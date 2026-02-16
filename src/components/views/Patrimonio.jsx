@@ -1,0 +1,92 @@
+import React from 'react';
+import { Card } from '../ui/Card';
+import { Fab } from '../ui/Fab';
+import { Wallet, PiggyBank, Trash2 } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
+
+export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleDelete }) => {
+  // 1. Cálculo da Poupança (Savings)
+  // Saldo Anterior: Tudo que aconteceu antes do dia 1 deste mês
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const inicioMesStr = `${year}-${month}-01`;
+
+  const poupancaAnterior = (data.poupanca || []).filter(item => item.data < inicioMesStr).reduce((acc, item) => {
+    return acc + (item.tipo === 'entrada' ? item.valor : -item.valor);
+  }, 0);
+
+  const movimentacaoPoupancaMes = filteredData.poupanca.reduce((acc, item) => {
+    return acc + (item.tipo === 'entrada' ? item.valor : -item.valor);
+  }, 0);
+
+  const poupancaAtual = poupancaAnterior + movimentacaoPoupancaMes;
+
+  // 2. Cálculo do Saldo em Conta (Checking + Total Savings)
+  const totalEntradas = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
+  const totalVariaveis = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
+  const totalFixosPagos = filteredData.fixos.filter(f => f.pago).reduce((acc, item) => acc + item.valor, 0);
+  
+  // Saldo = (Entradas - Saídas do Mês) + (Poupança Acumulada Anteriormente)
+  const saldoContaCalculado = totalEntradas - totalVariaveis - totalFixosPagos + poupancaAnterior;
+
+  return (
+    <div className="space-y-6 animate-in slide-in-from-right-4">
+     <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg">
+       <div className="flex flex-col gap-4">
+         <div>
+           <p className="text-slate-400 text-sm mb-1">Saldo Atual em Conta</p>
+           <div className="flex items-center gap-2">
+             <Wallet size={24} className="text-green-400" />
+             <span className="text-3xl font-bold">{formatCurrency(saldoContaCalculado)}</span>
+           </div>
+         </div>
+         
+         <div className="h-px bg-slate-700 w-full my-1"></div>
+
+         <div className="grid grid-cols-2 gap-4">
+           <div>
+              <p className="text-slate-400 text-xs mb-1">Terminei o mês com (Poupança)</p>
+              <span className="text-lg font-semibold">{formatCurrency(poupancaAnterior)}</span>
+           </div>
+           <div>
+              <p className="text-slate-400 text-xs mb-1">Meta mês atual (Poupança)</p>
+              <span className="text-lg font-semibold text-yellow-400">{formatCurrency(poupancaAtual)}</span>
+           </div>
+         </div>
+       </div>
+     </Card>
+
+     <div>
+       <div className="flex justify-between items-end mb-3 ml-1 mr-1">
+          <h3 className="text-sm font-bold text-slate-500 uppercase">Histórico da Poupança</h3>
+          <button onClick={() => openModal('poupanca')} className="text-xs text-blue-600 font-semibold hover:underline">+ Movimentação</button>
+       </div>
+       <div className="space-y-2">
+          {filteredData.poupanca.map(item => (
+            <Card key={item.id} className="py-3 flex justify-between items-center">
+               <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full ${item.tipo === 'entrada' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                     <PiggyBank size={20} />
+                  </div>
+                  <div>
+                     <p className="font-semibold text-slate-800">{item.descricao}</p>
+                     <p className="text-xs text-slate-400">{item.tipo === 'entrada' ? 'Aporte' : 'Resgate'}</p>
+                  </div>
+               </div>
+               <div className="flex items-center gap-3">
+                  <span className={`font-bold ${item.tipo === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
+                    {item.tipo === 'entrada' ? '+' : '-'}{formatCurrency(item.valor)}
+                  </span>
+                  <button onClick={() => handleDelete(item.id, 'poupanca')} className="text-slate-400 hover:text-red-500"><Trash2 size={14}/></button>
+               </div>
+            </Card>
+          ))}
+          {filteredData.poupanca.length === 0 && (
+            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma movimentação neste mês.</div>
+          )}
+       </div>
+     </div>
+     <Fab onClick={() => openModal('poupanca')} />
+    </div>
+  );
+};
