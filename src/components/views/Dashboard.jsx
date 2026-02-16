@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle } from 'lucide-react';
+import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 const BarChart = ({ data, total }) => (
@@ -46,6 +46,21 @@ export const Dashboard = ({
     return p.valor > 0 && gasto > p.valor * 0.9;
   });
 
+  // Cálculo do "Compromissos Pendentes" (Fixos em Aberto + Restante de Envelopes)
+  const fixosPendentes = filteredData.fixos
+    .filter(f => !f.pago)
+    .reduce((acc, item) => acc + item.valor, 0);
+
+  const envelopesRestantes = filteredData.provisoes.reduce((acc, item) => {
+    if (!item.tagId) return acc + item.valor;
+    const gasto = filteredData.variaveis
+      .filter(v => v.tagId === item.tagId)
+      .reduce((sum, v) => sum + v.valor, 0);
+    return acc + Math.max(0, item.valor - gasto);
+  }, 0);
+
+  const totalComprometido = fixosPendentes + envelopesRestantes;
+
   return (
     <div className="space-y-6 pb-20 animate-in fade-in">
       
@@ -60,7 +75,7 @@ export const Dashboard = ({
                {formatCurrency(saldoFinal)}
             </h2>
          </div>
-         <div className="flex gap-4 mt-4 text-sm text-slate-500 relative z-10">
+         <div className="flex flex-col gap-2 mt-4 text-sm text-slate-500 relative z-10">
             <div className="flex items-center gap-1">
                <ArrowUpRight size={16} className="text-emerald-500" />
                Entradas: <span className="font-semibold text-slate-700">{formatCurrency(totalEntradas)}</span>
@@ -71,6 +86,17 @@ export const Dashboard = ({
             </div>
          </div>
       </div>
+
+      {/* 1.5 Indicador de Compromissos Pendentes */}
+      <Card className="flex items-center justify-between bg-slate-50 border border-slate-200 shadow-sm">
+         <div className="flex items-center gap-3">
+            <div className="p-2 bg-white rounded-lg border border-slate-100 text-slate-500">
+               <Clock size={20} />
+            </div>
+            <span className="text-sm font-bold text-slate-600">Compromissos Pendentes <span className="block text-xs font-normal text-slate-400">Fixos em Aberto + Envelopes</span></span>
+         </div>
+         <span className="text-xl font-bold text-slate-700">{formatCurrency(totalComprometido)}</span>
+      </Card>
 
       {/* 2. Barra de Saúde Financeira */}
       <div>

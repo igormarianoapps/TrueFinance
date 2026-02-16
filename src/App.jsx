@@ -92,7 +92,11 @@ export default function App() {
 
     return {
       entradas: data.entradas.filter(filterFn),
-      fixos: data.fixos.filter(filterFn).sort((a, b) => new Date(a.data) - new Date(b.data)),
+      fixos: data.fixos.filter(filterFn).sort((a, b) => {
+        const dateDiff = new Date(a.data) - new Date(b.data);
+        if (dateDiff !== 0) return dateDiff;
+        return a.id > b.id ? 1 : -1;
+      }),
       variaveis: data.variaveis.filter(filterFn),
       provisoes: (data.provisoes || []).filter(filterFn),
       poupanca: (data.poupanca || []).filter(filterFn),
