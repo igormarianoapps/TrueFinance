@@ -1,6 +1,5 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { toLocalISO } from './utils/formatters';
 
 export const Modal = ({ 
   modalOpen, 
@@ -115,8 +114,16 @@ export const Modal = ({
                 <input required type="number" step="0.01" name="valor" defaultValue={editingItem?.valor} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="0,00" />
               </div>
               <div className="flex-1">
-                <label className="block text-sm text-slate-500 mb-1">Data</label>
-                <input name="data" type="date" defaultValue={editingItem?.data || toLocalISO(currentDate)} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" />
+                <label className="block text-sm text-slate-500 mb-1">Dia ({currentDate.toLocaleDateString('pt-BR', { month: 'long' })})</label>
+                <input 
+                  required 
+                  name="day" 
+                  type="number" 
+                  min="1" 
+                  max={new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()}
+                  defaultValue={editingItem ? parseInt(editingItem.data.split('-')[2]) : 1} 
+                  className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" 
+                />
               </div>
             </div>
           )}

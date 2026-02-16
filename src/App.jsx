@@ -92,7 +92,7 @@ export default function App() {
 
     return {
       entradas: data.entradas.filter(filterFn),
-      fixos: data.fixos.filter(filterFn),
+      fixos: data.fixos.filter(filterFn).sort((a, b) => new Date(a.data) - new Date(b.data)),
       variaveis: data.variaveis.filter(filterFn),
       provisoes: (data.provisoes || []).filter(filterFn),
       poupanca: (data.poupanca || []).filter(filterFn),
@@ -216,6 +216,14 @@ export default function App() {
     // Se o formulário enviou uma data específica (ex: input type="date"), usamos ela
     if (formData.get('data')) {
         values.data = formData.get('data');
+    }
+
+    // Se o formulário enviou apenas o dia (novo comportamento), construímos a data completa
+    if (formData.get('day')) {
+      const day = String(formData.get('day')).padStart(2, '0');
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      values.data = `${year}-${month}-${day}`;
     }
 
     const commonData = {

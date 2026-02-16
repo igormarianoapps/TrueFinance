@@ -21,13 +21,18 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   const poupancaAtual = poupancaAnterior + movimentacaoPoupancaMes;
 
-  // 2. Cálculo do Saldo em Conta (Checking + Total Savings)
+  // 2. Cálculo do Saldo em Conta (Livre)
   const totalEntradas = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
-  const totalVariaveis = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
-  const totalFixosPagos = filteredData.fixos.filter(f => f.pago).reduce((acc, item) => acc + item.valor, 0);
+  const totalFixos = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
+  const totalProvisoes = filteredData.provisoes.reduce((acc, item) => acc + item.valor, 0);
   
-  // Saldo = (Entradas - Saídas do Mês) + (Poupança Acumulada Anteriormente)
-  const saldoContaCalculado = totalEntradas - totalVariaveis - totalFixosPagos + poupancaAnterior;
+  const provisionedTagIds = filteredData.provisoes.map(p => p.tagId).filter(Boolean);
+  const totalVariaveisNaoProvisionadas = filteredData.variaveis
+    .filter(item => !item.tagId || !provisionedTagIds.includes(item.tagId))
+    .reduce((acc, item) => acc + item.valor, 0);
+
+  // Saldo = Entradas - Fixos - Envelopes - Variáveis Avulsas - Aportes Líquidos na Poupança
+  const saldoContaCalculado = totalEntradas - totalFixos - totalProvisoes - totalVariaveisNaoProvisionadas - movimentacaoPoupancaMes;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
