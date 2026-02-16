@@ -86,7 +86,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
           )}
        </div>
      </div>
-     <Fab onClick={() => openModal('poupanca')} />
+     <Fab onClick={() => openModal('poupanca')} className="bg-[#E95415] text-[#1B1B35]" />
     </div>
   );
 };
