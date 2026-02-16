@@ -374,7 +374,7 @@ export default function App() {
             <p className="text-slate-500 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-gradient-to-r from-slate-900 to-violet-700 hover:opacity-90 transition-opacity shadow-lg shadow-violet-200">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#1B1B35] hover:opacity-90 transition-opacity shadow-lg shadow-slate-400">Sim, confirmar</button>
             </div>
           </div>
         </div>

@@ -38,7 +38,7 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
           );
         })}
       </div>
-      <Fab onClick={() => openModal('variavel')} />
+      <Fab onClick={() => openModal('variavel')} className="bg-[#E95415] text-[#1B1B35]" />
     </div>
   );
 };
