@@ -35,7 +35,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
           </button>
 
           {/* Logo e Divider */}
-          <img src="/logopiggy.png" alt="Logo" className="w-24 mb-4" />
+          <img src="/logopiggy.png" alt="Logo" className="w-24 mb-4 object-contain" />
           <div className="w-full h-px bg-slate-200 mb-6"></div>
 
           <div className="w-20 h-20 rounded-full bg-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4">
