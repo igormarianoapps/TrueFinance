@@ -68,7 +68,7 @@ export const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#1B1B35] p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
         <div className="flex justify-center mb-6">
-          <img src="/logopiggy.png" alt="True Finance" className="w-32 object-contain" />
+          <img src="/logopiggy.png?v=3" alt="True Finance" className="w-32 object-contain" />
         </div>
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
