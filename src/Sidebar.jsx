@@ -33,6 +33,11 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
           <button onClick={() => setIsMenuOpen(false)} className="absolute top-4 right-4 p-2 hover:bg-slate-200 rounded-full transition-colors">
             <X size={20} className="text-slate-500"/>
           </button>
+
+          {/* Logo e Divider */}
+          <img src="/logopiggy.png" alt="Logo" className="w-24 mb-4" />
+          <div className="w-full h-px bg-slate-200 mb-6"></div>
+
           <div className="w-20 h-20 rounded-full bg-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4">
             <span className="text-2xl font-bold text-slate-600">{initials}</span>
           </div>

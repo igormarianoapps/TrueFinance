@@ -65,13 +65,15 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#1B1B35] p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-center text-slate-600">True Finance</h1>
+        <div className="flex justify-center mb-6">
+          <img src="/logopiggy.png" alt="True Finance" className="w-32" />
+        </div>
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
-          <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors">{loading ? 'Carregando...' : 'Entrar'}</button>
+          <button type="submit" disabled={loading} className="w-full bg-[#1B1B35] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
             <button type="button" onClick={() => setShowSignUp(true)} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>

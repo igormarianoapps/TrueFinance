@@ -34,6 +34,7 @@ export default function App() {
   // --- Auth & Data Fetching ---
   useEffect(() => {
     document.title = 'True Finance';
+
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
