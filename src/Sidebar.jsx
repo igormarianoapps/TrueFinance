@@ -27,7 +27,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
       <div className={`fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-slate-50">
           <div>
-            <h2 className="font-bold text-xl text-slate-900">Saldo</h2>
+            <h2 className="font-bold text-xl text-slate-900">True Finance</h2>
             <p className="text-xs text-slate-400">Controle Pessoal</p>
           </div>
           <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X size={20} className="text-slate-500"/></button>

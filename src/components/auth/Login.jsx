@@ -67,7 +67,7 @@ export const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-center text-slate-800">Financeiro 2026</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center text-slate-800">True Finance</h1>
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
