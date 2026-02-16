@@ -21,18 +21,13 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   const poupancaAtual = poupancaAnterior + movimentacaoPoupancaMes;
 
-  // 2. Cálculo do Saldo em Conta (Livre)
+  // 2. Cálculo do Saldo em Conta (Total Disponível: Conta + Poupança)
   const totalEntradas = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
   const totalFixos = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
-  const totalProvisoes = filteredData.provisoes.reduce((acc, item) => acc + item.valor, 0);
-  
-  const provisionedTagIds = filteredData.provisoes.map(p => p.tagId).filter(Boolean);
-  const totalVariaveisNaoProvisionadas = filteredData.variaveis
-    .filter(item => !item.tagId || !provisionedTagIds.includes(item.tagId))
-    .reduce((acc, item) => acc + item.valor, 0);
+  const totalVariaveis = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
 
-  // Saldo = Entradas - Fixos - Envelopes - Variáveis Avulsas - Aportes Líquidos na Poupança
-  const saldoContaCalculado = totalEntradas - totalFixos - totalProvisoes - totalVariaveisNaoProvisionadas - movimentacaoPoupancaMes;
+  // Saldo = (Entradas - Gastos Reais) + Poupança Acumulada
+  const saldoContaCalculado = totalEntradas - totalFixos - totalVariaveis + poupancaAnterior;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">

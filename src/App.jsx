@@ -124,8 +124,12 @@ export default function App() {
       }
     });
 
+    const movimentacaoPoupanca = (filteredData.poupanca || []).reduce((acc, item) => {
+      return acc + (item.tipoPoupanca === 'entrada' ? item.valor : -item.valor);
+    }, 0);
+
     const totalGastoFinal = fixosCalc + totalGastosNaoProvisionados + totalGastoProvisionadoEfetivo;
-    const saldoCalc = entradasCalc - totalGastoFinal;
+    const saldoCalc = entradasCalc - totalGastoFinal - movimentacaoPoupanca;
 
     return { 
       saldoFinal: saldoCalc, 
