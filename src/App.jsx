@@ -330,7 +330,7 @@ export default function App() {
   if (!session) return <Login />;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-10">
+    <div className="min-h-screen bg-slate-100 font-sans text-slate-600 pb-10">
       <Sidebar 
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
@@ -379,7 +379,7 @@ export default function App() {
       )}
 
       {/* Header Fixo */}
-      <header className="bg-violet-700 sticky top-0 z-30 px-4 py-3 shadow-md flex items-center justify-between">
+      <header className="bg-gradient-to-r from-[#4F39F6] to-[#860BDD] sticky top-0 z-30 px-4 py-3 shadow-md flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
             <Menu size={24} />
@@ -391,12 +391,12 @@ export default function App() {
       {/* Área Principal */}
       <main className="p-4 max-w-lg mx-auto w-full">
         {/* Seletor de Mês Destacado */}
-        <div className="flex items-center justify-center gap-6 mb-6">
-          <button onClick={handlePrevMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-slate-600 transition-all active:scale-95"><ChevronLeft size={24}/></button>
-          <span className="text-xl font-bold text-violet-700 capitalize min-w-[180px] text-center">
-            {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} | {currentDate.getFullYear()}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <button onClick={handlePrevMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-[#4F39F6] transition-all active:scale-95"><ChevronLeft size={24}/></button>
+          <span className="text-lg font-bold text-[#4F39F6] uppercase bg-white px-6 py-2 rounded-full shadow-sm min-w-[200px] text-center">
+            {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
           </span>
-          <button onClick={handleNextMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-slate-600 transition-all active:scale-95"><ChevronRight size={24}/></button>
+          <button onClick={handleNextMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-[#4F39F6] transition-all active:scale-95"><ChevronRight size={24}/></button>
         </div>
 
         {activeTab === 'Dashboard' && <Dashboard 
@@ -408,6 +408,7 @@ export default function App() {
           filteredData={filteredData}
           chartData={chartData}
           totalVariaveis={totalVariaveis}
+          openModal={openModal}
         />}
         {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Fixos & Provisões' && <FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />}

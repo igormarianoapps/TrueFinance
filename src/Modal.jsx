@@ -18,7 +18,7 @@ export const Modal = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in">
       <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-in slide-in-from-bottom-10 duration-300">
         <div className="flex justify-between items-center mb-6">
-           <h2 className="text-xl font-bold text-slate-800">
+           <h2 className="text-xl font-bold text-slate-600">
              {editingItem ? 'Editar' : 'Novo'} {
                modalType === 'variavel' ? 'Gasto Variável' :
                modalType === 'entrada' ? 'Entrada' :
@@ -160,7 +160,7 @@ export const Modal = ({
             </div>
           )}
 
-          <button type="submit" className="w-full bg-gradient-to-r from-slate-900 to-violet-700 text-white py-4 rounded-xl font-bold mt-4 shadow-lg shadow-violet-200 active:scale-95 transition-transform">
+          <button type="submit" className="w-full bg-gradient-to-r from-[#4F39F6] to-[#860BDD] text-white py-4 rounded-xl font-bold mt-4 shadow-lg shadow-violet-200 active:scale-95 transition-transform">
             Salvar Registro
           </button>
         </form>

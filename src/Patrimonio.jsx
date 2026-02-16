@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <Card className="bg-gradient-to-br from-slate-900 to-violet-700 text-white shadow-xl shadow-violet-200/50">
+     <Card className="bg-gradient-to-br from-[#4F39F6] to-[#860BDD] text-white shadow-xl shadow-violet-200/50">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Saldo Atual em Conta</p>
@@ -59,7 +59,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
      <div>
        <div className="flex justify-between items-end mb-3 ml-1 mr-1">
           <h3 className="text-sm font-bold text-slate-500 uppercase">Histórico da Poupança</h3>
-          <button onClick={() => openModal('poupanca')} className="text-xs text-violet-700 font-semibold hover:underline">+ Movimentação</button>
+          <button onClick={() => openModal('poupanca')} className="text-xs text-[#4F39F6] font-semibold hover:underline">+ Movimentação</button>
        </div>
        <div className="space-y-2">
           {filteredData.poupanca.map(item => (
@@ -69,7 +69,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
                      <PiggyBank size={20} />
                   </div>
                   <div>
-                     <p className="font-semibold text-slate-800">{item.descricao}</p>
+                     <p className="font-semibold text-slate-600">{item.descricao}</p>
                      <p className="text-xs text-slate-400">{item.tipoPoupanca === 'entrada' ? 'Aporte' : 'Resgate'}</p>
                   </div>
                </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
+import { Fab } from '../ui/Fab';
 import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
@@ -11,11 +12,11 @@ const BarChart = ({ data }) => {
       {data.map((item, idx) => (
         <div key={idx}>
           <div className="flex justify-between text-sm mb-1">
-            <span className="font-medium text-slate-700 flex items-center gap-2">
+            <span className="font-medium text-slate-600 flex items-center gap-2">
                <div className="w-3 h-3 rounded-full" style={{backgroundColor: item.cor}}></div>
                {item.label}
             </span>
-            <span className="font-bold text-slate-700">{formatCurrency(item.valor)}</span>
+            <span className="font-bold text-slate-600">{formatCurrency(item.valor)}</span>
           </div>
           <div className="w-full bg-slate-100 rounded-full h-2">
             <div className="h-2 rounded-full" style={{ width: `${maxValue > 0 ? (item.valor / maxValue) * 100 : 0}%`, backgroundColor: item.cor }}></div>
@@ -34,7 +35,8 @@ export const Dashboard = ({
   totalGastosNaoProvisionados,
   filteredData,
   chartData,
-  totalVariaveis
+  totalVariaveis,
+  openModal
 }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -82,11 +84,11 @@ export const Dashboard = ({
          <div className="flex flex-col gap-2 mt-4 text-sm text-slate-500 relative z-10">
             <div className="flex items-center gap-1">
                <ArrowUpRight size={16} className="text-emerald-500" />
-               Entradas: <span className="font-semibold text-slate-700">{formatCurrency(totalEntradas)}</span>
+               Entradas: <span className="font-semibold text-slate-600">{formatCurrency(totalEntradas)}</span>
             </div>
             <div className="flex items-center gap-1">
                <ArrowDownRight size={16} className="text-red-500" />
-               Comprometido: <span className="font-semibold text-slate-700">{formatCurrency(totalEntradas - saldoFinal)}</span>
+               Comprometido: <span className="font-semibold text-slate-600">{formatCurrency(totalEntradas - saldoFinal)}</span>
             </div>
          </div>
       </div>
@@ -99,12 +101,12 @@ export const Dashboard = ({
             </div>
             <span className="text-sm font-bold text-slate-600">Compromissos Pendentes <span className="block text-xs font-normal text-slate-400">Fixos em Aberto + Envelopes</span></span>
          </div>
-         <span className="text-xl font-bold text-slate-700">{formatCurrency(totalComprometido)}</span>
+         <span className="text-xl font-bold text-slate-600">{formatCurrency(totalComprometido)}</span>
       </Card>
 
       {/* 2. Barra de Saúde Financeira */}
       <div>
-         <h3 className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2"><PieChart size={16}/> Comprometimento da Renda</h3>
+         <h3 className="text-sm font-bold text-slate-600 mb-3 flex items-center gap-2"><PieChart size={16}/> Comprometimento da Renda</h3>
          <div className="h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
             {/* Fixos */}
             <div style={{ width: `${totalEntradas > 0 ? Math.min((totalFixos / totalEntradas) * 100, 100) : 0}%` }} className="bg-slate-400" title="Fixos"></div>
@@ -123,7 +125,7 @@ export const Dashboard = ({
       {/* 3. Alertas e Atenção */}
       {(contasProximas.length > 0 || envelopesCriticos.length > 0) && (
         <div className="space-y-3">
-          <h3 className="text-sm font-bold text-slate-700">Atenção Necessária</h3>
+          <h3 className="text-sm font-bold text-slate-600">Atenção Necessária</h3>
           <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
             {contasProximas.map(conta => {
               const [y, m, d] = conta.data.split('-').map(Number);
@@ -136,7 +138,7 @@ export const Dashboard = ({
                     <AlertTriangle size={16} />
                     <span className="text-xs font-bold uppercase">{isVencido ? 'Vencido / Atrasado' : 'Vence em breve'}</span>
                   </div>
-                  <p className="font-semibold text-slate-800 text-sm truncate">{conta.descricao}</p>
+                  <p className="font-semibold text-slate-600 text-sm truncate">{conta.descricao}</p>
                   <p className="text-xs text-slate-600">{new Date(conta.data).toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})} • {formatCurrency(conta.valor)}</p>
                 </div>
               );
@@ -147,7 +149,7 @@ export const Dashboard = ({
                   <AlertTriangle size={16} />
                   <span className="text-xs font-bold uppercase">Envelope Crítico</span>
                 </div>
-                <p className="font-semibold text-slate-800 text-sm truncate">{env.descricao}</p>
+                <p className="font-semibold text-slate-600 text-sm truncate">{env.descricao}</p>
                 <p className="text-xs text-slate-500">Limite quase atingido</p>
               </div>
             ))}
@@ -158,10 +160,11 @@ export const Dashboard = ({
       {/* 4. Análise de Gastos */}
       <div className="grid grid-cols-1 gap-3">
         <Card>
-          <h3 className="text-sm font-bold text-slate-700 mb-4">Distribuição de Gastos</h3>
+          <h3 className="text-sm font-bold text-slate-600 mb-4">Distribuição de Gastos</h3>
           <BarChart data={chartData} />
         </Card>
       </div>
+      <Fab onClick={() => openModal('variavel')} />
     </div>
   );
 };

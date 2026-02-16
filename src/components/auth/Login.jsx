@@ -67,14 +67,14 @@ export const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-center text-slate-800">True Finance</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center text-slate-600">True Finance</h1>
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
           <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
-            <button type="button" onClick={() => setShowSignUp(true)} className="text-slate-900 font-semibold hover:underline">Cadastrar</button>
+            <button type="button" onClick={() => setShowSignUp(true)} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>
             <button type="button" onClick={() => setShowForgot(true)} className="text-slate-500 hover:text-slate-700">Esqueci minha senha</button>
           </div>
         </form>
@@ -85,7 +85,7 @@ export const Login = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-md rounded-2xl p-6 relative animate-in fade-in zoom-in duration-200">
             <button onClick={() => setShowSignUp(false)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"><X size={20}/></button>
-            <h2 className="text-xl font-bold mb-4 text-slate-800">Criar Conta</h2>
+            <h2 className="text-xl font-bold mb-4 text-slate-600">Criar Conta</h2>
             <form onSubmit={handleSignUp} className="space-y-3">
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="text" placeholder="Nome Completo" value={newName} onChange={e => setNewName(e.target.value)} required />
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)} required />
@@ -102,7 +102,7 @@ export const Login = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-md rounded-2xl p-6 relative animate-in fade-in zoom-in duration-200">
             <button onClick={() => setShowForgot(false)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"><X size={20}/></button>
-            <h2 className="text-xl font-bold mb-4 text-slate-800">Recuperar Senha</h2>
+            <h2 className="text-xl font-bold mb-4 text-slate-600">Recuperar Senha</h2>
             <p className="text-sm text-slate-500 mb-4">Digite seu email para receber o link de redefinição.</p>
             <form onSubmit={handleForgotPassword} className="space-y-3">
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email cadastrado" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
