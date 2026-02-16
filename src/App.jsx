@@ -337,6 +337,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         setShowLogoutConfirm={setShowLogoutConfirm}
+        user={session?.user}
       />
       <Modal 
         modalOpen={modalOpen}
