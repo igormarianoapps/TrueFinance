@@ -3,24 +3,28 @@ import { Card } from '../ui/Card';
 import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
-const BarChart = ({ data, total }) => (
-  <div className="space-y-4">
-    {data.map((item, idx) => (
-      <div key={idx}>
-        <div className="flex justify-between text-sm mb-1">
-          <span className="font-medium text-slate-700 flex items-center gap-2">
-             <div className="w-3 h-3 rounded-full" style={{backgroundColor: item.cor}}></div>
-             {item.label}
-          </span>
-          <span className="font-bold text-slate-700">{formatCurrency(item.valor)}</span>
+const BarChart = ({ data }) => {
+  const maxValue = data.reduce((max, item) => Math.max(max, item.valor), 0);
+
+  return (
+    <div className="space-y-4">
+      {data.map((item, idx) => (
+        <div key={idx}>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="font-medium text-slate-700 flex items-center gap-2">
+               <div className="w-3 h-3 rounded-full" style={{backgroundColor: item.cor}}></div>
+               {item.label}
+            </span>
+            <span className="font-bold text-slate-700">{formatCurrency(item.valor)}</span>
+          </div>
+          <div className="w-full bg-slate-100 rounded-full h-2">
+            <div className="h-2 rounded-full" style={{ width: `${maxValue > 0 ? (item.valor / maxValue) * 100 : 0}%`, backgroundColor: item.cor }}></div>
+          </div>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-2">
-          <div className="h-2 rounded-full" style={{ width: `${total > 0 ? (item.valor / total) * 100 : 0}%`, backgroundColor: item.cor }}></div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 export const Dashboard = ({
   saldoFinal,
@@ -155,7 +159,7 @@ export const Dashboard = ({
       <div className="grid grid-cols-1 gap-3">
         <Card>
           <h3 className="text-sm font-bold text-slate-700 mb-4">Distribuição de Gastos</h3>
-          <BarChart data={chartData} total={totalVariaveis} />
+          <BarChart data={chartData} />
         </Card>
       </div>
     </div>
