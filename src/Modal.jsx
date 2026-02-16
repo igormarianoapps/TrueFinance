@@ -160,7 +160,7 @@ export const Modal = ({
             </div>
           )}
 
-          <button type="submit" className="w-full bg-[#1B1B35] text-white py-4 rounded-xl font-bold mt-4 shadow-lg shadow-slate-400 active:scale-95 transition-transform">
+          <button type="submit" className="w-full bg-gradient-to-r from-[#4F39F6] to-[#860BDD] text-white py-4 rounded-xl font-bold mt-4 shadow-lg shadow-violet-200 active:scale-95 transition-transform">
             Salvar Registro
           </button>
         </form>

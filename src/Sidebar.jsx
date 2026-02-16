@@ -34,6 +34,10 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <X size={20} className="text-slate-500"/>
           </button>
 
+          {/* Logo e Divider */}
+          <img src="/logopiggy.png" alt="Logo" className="w-24 mb-4 object-contain" />
+          <div className="w-full h-px bg-slate-300 mb-6"></div>
+
           <div className="w-20 h-20 rounded-full bg-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4">
             <span className="text-2xl font-bold text-slate-600">{initials}</span>
           </div>
@@ -47,7 +51,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <button
               key={item.id}
               onClick={() => { setActiveTab(item.id); setIsMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === item.id ? 'bg-[#1B1B35] text-white shadow-md shadow-slate-400' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === item.id ? 'bg-gradient-to-r from-[#4F39F6] to-[#860BDD] text-white shadow-md shadow-violet-200' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>
@@ -55,13 +59,6 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
           ))}
         </nav>
         <div className="p-4 border-t border-slate-100">
-          {/* Logo e Dividers no Footer */}
-          <div className="w-full h-px bg-slate-200 mb-4"></div>
-          <div className="flex justify-center mb-4 px-2">
-            <img src="/logopiggy.png" alt="Logo" className="w-full max-w-[200px] object-contain" />
-          </div>
-          <div className="w-full h-px bg-slate-200 mb-4"></div>
-
           <button
             onClick={() => { setIsMenuOpen(false); setShowLogoutConfirm(true); }}
             className="w-full flex items-center gap-3 p-3 rounded-xl text-red-600 hover:bg-red-50 transition-all"

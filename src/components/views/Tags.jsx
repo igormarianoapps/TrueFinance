@@ -16,7 +16,7 @@ export const Tags = ({ filteredData, openModal }) => {
           </div>
         ))}
       </div>
-      <Fab onClick={() => openModal('tag')} className="bg-[#E95415] text-[#1B1B35]" />
+      <Fab onClick={() => openModal('tag')} />
     </div>
   );
 };
