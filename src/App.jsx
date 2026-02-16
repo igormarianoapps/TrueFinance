@@ -199,6 +199,11 @@ export default function App() {
     
     if (values.valor) values.valor = parseFloat(values.valor);
     
+    if (modalType !== 'tag' && !values.valor) {
+      alert("Por favor, insira um valor válido.");
+      return;
+    }
+
     if (values.tagId !== undefined) {
       values.tagId = values.tagId === '' ? null : parseInt(values.tagId);
     }
@@ -238,13 +243,16 @@ export default function App() {
 
     if (editingItem) {
       if (modalType === 'tag') {
-        await supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingItem.id);
+        const { error } = await supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingItem.id);
+        if (error) console.error('Erro ao atualizar tag:', error);
       } else {
-        await supabase.from('transacoes').update(commonData).eq('id', editingItem.id);
+        const { error } = await supabase.from('transacoes').update(commonData).eq('id', editingItem.id);
+        if (error) console.error('Erro ao atualizar transação:', error);
       }
     } else {
       if (modalType === 'tag') {
-        await supabase.from('tags').insert({ user_id: session.user.id, nome: values.nome, cor: values.cor });
+        const { error } = await supabase.from('tags').insert({ user_id: session.user.id, nome: values.nome, cor: values.cor });
+        if (error) console.error('Erro ao criar tag:', error);
       } else {
         const newItems = [];
         const baseId = Date.now(); 
@@ -276,7 +284,8 @@ export default function App() {
         }
         
         if (newItems.length > 0) {
-          await supabase.from('transacoes').insert(newItems);
+          const { error } = await supabase.from('transacoes').insert(newItems);
+          if (error) console.error('Erro ao criar transações:', error);
         }
       }
     }
@@ -300,7 +309,7 @@ export default function App() {
   };
 
   const openModal = (type, item = null) => {
-    setModalType(type);
+    setModalType(type.toLowerCase());
     setEditingItem(item);
     setRecurrenceType('unico'); 
     setModalOpen(true);

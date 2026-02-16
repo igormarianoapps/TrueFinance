@@ -21,6 +21,7 @@ export const Modal = ({
            <h2 className="text-xl font-bold text-slate-800">
              {editingItem ? 'Editar' : 'Novo'} {
                modalType === 'variavel' ? 'Gasto Variável' :
+               modalType === 'entrada' ? 'Entrada' :
                modalType === 'fixo' ? 'Gasto Fixo' :
                modalType === 'provisao' ? 'Envelope' :
                modalType === 'poupanca' ? 'Poupança' :
