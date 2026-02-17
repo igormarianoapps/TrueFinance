@@ -34,11 +34,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <X size={20} className="text-slate-500"/>
           </button>
 
-          {/* Logo e Divider */}
-          <img src="/logopiggy.png" alt="Logo" className="w-24 mb-4 object-contain" />
-          <div className="w-full h-px bg-slate-300 mb-6"></div>
-
-          <div className="w-20 h-20 rounded-full bg-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4">
+          <div className="w-20 h-20 rounded-full bg-slate-200 border-4 border-white shadow-lg flex items-center justify-center mb-4 mt-8">
             <span className="text-2xl font-bold text-slate-600">{initials}</span>
           </div>
           <div className="text-center">
@@ -46,7 +42,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <h2 className="font-bold text-lg text-slate-700">{firstName}</h2>
           </div>
         </div>
-        <nav className="p-4 space-y-2 flex-1">
+        <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
           {menuItems.map(item => (
             <button
               key={item.id}
@@ -58,7 +54,13 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-100">
+        <div className="p-4 mt-auto">
+          <div className="w-full h-px bg-slate-200 mb-4"></div>
+          <div className="flex justify-center">
+            <img src="/logopiggy.png" alt="Logo" className="w-32 mb-4 object-contain" />
+          </div>
+          <div className="w-full h-px bg-slate-200 mb-4"></div>
+
           <button
             onClick={() => { setIsMenuOpen(false); setShowLogoutConfirm(true); }}
             className="w-full flex items-center gap-3 p-3 rounded-xl text-red-600 hover:bg-red-50 transition-all"

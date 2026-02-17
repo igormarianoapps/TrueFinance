@@ -393,12 +393,12 @@ export default function App() {
       {/* Área Principal */}
       <main className="p-4 max-w-lg mx-auto w-full">
         {/* Seletor de Mês Destacado */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <button onClick={handlePrevMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-[#4F39F6] transition-all active:scale-95"><ChevronLeft size={24}/></button>
-          <span className="text-lg font-bold text-[#4F39F6] uppercase bg-white px-6 py-2 rounded-full shadow-sm min-w-[200px] text-center">
+        <div className="flex items-center justify-between gap-4 mb-6 bg-white shadow-md p-3 rounded-xl">
+          <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
+          <span className="text-lg font-bold text-[#12111C] uppercase text-center">
             {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
           </span>
-          <button onClick={handleNextMonth} className="p-2 rounded-full bg-white shadow-sm hover:bg-slate-200 text-[#4F39F6] transition-all active:scale-95"><ChevronRight size={24}/></button>
+          <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
         </div>
 
         {activeTab === 'Dashboard' && <Dashboard 
