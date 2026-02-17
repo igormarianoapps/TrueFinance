@@ -374,14 +374,14 @@ export default function App() {
             <p className="text-slate-500 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-gradient-to-r from-slate-900 to-violet-700 hover:opacity-90 transition-opacity shadow-lg shadow-violet-200">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#12111C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
           </div>
         </div>
       )}
 
       {/* Header Fixo */}
-      <header className="bg-gradient-to-r from-[#4F39F6] to-[#860BDD] sticky top-0 z-30 px-4 py-3 shadow-md flex items-center justify-between">
+      <header className="bg-[#12111C] sticky top-0 z-30 px-4 py-3 shadow-md flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
             <Menu size={24} />

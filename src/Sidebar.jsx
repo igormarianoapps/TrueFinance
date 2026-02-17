@@ -51,7 +51,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <button
               key={item.id}
               onClick={() => { setActiveTab(item.id); setIsMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === item.id ? 'bg-gradient-to-r from-[#4F39F6] to-[#860BDD] text-white shadow-md shadow-violet-200' : 'text-slate-500 hover:bg-slate-100'}`}
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeTab === item.id ? 'bg-[#12111C] text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'}`}
             >
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>

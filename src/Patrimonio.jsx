@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <Card className="bg-gradient-to-br from-[#4F39F6] to-[#860BDD] text-white shadow-xl shadow-violet-200/50">
+     <Card className="bg-[#12111C] text-white shadow-xl">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Saldo Atual em Conta</p>
