@@ -381,26 +381,28 @@ export default function App() {
       )}
 
       {/* Header Fixo */}
-      <header className="bg-[#12111C] sticky top-0 z-30 px-4 py-3 shadow-md flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
-            <Menu size={24} />
-          </button>
-          <h1 className="font-bold text-lg text-white">{activeTab}</h1>
+      <div className="sticky top-0 z-30 shadow-md">
+        <header className="bg-[#12111C] px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
+              <Menu size={24} />
+            </button>
+            <h1 className="font-bold text-lg text-white">{activeTab}</h1>
+          </div>
+        </header>
+        <div className="bg-white w-full">
+          <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
+            <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
+            <span className="text-lg font-bold text-[#12111C] uppercase text-center">
+              {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
+            </span>
+            <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Área Principal */}
       <main className="p-4 max-w-lg mx-auto w-full">
-        {/* Seletor de Mês Destacado */}
-        <div className="flex items-center justify-between gap-4 mb-6 bg-white shadow-md p-3 rounded-xl">
-          <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
-          <span className="text-lg font-bold text-[#12111C] uppercase text-center">
-            {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
-          </span>
-          <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
-        </div>
-
         {activeTab === 'Dashboard' && <Dashboard 
           saldoFinal={saldoFinal}
           totalEntradas={totalEntradas}
