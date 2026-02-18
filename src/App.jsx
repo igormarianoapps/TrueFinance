@@ -229,21 +229,12 @@ export default function App() {
       const month = String(currentDate.getMonth() + 1).padStart(2, '0');
       let day;
 
-      if (editingItem) {
+      if (editingItem && editingItem.data) {
         // Para edição, usa o dia do formulário ou o dia original do item
         day = formData.get('day') || editingItem.data.split('-')[2];
       } else { // Para novos itens
         const dayFromForm = formData.get('day');
-        const today = new Date();
-        const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
-
-        // Se estiver no mês atual e o usuário não alterou o dia (valor padrão '1', '01' ou campo vazio), usa o dia de hoje.
-        if (isViewingCurrentMonth && (!dayFromForm || dayFromForm === '1' || dayFromForm === '01')) {
-          day = today.getDate();
-        } else {
-          // Caso contrário, usa o dia que o usuário selecionou, ou o padrão '1' se o campo estiver vazio em meses não-atuais.
-          day = dayFromForm || '1'; // Fallback para '1' se dayFromForm for '' ou null
-        }
+        day = dayFromForm || '1';
       }
       values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;
     }
@@ -258,7 +249,7 @@ export default function App() {
       tipo_poupanca: values.tipoPoupanca || null
     };
 
-    if (editingItem) {
+    if (editingItem && editingItem.id) {
       if (modalType === 'tag') {
         const { error } = await supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingItem.id);
         if (error) console.error('Erro ao atualizar tag:', error);
@@ -327,8 +318,21 @@ export default function App() {
 
   const openModal = (type, item = null) => {
     setModalType(type.toLowerCase());
-    setEditingItem(item);
     setRecurrenceType('unico'); 
+    
+    if (item) {
+      setEditingItem(item);
+    } else {
+      // Lógica para novos itens: Se for mês atual, define data de hoje
+      const today = new Date();
+      const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+      
+      if (isViewingCurrentMonth && type.toLowerCase() !== 'tag') {
+        setEditingItem({ data: toLocalISO(today).split('T')[0] });
+      } else {
+        setEditingItem(null);
+      }
+    }
     setModalOpen(true);
   };
 

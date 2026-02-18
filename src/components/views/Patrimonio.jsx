@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <Card style={{ backgroundColor: '#1B1B35' }} className="text-white shadow-xl">
+     <Card className="bg-[#1B1B35] text-white shadow-xl">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Patrimônio Total</p>
