@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  PieChart, TrendingUp, Calendar, TrendingDown, Tag, Wallet, LogOut, X
+  PieChart, TrendingUp, Calendar, TrendingDown, Tag, Wallet, LogOut, X, User
 } from 'lucide-react';
 
 export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user }) => {
@@ -11,6 +11,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
     { id: 'Gastos Variáveis', icon: TrendingDown },
     { id: 'Tags', icon: Tag },
     { id: 'Patrimônio', icon: Wallet },
+    { id: 'Perfil', icon: User },
   ];
 
   const fullName = user?.user_metadata?.full_name || 'Usuário';

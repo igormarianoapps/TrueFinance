@@ -14,6 +14,7 @@ import { FixosEProvisoes } from './components/views/FixosEProvisoes';
 import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
 import { Patrimonio } from './Patrimonio';
+import { Perfil } from './components/views/Perfil';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -419,6 +420,7 @@ export default function App() {
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}
         {activeTab === 'Patrimônio' && <Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />}
+        {activeTab === 'Perfil' && <Perfil user={session?.user} />}
       </main>
     </div>
   );
