@@ -14,6 +14,7 @@ import { FixosEProvisoes } from './components/views/FixosEProvisoes';
 import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
 import { Patrimonio } from './Patrimonio';
+import { Movimentacoes } from './components/views/Movimentacoes';
 import { Perfil } from './components/views/Perfil';
 
 export default function App() {
@@ -415,6 +416,7 @@ export default function App() {
           totalVariaveis={totalVariaveis}
           openModal={openModal}
         />}
+        {activeTab === 'Movimentações' && <Movimentacoes filteredData={filteredData} setActiveTab={setActiveTab} />}
         {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Fixos & Provisões' && <FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />}
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
