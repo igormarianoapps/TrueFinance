@@ -235,11 +235,15 @@ export default function App() {
       } else { // Para novos itens
         const dayFromForm = formData.get('day');
         const today = new Date();
-        const viewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+        const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
 
-        // Se o dia do formulário for '1' (o default) e estivermos no mês atual, usa o dia de hoje.
-        // Caso contrário, respeita o dia que o usuário selecionou no formulário.
-        day = (viewingCurrentMonth && dayFromForm === '1') ? today.getDate() : (dayFromForm || '1');
+        // Se estiver no mês atual e o usuário não escolheu um dia (ou seja, o valor é o padrão '1' ou nulo), usa o dia de hoje.
+        if (isViewingCurrentMonth && (dayFromForm === '1' || !dayFromForm)) {
+          day = today.getDate();
+        } else {
+          // Caso contrário, usa o dia do formulário, ou o padrão '1' para meses passados/futuros.
+          day = dayFromForm || '1';
+        }
       }
       values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;
     }
@@ -394,15 +398,17 @@ export default function App() {
             <h1 className="font-bold text-lg text-white">{activeTab}</h1>
           </div>
         </header>
-        <div className="bg-white w-full">
-          <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-            <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
-            <span className="text-lg font-bold text-[#12111C] uppercase text-center">
-              {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
-            </span>
-            <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
+        {!['Perfil', 'Tags'].includes(activeTab) && (
+          <div className="bg-white w-full">
+            <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
+              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
+              <span className="text-lg font-bold text-[#12111C] uppercase text-center">
+                {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
+              </span>
+              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Área Principal */}
