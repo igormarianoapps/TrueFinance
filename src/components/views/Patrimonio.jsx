@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <Card className="bg-[#1B1B35] text-white shadow-xl">
+     <div className="bg-[#1B1B35] text-white shadow-xl p-6 rounded-2xl">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Patrimônio Total</p>
@@ -54,7 +54,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
            </div>
          </div>
        </div>
-     </Card>
+     </div>
 
      <div>
        <div className="flex justify-between items-end mb-3 ml-1 mr-1">
