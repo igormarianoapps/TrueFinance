@@ -219,29 +219,29 @@ export default function App() {
       values.tagId = values.tagId === '' ? null : parseInt(values.tagId);
     }
 
-    // Define uma data padrão para novos itens, que pode ser sobrescrita pelo formulário
-    if (modalType !== 'tag' && !editingItem) {
-        const today = new Date();
-        const viewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
-        
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        // Usa o dia de hoje como padrão se estivermos no mês atual, senão usa o dia 1
-        const day = viewingCurrentMonth ? String(today.getDate()).padStart(2, '0') : '01';
-
-        values.data = `${year}-${month}-${day}`;
-    }
-
-    // Se o formulário enviou uma data específica (ex: input type="date"), ela tem prioridade
+    // Lógica de data
     if (formData.get('data')) {
-        values.data = formData.get('data');
-    }
-    // Se o formulário enviou apenas o dia, ele também tem prioridade
-    else if (formData.get('day')) {
-      const day = String(formData.get('day') || '1').padStart(2, '0');
+      // Prioridade 1: Um input de data completo (type="date")
+      values.data = formData.get('data');
+    } else if (modalType !== 'tag') {
+      // Prioridade 2: Lógica para o input de dia (type="number")
       const year = currentDate.getFullYear();
       const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      values.data = `${year}-${month}-${day}`;
+      let day;
+
+      if (editingItem) {
+        // Para edição, usa o dia do formulário ou o dia original do item
+        day = formData.get('day') || editingItem.data.split('-')[2];
+      } else { // Para novos itens
+        const dayFromForm = formData.get('day');
+        const today = new Date();
+        const viewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+
+        // Se o dia do formulário for '1' (o default) e estivermos no mês atual, usa o dia de hoje.
+        // Caso contrário, respeita o dia que o usuário selecionou no formulário.
+        day = (viewingCurrentMonth && dayFromForm === '1') ? today.getDate() : (dayFromForm || '1');
+      }
+      values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;
     }
 
     const commonData = {
