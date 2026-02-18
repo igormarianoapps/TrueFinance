@@ -235,7 +235,3 @@ export const AnnualDashboard = ({ data }) => {
         </div>
     );
 };
-            />
-        </div>
-    );
-};
