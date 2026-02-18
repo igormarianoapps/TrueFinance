@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Card } from '../ui/Card';
 import { User, Lock, Camera } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 
 export const Perfil = ({ user }) => {
   const [fullName, setFullName] = useState('');
@@ -82,21 +83,30 @@ export const Perfil = ({ user }) => {
         throw new Error('Você deve selecionar uma imagem para fazer o upload.');
       }
 
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
+      const originalFile = event.target.files[0];
+
+      const options = {
+        maxSizeMB: 0.1, // Alvo de 100KB
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(originalFile, options);
+
+      const fileExt = compressedFile.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, compressedFile);
 
       if (uploadError) {
         throw uploadError;
       }
 
-      let { error: updateUserError } = await supabase.auth.updateUser({
+      const { error: updateUserError } = await supabase.auth.updateUser({
         data: { avatar_url: filePath }
       });
-
+      
       if (updateUserError) {
         throw updateUserError;
       }
