@@ -52,13 +52,15 @@ const CashFlowChart = ({ data }) => {
     );
 };
 
-const ExpenseDistributionChart = ({ data, total }) => {
+const ExpenseDistributionChart = ({ data }) => {
+    const maxValue = Math.max(...data.map(d => d.valor), 0);
+
     return (
         <Card>
             <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><PieChart size={16}/> Distribuição Anual de Gastos</h3>
             <div className="space-y-3">
                 {data.map(tag => {
-                    const percentage = total > 0 ? ((tag.valor / total) * 100).toFixed(1) : 0;
+                    const width = maxValue > 0 ? (tag.valor / maxValue) * 100 : 0;
                     return (
                         <div key={tag.id}>
                             <div className="flex justify-between text-sm mb-1">
@@ -71,9 +73,8 @@ const ExpenseDistributionChart = ({ data, total }) => {
                             <div className="w-full bg-slate-100 rounded-full h-2.5 relative">
                                 <div 
                                     className="h-full rounded-full" 
-                                    style={{ width: `${percentage}%`, backgroundColor: tag.cor }}
+                                    style={{ width: `${width}%`, backgroundColor: tag.cor }}
                                 ></div>
-                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white mix-blend-difference">{percentage}%</span>
                             </div>
                         </div>
                     );
@@ -137,11 +138,14 @@ export const AnnualDashboard = ({ data }) => {
     const handleNextYear = () => setCurrentYear(prev => prev + 1);
 
     const annualData = useMemo(() => {
+        const getYear = (dateStr) => parseInt(dateStr.split('-')[0]);
+        const getMonth = (dateStr) => parseInt(dateStr.split('-')[1]) - 1;
+
         const yearData = {
-            entradas: data.entradas.filter(t => new Date(t.data).getFullYear() === currentYear),
-            fixos: data.fixos.filter(t => new Date(t.data).getFullYear() === currentYear),
-            variaveis: data.variaveis.filter(t => new Date(t.data).getFullYear() === currentYear),
-            poupanca: data.poupanca.filter(t => new Date(t.data).getFullYear() === currentYear),
+            entradas: data.entradas.filter(t => getYear(t.data) === currentYear),
+            fixos: data.fixos.filter(t => getYear(t.data) === currentYear),
+            variaveis: data.variaveis.filter(t => getYear(t.data) === currentYear),
+            poupanca: data.poupanca.filter(t => getYear(t.data) === currentYear),
         };
 
         const totalAnnualEntradas = yearData.entradas.reduce((sum, t) => sum + t.valor, 0);
@@ -151,9 +155,9 @@ export const AnnualDashboard = ({ data }) => {
         const taxaPoupanca = totalAnnualEntradas > 0 ? (totalPoupadoAno / totalAnnualEntradas) * 100 : 0;
 
         const monthlyCashFlow = Array(12).fill(0).map((_, i) => {
-            const monthlyEntradas = yearData.entradas.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
-            const monthlyFixos = yearData.fixos.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
-            const monthlyVariaveis = yearData.variaveis.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
+            const monthlyEntradas = yearData.entradas.filter(t => getMonth(t.data) === i).reduce((sum, t) => sum + t.valor, 0);
+            const monthlyFixos = yearData.fixos.filter(t => getMonth(t.data) === i).reduce((sum, t) => sum + t.valor, 0);
+            const monthlyVariaveis = yearData.variaveis.filter(t => getMonth(t.data) === i).reduce((sum, t) => sum + t.valor, 0);
             return {
                 month: months[i],
                 balance: monthlyEntradas - (monthlyFixos + monthlyVariaveis)
@@ -171,12 +175,12 @@ export const AnnualDashboard = ({ data }) => {
 
         const patrimonyEvolution = [];
         let cumulativeSavings = data.poupanca
-            .filter(p => new Date(p.data).getFullYear() < currentYear)
+            .filter(p => getYear(p.data) < currentYear)
             .reduce((acc, p) => acc + (p.tipoPoupanca === 'entrada' ? p.valor : -p.valor), 0);
 
         for (let i = 0; i < 12; i++) {
             const monthContribution = yearData.poupanca
-                .filter(p => new Date(p.data).getMonth() === i)
+                .filter(p => getMonth(p.data) === i)
                 .reduce((acc, p) => acc + (p.tipoPoupanca === 'entrada' ? p.valor : -p.valor), 0);
             
             cumulativeSavings += monthContribution;
@@ -228,7 +232,7 @@ export const AnnualDashboard = ({ data }) => {
 
             <CashFlowChart data={annualData.monthlyCashFlow} />
 
-            <ExpenseDistributionChart data={annualData.expenseDistribution} total={annualData.totalAnnualVariaveis} />
+            <ExpenseDistributionChart data={annualData.expenseDistribution} />
             
             <PatrimonyEvolutionChart data={annualData.patrimonyEvolution} />
 
