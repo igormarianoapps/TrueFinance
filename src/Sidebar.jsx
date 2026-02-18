@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   PieChart, TrendingUp, Calendar, TrendingDown, Tag, Wallet, LogOut, X, User
 } from 'lucide-react';
+import { supabase } from './supabaseClient';
 
 export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user }) => {
   const menuItems = [
@@ -14,9 +15,31 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
     { id: 'Perfil', icon: User },
   ];
 
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const fullName = user?.user_metadata?.full_name || 'Usuário';
   const firstName = fullName.split(' ')[0];
   const initials = fullName.substring(0, 2).toUpperCase();
+
+  useEffect(() => {
+    if (user?.user_metadata?.avatar_url) {
+      downloadImage(user.user_metadata.avatar_url);
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [user]);
+
+  const downloadImage = async (path) => {
+    try {
+      const { data, error } = await supabase.storage.from('avatars').download(path);
+      if (error) {
+        throw error;
+      }
+      const url = URL.createObjectURL(data);
+      setAvatarUrl(url);
+    } catch (error) {
+      console.log('Error downloading image: ', error.message);
+    }
+  };
 
   return (
     <>
@@ -35,8 +58,12 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <X size={20} className="text-slate-500"/>
           </button>
 
-          <div className="w-16 h-16 rounded-full bg-slate-200 border-2 border-white shadow-lg flex items-center justify-center mb-2 mt-4">
-            <span className="text-xl font-bold text-slate-600">{initials}</span>
+          <div className="w-16 h-16 rounded-full bg-slate-200 border-2 border-white shadow-lg flex items-center justify-center mb-2 mt-4 overflow-hidden">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar do usuário" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-xl font-bold text-slate-600">{initials}</span>
+            )}
           </div>
           <h2 className="font-bold text-lg text-slate-700">Bem-vindo, {firstName}</h2>
         </div>
