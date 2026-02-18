@@ -237,12 +237,12 @@ export default function App() {
         const today = new Date();
         const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
 
-        // Se estiver no mês atual e o usuário não escolheu um dia (ou seja, o valor é o padrão '1' ou nulo), usa o dia de hoje.
-        if (isViewingCurrentMonth && (dayFromForm === '1' || !dayFromForm)) {
+        // Se estiver no mês atual e o usuário não alterou o dia (valor padrão '1' ou campo vazio), usa o dia de hoje.
+        if (isViewingCurrentMonth && (!dayFromForm || dayFromForm === '1')) {
           day = today.getDate();
         } else {
-          // Caso contrário, usa o dia do formulário, ou o padrão '1' para meses passados/futuros.
-          day = dayFromForm || '1';
+          // Caso contrário, usa o dia que o usuário selecionou, ou o padrão '1' se o campo estiver vazio em meses não-atuais.
+          day = dayFromForm || '1'; // Fallback para '1' se dayFromForm for '' ou null
         }
       }
       values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;

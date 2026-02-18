@@ -34,7 +34,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
      <Card style={{ backgroundColor: '#12111C' }} className="text-white shadow-xl">
        <div className="flex flex-col gap-4">
          <div>
-           <p className="text-slate-400 text-sm mb-1">Saldo Atual em Conta</p>
+           <p className="text-slate-400 text-sm mb-1">Patrimônio Total</p>
            <div className="flex items-center gap-2">
              <Wallet size={24} className="text-green-400" />
              <span className="text-3xl font-bold">{formatCurrency(saldoContaCalculado)}</span>
