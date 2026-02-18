@@ -1,100 +1,130 @@
 import React, { useState, useMemo } from 'react';
 import { Card } from '../ui/Card';
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PiggyBank, PieChart, BarChart3 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-const BarChart = ({ data, title, icon: Icon }) => {
-    const maxValue = data.reduce((max, month) => Math.max(max, ...Object.values(month.values)), 0);
+const KpiCard = ({ title, value, isCurrency = true, isPercentage = false, color = 'text-slate-800' }) => (
+    <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+        <p className="text-sm text-slate-500 mb-1">{title}</p>
+        <p className={`text-2xl font-bold ${color}`}>
+            {isCurrency ? formatCurrency(value) : value}
+            {isPercentage && '%'}
+        </p>
+    </div>
+);
+
+const CashFlowChart = ({ data }) => {
+    const maxAbsValue = Math.max(...data.map(d => Math.abs(d.balance)));
 
     return (
         <Card>
-            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><Icon size={16}/> {title}</h3>
-            <div className="flex gap-2 h-48 items-end">
-                {data.map((monthData, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
-                        <div className="w-full h-full flex items-end justify-center gap-px">
-                            {Object.entries(monthData.values).map(([key, value]) => (
-                                <div 
-                                    key={key}
-                                    className="w-full rounded-t-sm"
-                                    style={{ 
-                                        height: `${maxValue > 0 ? (value / maxValue) * 100 : 0}%`,
-                                        backgroundColor: key === 'entradas' ? '#22c55e' : key === 'fixos' ? '#64748b' : '#f97316'
-                                    }}
-                                    title={`${key}: ${formatCurrency(value)}`}
-                                ></div>
-                            ))}
-                        </div>
-                        <span className="text-xs font-medium text-slate-400">{monthData.month}</span>
-                    </div>
-                ))}
-            </div>
-            <div className="flex justify-center gap-4 text-xs text-slate-500 mt-3">
-                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#22c55e]"></div>Entradas</div>
-                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#64748b]"></div>Fixos</div>
-                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-[#f97316]"></div>Variáveis</div>
-            </div>
-        </Card>
-    );
-};
-
-const TagsChart = ({ data, title, icon: Icon }) => {
-    const maxValue = Math.max(...data.map(tag => Math.max(...tag.monthlyValues)));
-
-    return (
-        <Card>
-            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><Icon size={16}/> {title}</h3>
-            <div className="space-y-3">
-                {data.map(tag => (
-                    <div key={tag.id}>
-                        <p className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full" style={{backgroundColor: tag.cor}}></div>
-                            {tag.nome}
-                        </p>
-                        <div className="flex gap-1 h-6">
-                            {tag.monthlyValues.map((value, index) => (
-                                <div key={index} className="flex-1 bg-slate-100 rounded-sm" title={`${months[index]}: ${formatCurrency(value)}`}>
+            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><BarChart3 size={16}/> Fluxo de Caixa Mensal</h3>
+            <div className="flex gap-2 h-48 items-center border-t border-slate-200 pt-4">
+                {data.map((monthData, index) => {
+                    const isPositive = monthData.balance >= 0;
+                    const height = maxAbsValue > 0 ? (Math.abs(monthData.balance) / maxAbsValue) * 100 : 0;
+                    return (
+                        <div key={index} className="flex-1 flex flex-col items-center justify-end h-full gap-1">
+                            <div className="w-full h-full relative">
+                                {isPositive ? (
                                     <div 
-                                        className="h-full rounded-sm"
-                                        style={{
-                                            width: `${maxValue > 0 ? (value / maxValue) * 100 : 0}%`,
-                                            backgroundColor: tag.cor
-                                        }}
+                                        className="absolute bottom-1/2 w-full bg-emerald-500 rounded-t-sm"
+                                        style={{ height: `${height / 2}%` }}
+                                        title={`${monthData.month}: ${formatCurrency(monthData.balance)}`}
                                     ></div>
-                                </div>
-                            ))}
+                                ) : (
+                                    <div 
+                                        className="absolute top-1/2 w-full bg-red-500 rounded-b-sm"
+                                        style={{ height: `${height / 2}%` }}
+                                        title={`${monthData.month}: ${formatCurrency(monthData.balance)}`}
+                                    ></div>
+                                )}
+                            </div>
+                            <span className="text-xs font-medium text-slate-400">{monthData.month}</span>
                         </div>
-                    </div>
-                ))}
-                {data.length === 0 && <p className="text-sm text-slate-400 text-center py-4">Sem dados de tags para este ano.</p>}
+                    );
+                })}
+            </div>
+             <div className="w-full h-px bg-slate-200 mt-2"></div>
+        </Card>
+    );
+};
+
+const ExpenseDistributionChart = ({ data, total }) => {
+    return (
+        <Card>
+            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><PieChart size={16}/> Distribuição Anual de Gastos</h3>
+            <div className="space-y-3">
+                {data.map(tag => {
+                    const percentage = total > 0 ? ((tag.valor / total) * 100).toFixed(1) : 0;
+                    return (
+                        <div key={tag.id}>
+                            <div className="flex justify-between text-sm mb-1">
+                                <span className="font-medium text-slate-600 flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{backgroundColor: tag.cor}}></div>
+                                    {tag.nome}
+                                </span>
+                                <span className="font-bold text-slate-600">{formatCurrency(tag.valor)}</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-2.5 relative">
+                                <div 
+                                    className="h-full rounded-full" 
+                                    style={{ width: `${percentage}%`, backgroundColor: tag.cor }}
+                                ></div>
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white mix-blend-difference">{percentage}%</span>
+                            </div>
+                        </div>
+                    );
+                })}
+                {data.length === 0 && <p className="text-sm text-slate-400 text-center py-4">Sem gastos variáveis para este ano.</p>}
             </div>
         </Card>
     );
 };
 
-const SavingsChart = ({ data, title, icon: Icon }) => {
-    const maxContribution = Math.max(...data.map(d => Math.abs(d.contribution)));
+const PatrimonyEvolutionChart = ({ data }) => {
+    const values = data.map(d => d.total);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+
+    const points = data.map((d, i) => {
+        const x = (i / (data.length - 1)) * 100;
+        const y = 100 - (range > 0 ? ((d.total - min) / range) * 100 : 50);
+        return `${x},${y}`;
+    }).join(' ');
 
     return (
         <Card>
-            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><Icon size={16}/> {title}</h3>
-            <div className="flex gap-2 h-40 items-end">
-                {data.map((monthData, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-1" title={`Saldo: ${formatCurrency(monthData.total)}`}>
-                        <div className="w-full h-full flex items-end justify-center">
-                            <div 
-                                className="w-full rounded-t-sm"
-                                style={{ 
-                                    height: `${maxContribution > 0 ? (Math.abs(monthData.contribution) / maxContribution) * 100 : 0}%`,
-                                    backgroundColor: monthData.contribution >= 0 ? '#10b981' : '#f43f5e'
-                                }}
-                            ></div>
-                        </div>
-                        <span className="text-xs font-medium text-slate-400">{monthData.month}</span>
-                    </div>
-                ))}
+            <h3 className="text-sm font-bold text-slate-600 mb-4 flex items-center gap-2"><PiggyBank size={16}/> Evolução do Patrimônio</h3>
+            <div className="h-48 w-full relative">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+                    <defs>
+                        <linearGradient id="area-gradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity="0.3"/>
+                            <stop offset="100%" stopColor="#10b981" stopOpacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <polyline
+                        fill="none"
+                        stroke="#10b981"
+                        strokeWidth="1"
+                        points={points}
+                    />
+                    <polyline
+                        fill="url(#area-gradient)"
+                        stroke="none"
+                        points={`0,100 ${points} 100,100`}
+                    />
+                </svg>
+                <div className="absolute bottom-0 w-full flex justify-between text-xs text-slate-400 px-1">
+                    <span>{months[0]}</span>
+                    <span>{months[11]}</span>
+                </div>
+                 <div className="absolute top-0 left-0 text-xs text-slate-400">{formatCurrency(max)}</div>
+                 <div className="absolute bottom-4 left-0 text-xs text-slate-400">{formatCurrency(min)}</div>
             </div>
         </Card>
     );
@@ -106,65 +136,68 @@ export const AnnualDashboard = ({ data }) => {
     const handlePrevYear = () => setCurrentYear(prev => prev - 1);
     const handleNextYear = () => setCurrentYear(prev => prev + 1);
 
-    const chartData = useMemo(() => {
-        const monthlyTotals = Array(12).fill(0).map((_, i) => ({
-            month: months[i],
-            values: { entradas: 0, fixos: 0, variaveis: 0 }
-        }));
-
-        const processTransactions = (transactions, type) => {
-            transactions.forEach(item => {
-                const [itemYear, itemMonth] = item.data.split('-').map(Number);
-                if (itemYear === currentYear) {
-                    monthlyTotals[itemMonth - 1].values[type] += item.valor;
-                }
-            });
+    const annualData = useMemo(() => {
+        const yearData = {
+            entradas: data.entradas.filter(t => new Date(t.data).getFullYear() === currentYear),
+            fixos: data.fixos.filter(t => new Date(t.data).getFullYear() === currentYear),
+            variaveis: data.variaveis.filter(t => new Date(t.data).getFullYear() === currentYear),
+            poupanca: data.poupanca.filter(t => new Date(t.data).getFullYear() === currentYear),
         };
 
-        processTransactions(data.entradas, 'entradas');
-        processTransactions(data.fixos, 'fixos');
-        processTransactions(data.variaveis, 'variaveis');
+        const totalAnnualEntradas = yearData.entradas.reduce((sum, t) => sum + t.valor, 0);
+        const totalAnnualSaidas = yearData.fixos.reduce((sum, t) => sum + t.valor, 0) + yearData.variaveis.reduce((sum, t) => sum + t.valor, 0);
+        const balancoAnual = totalAnnualEntradas - totalAnnualSaidas;
+        const totalPoupadoAno = yearData.poupanca.reduce((sum, t) => sum + (t.tipoPoupanca === 'entrada' ? t.valor : -t.valor), 0);
+        const taxaPoupanca = totalAnnualEntradas > 0 ? (totalPoupadoAno / totalAnnualEntradas) * 100 : 0;
 
-        const tagsData = data.tags.map(tag => {
-            const monthlyValues = Array(12).fill(0);
-            data.variaveis.forEach(item => {
-                if (item.tagId === tag.id) {
-                    const [itemYear, itemMonth] = item.data.split('-').map(Number);
-                    if (itemYear === currentYear) {
-                        monthlyValues[itemMonth - 1] += item.valor;
-                    }
-                }
-            });
-            return { ...tag, monthlyValues };
-        }).sort((a,b) => b.monthlyValues.reduce((s,v) => s+v, 0) - a.monthlyValues.reduce((s,v) => s+v, 0));
+        const monthlyCashFlow = Array(12).fill(0).map((_, i) => {
+            const monthlyEntradas = yearData.entradas.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
+            const monthlyFixos = yearData.fixos.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
+            const monthlyVariaveis = yearData.variaveis.filter(t => new Date(t.data).getMonth() === i).reduce((sum, t) => sum + t.valor, 0);
+            return {
+                month: months[i],
+                balance: monthlyEntradas - (monthlyFixos + monthlyVariaveis)
+            };
+        });
 
-        const savingsData = [];
+        const expenseDistribution = data.tags.map(tag => {
+            const totalGasto = yearData.variaveis
+                .filter(v => v.tagId === tag.id)
+                .reduce((sum, v) => sum + v.valor, 0);
+            return { ...tag, valor: totalGasto };
+        }).filter(tag => tag.valor > 0).sort((a, b) => b.valor - a.valor);
+        
+        const totalAnnualVariaveis = yearData.variaveis.reduce((sum, t) => sum + t.valor, 0);
+
+        const patrimonyEvolution = [];
         let cumulativeSavings = data.poupanca
             .filter(p => new Date(p.data).getFullYear() < currentYear)
             .reduce((acc, p) => acc + (p.tipoPoupanca === 'entrada' ? p.valor : -p.valor), 0);
 
         for (let i = 0; i < 12; i++) {
-            const monthContribution = data.poupanca
-                .filter(p => {
-                    const pDate = new Date(p.data);
-                    return pDate.getFullYear() === currentYear && pDate.getMonth() === i;
-                })
+            const monthContribution = yearData.poupanca
+                .filter(p => new Date(p.data).getMonth() === i)
                 .reduce((acc, p) => acc + (p.tipoPoupanca === 'entrada' ? p.valor : -p.valor), 0);
             
             cumulativeSavings += monthContribution;
-            savingsData.push({
+            patrimonyEvolution.push({
                 month: months[i],
-                contribution: monthContribution,
                 total: cumulativeSavings
             });
         }
 
-        return { monthlyTotals, tagsData, savingsData };
+        return {
+            kpis: { totalAnnualEntradas, totalAnnualSaidas, balancoAnual, taxaPoupanca },
+            monthlyCashFlow,
+            expenseDistribution,
+            totalAnnualVariaveis,
+            patrimonyEvolution
+        };
     }, [data, currentYear]);
 
     return (
         <div className="space-y-6 animate-in fade-in">
-            {/* Seletor de Ano */}
+            {/* Year Selector */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
                 <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
                     <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 text-[#1B1B35] transition-all active:scale-95"><ChevronLeft size={24}/></button>
@@ -175,22 +208,33 @@ export const AnnualDashboard = ({ data }) => {
                 </div>
             </div>
 
-            <BarChart 
-                data={chartData.monthlyTotals}
-                title="Visão Geral Mensal"
-                icon={TrendingUp}
-            />
+            {/* KPIs */}
+            <div className="grid grid-cols-2 gap-4">
+                <KpiCard title="Total de Entradas" value={annualData.kpis.totalAnnualEntradas} color="text-emerald-600" />
+                <KpiCard title="Total de Saídas" value={annualData.kpis.totalAnnualSaidas} color="text-red-600" />
+                <KpiCard 
+                    title="Balanço Anual" 
+                    value={annualData.kpis.balancoAnual} 
+                    color={annualData.kpis.balancoAnual >= 0 ? 'text-emerald-600' : 'text-red-600'}
+                />
+                <KpiCard 
+                    title="Taxa de Poupança" 
+                    value={annualData.kpis.taxaPoupanca.toFixed(1)} 
+                    isCurrency={false}
+                    isPercentage={true}
+                    color="text-sky-600"
+                />
+            </div>
 
-            <TagsChart 
-                data={chartData.tagsData}
-                title="Comparativo de Tags"
-                icon={TrendingDown}
-            />
+            <CashFlowChart data={annualData.monthlyCashFlow} />
 
-            <SavingsChart
-                data={chartData.savingsData}
-                title="Evolução da Poupança"
-                icon={PiggyBank}
+            <ExpenseDistributionChart data={annualData.expenseDistribution} total={annualData.totalAnnualVariaveis} />
+            
+            <PatrimonyEvolutionChart data={annualData.patrimonyEvolution} />
+
+        </div>
+    );
+};
             />
         </div>
     );
