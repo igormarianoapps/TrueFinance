@@ -100,7 +100,7 @@ export default function App() {
         if (dateDiff !== 0) return dateDiff;
         return a.id > b.id ? 1 : -1;
       }),
-      variaveis: data.variaveis.filter(filterFn),
+      variaveis: data.variaveis.filter(filterFn).sort((a, b) => b.id - a.id),
       provisoes: (data.provisoes || []).filter(filterFn),
       poupanca: (data.poupanca || []).filter(filterFn),
       tags: data.tags 
