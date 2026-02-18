@@ -237,8 +237,8 @@ export default function App() {
         const today = new Date();
         const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
 
-        // Se estiver no mês atual e o usuário não alterou o dia (valor padrão '1' ou campo vazio), usa o dia de hoje.
-        if (isViewingCurrentMonth && (!dayFromForm || dayFromForm === '1')) {
+        // Se estiver no mês atual e o usuário não alterou o dia (valor padrão '1', '01' ou campo vazio), usa o dia de hoje.
+        if (isViewingCurrentMonth && (!dayFromForm || dayFromForm === '1' || dayFromForm === '01')) {
           day = today.getDate();
         } else {
           // Caso contrário, usa o dia que o usuário selecionou, ou o padrão '1' se o campo estiver vazio em meses não-atuais.
@@ -382,7 +382,7 @@ export default function App() {
             <p className="text-slate-500 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#12111C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#1B1B35] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
           </div>
         </div>
@@ -390,7 +390,7 @@ export default function App() {
 
       {/* Header Fixo */}
       <div className="sticky top-0 z-30 shadow-md">
-        <header className="bg-[#12111C] px-4 py-3 flex items-center justify-between">
+        <header className="bg-[#1B1B35] px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
               <Menu size={24} />
@@ -401,11 +401,11 @@ export default function App() {
         {!['Perfil', 'Tags'].includes(activeTab) && (
           <div className="bg-white w-full">
             <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronLeft size={24}/></button>
-              <span className="text-lg font-bold text-[#12111C] uppercase text-center">
+              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#1B1B35] transition-all active:scale-95"><ChevronLeft size={24}/></button>
+              <span className="text-lg font-bold text-[#1B1B35] uppercase text-center">
                 {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
               </span>
-              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#12111C] transition-all active:scale-95"><ChevronRight size={24}/></button>
+              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#1B1B35] transition-all active:scale-95"><ChevronRight size={24}/></button>
             </div>
           </div>
         )}

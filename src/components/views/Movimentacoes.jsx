@@ -13,7 +13,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, children }) => 
                 </div>
                 <button 
                     onClick={() => setActiveTab(fullViewTab)}
-                    className="flex items-center gap-1 text-sm font-semibold text-[#12111C] hover:underline"
+                    className="flex items-center gap-1 text-sm font-semibold text-[#1B1B35] hover:underline"
                 >
                     Ver tudo <ArrowRight size={14} />
                 </button>

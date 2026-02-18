@@ -73,7 +73,7 @@ export const Dashboard = ({
       {/* 1. Hero Card: Sobra Projetada */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-10">
-           <img src="/piggy.png" alt="" className="w-[100px] h-[100px] object-contain" />
+           <img src="/piggy.png" alt="" className="w-[140px] h-[140px] object-contain" />
          </div>
          <span className="text-sm font-medium text-slate-500 relative z-10">Sobra Projetada (Poder de Compra)</span>
          <div className="flex items-baseline gap-2 mt-1 relative z-10">
