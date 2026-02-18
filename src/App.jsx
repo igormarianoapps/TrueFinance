@@ -13,7 +13,7 @@ import { Entradas } from './components/views/Entradas';
 import { FixosEProvisoes } from './components/views/FixosEProvisoes';
 import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
-import { Patrimonio } from './Patrimonio';
+import { Patrimonio } from './components/views/Patrimonio';
 import { Movimentacoes } from './components/views/Movimentacoes';
 import { Perfil } from './components/views/Perfil';
 
@@ -219,24 +219,26 @@ export default function App() {
       values.tagId = values.tagId === '' ? null : parseInt(values.tagId);
     }
 
-    if (modalType !== 'tag' && modalType !== 'provisao' && modalType !== 'poupanca') {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      values.data = `${year}-${String(month).padStart(2, '0')}-01`; 
-    } else if (modalType === 'provisao' || modalType === 'poupanca') {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth() + 1;
-      values.data = `${year}-${String(month).padStart(2, '0')}-01`;
+    // Define uma data padrão para novos itens, que pode ser sobrescrita pelo formulário
+    if (modalType !== 'tag' && !editingItem) {
+        const today = new Date();
+        const viewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+        
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        // Usa o dia de hoje como padrão se estivermos no mês atual, senão usa o dia 1
+        const day = viewingCurrentMonth ? String(today.getDate()).padStart(2, '0') : '01';
+
+        values.data = `${year}-${month}-${day}`;
     }
 
-    // Se o formulário enviou uma data específica (ex: input type="date"), usamos ela
+    // Se o formulário enviou uma data específica (ex: input type="date"), ela tem prioridade
     if (formData.get('data')) {
         values.data = formData.get('data');
     }
-
-    // Se o formulário enviou apenas o dia (novo comportamento), construímos a data completa
-    if (formData.get('day')) {
-      const day = String(formData.get('day')).padStart(2, '0');
+    // Se o formulário enviou apenas o dia, ele também tem prioridade
+    else if (formData.get('day')) {
+      const day = String(formData.get('day') || '1').padStart(2, '0');
       const year = currentDate.getFullYear();
       const month = String(currentDate.getMonth() + 1).padStart(2, '0');
       values.data = `${year}-${month}-${day}`;
