@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { ArrowRight, TrendingUp, Calendar, TrendingDown } from 'lucide-react';
+import { ArrowRight, TrendingUp, Calendar, TrendingDown, PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
-const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, children }) => (
+const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, addLabel, children }) => (
     <Card>
         <div className="p-4">
             <div className="flex justify-between items-center mb-3">
@@ -13,15 +13,22 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, children }) => 
                 </div>
                 <button 
                     onClick={() => setActiveTab(fullViewTab)}
-                    className="flex items-center gap-1 text-sm font-semibold text-[#1B1B35] hover:underline"
+                    className="flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-[#1B1B35]"
                 >
                     Ver tudo <ArrowRight size={14} />
                 </button>
             </div>
-            <div className="space-y-2">
-                {children}
-            </div>
+            {children}
         </div>
+        {onAddClick && (
+            <button 
+                onClick={onAddClick}
+                className="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 font-semibold p-3 text-sm border-t border-slate-200 rounded-b-lg flex items-center justify-center gap-2 transition-colors"
+            >
+                <PlusCircle size={16} />
+                {addLabel}
+            </button>
+        )}
     </Card>
 );
 
@@ -37,55 +44,94 @@ const ItemRow = ({ description, value, valueColor, tag }) => (
     </div>
 );
 
-export const Movimentacoes = ({ filteredData, setActiveTab }) => {
+export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntradas }) => {
     const MAX_ITEMS = 3;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const fixosPendentes = filteredData.fixos.filter(f => !f.pago);
+    const vencidos = fixosPendentes.filter(f => new Date(f.data) < today);
+
+    const renderAlerts = () => {
+        if (fixosPendentes.length === 0 && filteredData.fixos.length > 0) {
+            return (
+                <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 p-3 rounded-lg">
+                    <CheckCircle size={18} />
+                    <span className="text-sm font-semibold">Pagamentos em dia!</span>
+                </div>
+            );
+        }
+
+        if (vencidos.length > 0) {
+            return (
+                <div className="flex items-center gap-2 text-red-700 bg-red-50 p-3 rounded-lg">
+                    <AlertTriangle size={18} />
+                    <span className="text-sm font-semibold">{vencidos.length} pagamento(s) vencido(s).</span>
+                </div>
+            );
+        }
+
+        if (fixosPendentes.length > 0) {
+            return (
+                <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 p-3 rounded-lg">
+                    <AlertTriangle size={18} />
+                    <span className="text-sm font-semibold">{fixosPendentes.length} pagamento(s) a vencer.</span>
+                </div>
+            );
+        }
+
+        return <p className="text-sm text-slate-400 text-center py-4">Nenhum item fixo ou provisão este mês.</p>;
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in">
-            <Section title="Entradas" icon={TrendingUp} fullViewTab="Entradas" setActiveTab={setActiveTab}>
-                {filteredData.entradas.length > 0 ? (
-                    filteredData.entradas.slice(0, MAX_ITEMS).map(item => (
-                        <ItemRow 
-                            key={item.id}
-                            description={item.descricao}
-                            value={item.valor}
-                            valueColor="text-green-600"
-                        />
-                    ))
-                ) : (
-                    <p className="text-sm text-slate-400 text-center py-4">Nenhuma entrada este mês.</p>
-                )}
+            <Section 
+                title="Entradas" 
+                icon={TrendingUp} 
+                fullViewTab="Entradas" 
+                setActiveTab={setActiveTab}
+                onAddClick={() => openModal('entrada')}
+                addLabel="Adicionar Nova Entrada"
+            >
+                <div className="text-center py-4">
+                    <p className="text-sm text-slate-500">Total de entradas no mês</p>
+                    <p className="text-3xl font-bold text-emerald-600">{formatCurrency(totalEntradas)}</p>
+                </div>
             </Section>
 
-            <Section title="Fixos & Provisões" icon={Calendar} fullViewTab="Fixos & Provisões" setActiveTab={setActiveTab}>
-                {filteredData.fixos.length > 0 || filteredData.provisoes.length > 0 ? (
-                    [...filteredData.fixos, ...filteredData.provisoes].sort((a,b) => new Date(a.data) - new Date(b.data)).slice(0, MAX_ITEMS).map(item => (
-                        <ItemRow 
-                            key={item.id}
-                            description={item.descricao}
-                            value={item.valor}
-                            valueColor="text-red-600"
-                            tag={item.tipo === 'fixo' ? 'Custo Fixo' : 'Provisão'}
-                        />
-                    ))
-                ) : (
-                    <p className="text-sm text-slate-400 text-center py-4">Nenhum item fixo ou provisão este mês.</p>
-                )}
+            <Section 
+                title="Fixos & Provisões" 
+                icon={Calendar} 
+                fullViewTab="Fixos & Provisões" 
+                setActiveTab={setActiveTab}
+                onAddClick={() => openModal('fixo')}
+                addLabel="Adicionar Custo Fixo"
+            >
+                {renderAlerts()}
             </Section>
 
-            <Section title="Gastos Variáveis" icon={TrendingDown} fullViewTab="Gastos Variáveis" setActiveTab={setActiveTab}>
-                {filteredData.variaveis.length > 0 ? (
-                    filteredData.variaveis.slice(0, MAX_ITEMS).map(item => (
-                        <ItemRow 
-                            key={item.id}
-                            description={item.descricao}
-                            value={item.valor}
-                            valueColor="text-orange-500"
-                        />
-                    ))
-                ) : (
-                    <p className="text-sm text-slate-400 text-center py-4">Nenhum gasto variável este mês.</p>
-                )}
+            <Section 
+                title="Gastos Variáveis" 
+                icon={TrendingDown} 
+                fullViewTab="Gastos Variáveis" 
+                setActiveTab={setActiveTab}
+                onAddClick={() => openModal('variavel')}
+                addLabel="Adicionar Gasto Variável"
+            >
+                <div className="space-y-2">
+                    {filteredData.variaveis.length > 0 ? (
+                        filteredData.variaveis.slice(0, MAX_ITEMS).map(item => (
+                            <ItemRow 
+                                key={item.id}
+                                description={item.descricao}
+                                value={item.valor}
+                                valueColor="text-orange-500"
+                            />
+                        ))
+                    ) : (
+                        <p className="text-sm text-slate-400 text-center py-4">Nenhum gasto variável este mês.</p>
+                    )}
+                </div>
             </Section>
         </div>
     );
