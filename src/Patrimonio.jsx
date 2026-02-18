@@ -26,8 +26,8 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
   const totalFixos = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
   const totalVariaveis = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
 
-  // Saldo = (Entradas - Gastos Reais) + Poupança Acumulada
-  const saldoContaCalculado = totalEntradas - totalFixos - totalVariaveis + poupancaAnterior + movimentacaoPoupancaMes;
+  // Saldo Total = (Entradas do mês - Gastos do mês) + Saldo anterior da poupança
+  const saldoContaCalculado = totalEntradas - totalFixos - totalVariaveis + poupancaAnterior;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
