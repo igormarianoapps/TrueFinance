@@ -141,6 +141,13 @@ export const AnnualDashboard = ({ data }) => {
         const getYear = (dateStr) => parseInt(dateStr.split('-')[0]);
         const getMonth = (dateStr) => parseInt(dateStr.split('-')[1]) - 1;
 
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+        const isCurrentYear = currentYear === year;
+
         const yearData = {
             entradas: data.entradas.filter(t => getYear(t.data) === currentYear),
             fixos: data.fixos.filter(t => getYear(t.data) === currentYear),
@@ -148,8 +155,10 @@ export const AnnualDashboard = ({ data }) => {
             poupanca: data.poupanca.filter(t => getYear(t.data) === currentYear),
         };
 
+        const expensesFilter = (t) => !isCurrentYear || t.data <= todayStr;
+
         const totalAnnualEntradas = yearData.entradas.reduce((sum, t) => sum + t.valor, 0);
-        const totalAnnualSaidas = yearData.fixos.reduce((sum, t) => sum + t.valor, 0) + yearData.variaveis.reduce((sum, t) => sum + t.valor, 0);
+        const totalAnnualSaidas = yearData.fixos.filter(expensesFilter).reduce((sum, t) => sum + t.valor, 0) + yearData.variaveis.filter(expensesFilter).reduce((sum, t) => sum + t.valor, 0);
         const balancoAnual = totalAnnualEntradas - totalAnnualSaidas;
         const totalPoupadoAno = yearData.poupanca.reduce((sum, t) => sum + (t.tipoPoupanca === 'entrada' ? t.valor : -t.valor), 0);
         const taxaPoupanca = totalAnnualEntradas > 0 ? (totalPoupadoAno / totalAnnualEntradas) * 100 : 0;
@@ -217,7 +226,7 @@ export const AnnualDashboard = ({ data }) => {
                 <KpiCard title="Total de Entradas" value={annualData.kpis.totalAnnualEntradas} color="text-emerald-600" />
                 <KpiCard title="Total de Saídas" value={annualData.kpis.totalAnnualSaidas} color="text-red-600" />
                 <KpiCard 
-                    title="Balanço Anual" 
+                    title="Balanço Anual (Entradas - Saídas)" 
                     value={annualData.kpis.balancoAnual} 
                     color={annualData.kpis.balancoAnual >= 0 ? 'text-emerald-600' : 'text-red-600'}
                 />
