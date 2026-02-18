@@ -37,6 +37,12 @@ export default function App() {
   useEffect(() => {
     document.title = 'True Finance';
 
+    // Recupera a aba ativa do localStorage ao carregar
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
@@ -44,6 +50,11 @@ export default function App() {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Salva a aba ativa no localStorage sempre que ela mudar
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   const fetchData = async () => {
     if (!session) return;
