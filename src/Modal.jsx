@@ -104,12 +104,12 @@ export const Modal = ({
             </>
           )}
 
-          {modalType === 'fixo' && !editingItem && (
+          {modalType === 'fixo' && (!editingItem || !editingItem.id) && (
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
               <label className="block text-sm text-slate-500 mb-2">Recorrência</label>
               <div className="flex gap-2 mb-3">
                 {['unico', 'mensal', 'parcelado'].map(type => (
-                  <button type="button" key={type} onClick={() => setRecurrenceType(type)} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${recurrenceType === type ? 'bg-violet-700 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                  <button type="button" key={type} onClick={() => setRecurrenceType(type)} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${recurrenceType === type ? 'bg-[#1B1B35] text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}>
                     {type === 'unico' ? 'Único' : type === 'mensal' ? 'Fixo Mensal' : 'Parcelado'}
                   </button>
                 ))}
@@ -151,7 +151,7 @@ export const Modal = ({
                   {data.tags.map(tag => (
                     <label key={tag.id} className="cursor-pointer">
                       <input type="radio" name="tagId" value={tag.id} defaultChecked={editingItem?.tagId === tag.id} className="peer sr-only" />
-                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-violet-700 peer-checked:text-white peer-checked:border-violet-700 transition-all text-slate-600 border-slate-200 hover:bg-slate-50">
+                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-[#1B1B35] peer-checked:text-white peer-checked:border-[#1B1B35] transition-all text-slate-600 border-slate-200 hover:bg-slate-50">
                         #{tag.nome}
                       </div>
                     </label>
