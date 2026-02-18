@@ -15,12 +15,13 @@ import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
 import { Patrimonio } from './components/views/Patrimonio';
 import { Movimentacoes } from './components/views/Movimentacoes';
+import { AnnualDashboard } from './components/views/AnnualDashboard';
 import { Perfil } from './components/views/Perfil';
 
 export default function App() {
   const [session, setSession] = useState(null);
   const [authEvent, setAuthEvent] = useState(null);
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('Resumo Mensal');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [data, setData] = useState({ entradas: [], fixos: [], provisoes: [], tags: [], variaveis: [], poupanca: [] });
   const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 1));
@@ -413,7 +414,7 @@ export default function App() {
             <h1 className="font-bold text-lg text-white">{activeTab}</h1>
           </div>
         </header>
-        {!['Perfil', 'Tags'].includes(activeTab) && (
+        {!['Perfil', 'Tags', 'Dashboard'].includes(activeTab) && (
           <div className="bg-white w-full">
             <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
               <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 text-[#1B1B35] transition-all active:scale-95"><ChevronLeft size={24}/></button>
@@ -428,7 +429,7 @@ export default function App() {
 
       {/* Área Principal */}
       <main className="p-4 max-w-lg mx-auto w-full">
-        {activeTab === 'Dashboard' && <Dashboard 
+        {activeTab === 'Resumo Mensal' && <Dashboard 
           saldoFinal={saldoFinal}
           totalEntradas={totalEntradas}
           totalFixos={totalFixos}
@@ -441,6 +442,7 @@ export default function App() {
         />}
         {activeTab === 'Movimentações' && <Movimentacoes filteredData={filteredData} setActiveTab={setActiveTab} openModal={openModal} totalEntradas={totalEntradas} />}
         {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}
+        {activeTab === 'Dashboard' && <AnnualDashboard data={data} />}
         {activeTab === 'Fixos & Provisões' && <FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />}
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}

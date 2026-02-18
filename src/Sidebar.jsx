@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  PieChart, ArrowLeftRight, Tag, Wallet, LogOut, X, User
+  PieChart, ArrowLeftRight, Tag, Wallet, LogOut, X, User, LineChart
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user }) => {
   const menuItems = [
-    { id: 'Dashboard', icon: PieChart },
+    { id: 'Resumo Mensal', icon: PieChart },
     { id: 'Movimentações', icon: ArrowLeftRight },
-    { id: 'Tags', icon: Tag },
     { id: 'Patrimônio', icon: Wallet },
+    { id: 'Dashboard', icon: LineChart },
+    { id: 'Tags', icon: Tag },
     { id: 'Perfil', icon: User },
   ];
 
