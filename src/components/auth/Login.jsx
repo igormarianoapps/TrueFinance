@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { X } from 'lucide-react';
+import { TermsOfUse, PrivacyPolicy } from './LegalDocs';
 
 export const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,10 @@ export const Login = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Estados de Termos
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [activeDoc, setActiveDoc] = useState(null);
+
   // Estado de Recuperação
   const [forgotEmail, setForgotEmail] = useState('');
 
@@ -32,6 +37,10 @@ export const Login = () => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       alert("As senhas não conferem.");
+      return;
+    }
+    if (!termsAccepted) {
+      alert("Você deve aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.");
       return;
     }
     setLoading(true);
@@ -76,7 +85,7 @@ export const Login = () => {
           <button type="submit" disabled={loading} className="w-full bg-[#1B1B35] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
-            <button type="button" onClick={() => setShowSignUp(true)} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>
+            <button type="button" onClick={() => { setShowSignUp(true); setTermsAccepted(false); }} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>
             <button type="button" onClick={() => setShowForgot(true)} className="text-slate-500 hover:text-slate-700">Esqueci minha senha</button>
           </div>
         </form>
@@ -93,6 +102,20 @@ export const Login = () => {
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email" value={newEmail} onChange={e => setNewEmail(e.target.value)} required />
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="password" placeholder="Senha" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="password" placeholder="Confirmar Senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+              
+              <div className="flex items-start gap-2 mt-4 mb-2">
+                <input 
+                  type="checkbox" 
+                  id="terms" 
+                  checked={termsAccepted} 
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-1 rounded border-slate-300 text-[#1B1B35] focus:ring-[#1B1B35] cursor-pointer"
+                />
+                <label htmlFor="terms" className="text-sm text-slate-500 cursor-pointer select-none">
+                  Li e aceito os <button type="button" onClick={() => setActiveDoc('terms')} className="text-[#1B1B35] font-bold hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setActiveDoc('privacy')} className="text-[#1B1B35] font-bold hover:underline">Política de Privacidade</button>.
+                </label>
+              </div>
+
               <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors mt-2">{loading ? 'Enviando...' : 'Cadastrar'}</button>
             </form>
           </div>
@@ -110,6 +133,18 @@ export const Login = () => {
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200" type="email" placeholder="Email cadastrado" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
               <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors mt-2">{loading ? 'Enviando...' : 'Enviar Email'}</button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Documentos Legais */}
+      {activeDoc && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-lg rounded-2xl p-6 relative animate-in fade-in zoom-in duration-200 max-h-[80vh] overflow-y-auto">
+            <button onClick={() => setActiveDoc(null)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"><X size={20}/></button>
+            {activeDoc === 'terms' && <TermsOfUse />}
+            {activeDoc === 'privacy' && <PrivacyPolicy />}
+            <button onClick={() => setActiveDoc(null)} className="w-full bg-slate-100 text-slate-700 p-3 rounded-lg font-bold hover:bg-slate-200 transition-colors mt-6">Fechar</button>
           </div>
         </div>
       )}
