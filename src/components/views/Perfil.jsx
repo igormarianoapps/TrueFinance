@@ -154,7 +154,7 @@ export const Perfil = ({ user, theme, setTheme }) => {
           <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Editar Nome</h3>
           <form onSubmit={handleUpdateName} className="space-y-4">
             <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 pl-10 bg-slate-50 dark:bg-slate-700 dark:text-slate-200 rounded-lg border-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-600 outline-none" placeholder="Seu nome de exibição" required /></div>
-            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#12111C] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
+            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#1B1B35] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
           </form>
         </div>
       </Card>

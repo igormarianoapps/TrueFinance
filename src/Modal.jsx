@@ -19,7 +19,7 @@ export const Modal = ({
       <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-in slide-in-from-bottom-10 duration-300">
         <div className="flex justify-between items-center mb-6">
            <h2 className="text-xl font-bold text-slate-600">
-             {editingItem ? 'Editar' : 'Novo'} {
+             {editingItem ? 'Editar' : 'Adicionar'} {
                modalType === 'variavel' ? 'Gasto Variável' :
                modalType === 'entrada' ? 'Entrada' :
                modalType === 'fixo' ? 'Gasto Fixo' :
