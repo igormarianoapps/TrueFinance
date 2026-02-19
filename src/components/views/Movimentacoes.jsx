@@ -8,12 +8,12 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
         <div className="p-4">
             <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-2">
-                    <Icon className="text-slate-500" size={20} />
-                    <h3 className="text-lg font-bold text-slate-700">{title}</h3>
+                    <Icon className="text-slate-500 dark:text-slate-400" size={20} />
+                    <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200">{title}</h3>
                 </div>
                 <button 
                     onClick={() => setActiveTab(fullViewTab)}
-                    className="flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-[#1B1B35]"
+                    className="flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-[#1B1B35] dark:hover:text-white"
                 >
                     Ver tudo <ArrowRight size={14} />
                 </button>
@@ -33,12 +33,12 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
 );
 
 const ItemRow = ({ description, value, valueColor, tag }) => (
-    <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+    <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
         <div>
-            <p className="font-semibold text-slate-700">{description}</p>
-            {tag && <p className="text-xs text-slate-400">{tag}</p>}
+            <p className="font-semibold text-slate-700 dark:text-slate-200">{description}</p>
+            {tag && <p className="text-xs text-slate-400 dark:text-slate-500">{tag}</p>}
         </div>
-        <span className={`font-bold ${valueColor}`}>
+        <span className={`font-bold ${valueColor} dark:opacity-90`}>
             {formatCurrency(value)}
         </span>
     </div>
@@ -55,7 +55,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
     const renderAlerts = () => {
         if (fixosPendentes.length === 0 && filteredData.fixos.length > 0) {
             return (
-                <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400 p-3 rounded-lg">
                     <CheckCircle size={18} />
                     <span className="text-sm font-semibold">Pagamentos em dia!</span>
                 </div>
@@ -64,7 +64,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
 
         if (vencidos.length > 0) {
             return (
-                <div className="flex items-center gap-2 text-red-700 bg-red-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2 text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400 p-3 rounded-lg">
                     <AlertTriangle size={18} />
                     <span className="text-sm font-semibold">{vencidos.length} pagamento(s) vencido(s).</span>
                 </div>
@@ -73,14 +73,14 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
 
         if (fixosPendentes.length > 0) {
             return (
-                <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 p-3 rounded-lg">
                     <AlertTriangle size={18} />
                     <span className="text-sm font-semibold">{fixosPendentes.length} pagamento(s) a vencer.</span>
                 </div>
             );
         }
 
-        return <p className="text-sm text-slate-400 text-center py-4">Nenhum item fixo ou provisão este mês.</p>;
+        return <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Nenhum item fixo ou provisão este mês.</p>;
     };
 
     return (
@@ -91,11 +91,11 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                 fullViewTab="Entradas" 
                 setActiveTab={setActiveTab}
                 onAddClick={() => openModal('entrada')}
-                addLabel="Adicionar Nova Entrada"
+                addLabel="Adicionar Entrada"
             >
                 <div className="text-center py-4">
-                    <p className="text-sm text-slate-500">Total de entradas no mês</p>
-                    <p className="text-3xl font-bold text-emerald-600">{formatCurrency(totalEntradas)}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Total de entradas no mês</p>
+                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-500">{formatCurrency(totalEntradas)}</p>
                 </div>
             </Section>
 
@@ -105,7 +105,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                 fullViewTab="Fixos & Provisões" 
                 setActiveTab={setActiveTab}
                 onAddClick={() => openModal('fixo')}
-                addLabel="Adicionar Custo Fixo"
+                addLabel="Adicionar Fixo"
             >
                 {renderAlerts()}
             </Section>
@@ -116,7 +116,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                 fullViewTab="Gastos Variáveis" 
                 setActiveTab={setActiveTab}
                 onAddClick={() => openModal('variavel')}
-                addLabel="Adicionar Gasto Variável"
+                addLabel="Adicionar Gasto"
             >
                 <div className="space-y-2">
                     {filteredData.variaveis.length > 0 ? (
@@ -129,7 +129,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                             />
                         ))
                     ) : (
-                        <p className="text-sm text-slate-400 text-center py-4">Nenhum gasto variável este mês.</p>
+                        <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Nenhum gasto variável este mês.</p>
                     )}
                 </div>
             </Section>
