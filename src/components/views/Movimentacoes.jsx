@@ -4,7 +4,7 @@ import { ArrowRight, TrendingUp, Calendar, TrendingDown, PlusCircle, AlertTriang
 import { formatCurrency } from '../../utils/formatters';
 
 const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, addLabel, children }) => (
-    <Card>
+    <Card className="bg-white dark:bg-[#1F1F1F]">
         <div className="p-4">
             <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-2">
@@ -33,7 +33,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
 );
 
 const ItemRow = ({ description, value, valueColor, tag }) => (
-    <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+    <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-[#2A2A2A] rounded-lg">
         <div>
             <p className="font-semibold text-slate-700 dark:text-slate-200">{description}</p>
             {tag && <p className="text-xs text-slate-400 dark:text-slate-500">{tag}</p>}

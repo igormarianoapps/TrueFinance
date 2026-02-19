@@ -6,7 +6,7 @@ import { formatCurrency } from '../../utils/formatters';
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 const KpiCard = ({ title, value, isCurrency = true, isPercentage = false, color = 'text-slate-800' }) => (
-    <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-100 dark:border-slate-700">
+    <div className="bg-slate-50 dark:bg-[#1F1F1F] p-4 rounded-lg border border-slate-100 dark:border-[#2A2A2A]">
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{title}</p>
         <p className={`text-2xl font-bold ${color} dark:opacity-90`}>
             {isCurrency ? formatCurrency(value) : value}
@@ -19,9 +19,9 @@ const CashFlowChart = ({ data }) => {
     const maxAbsValue = Math.max(...data.map(d => Math.abs(d.balance)));
 
     return (
-        <Card>
+        <Card className="bg-white dark:bg-[#1F1F1F]">
             <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2"><BarChart3 size={16}/> Fluxo de Caixa Mensal</h3>
-            <div className="flex gap-2 h-48 items-center border-t border-slate-200 dark:border-slate-700 pt-4">
+            <div className="flex gap-2 h-48 items-center border-t border-slate-200 dark:border-[#2A2A2A] pt-4">
                 {data.map((monthData, index) => {
                     const isPositive = monthData.balance >= 0;
                     const height = maxAbsValue > 0 ? (Math.abs(monthData.balance) / maxAbsValue) * 100 : 0;
@@ -47,7 +47,7 @@ const CashFlowChart = ({ data }) => {
                     );
                 })}
             </div>
-             <div className="w-full h-px bg-slate-200 dark:bg-slate-700 mt-2"></div>
+             <div className="w-full h-px bg-slate-200 dark:bg-[#2A2A2A] mt-2"></div>
         </Card>
     );
 };
@@ -56,7 +56,7 @@ const ExpenseDistributionChart = ({ data }) => {
     const maxValue = Math.max(...data.map(d => d.valor), 0);
 
     return (
-        <Card>
+        <Card className="bg-white dark:bg-[#1F1F1F]">
             <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2"><PieChart size={16}/> Distribuição Anual de Gastos</h3>
             <div className="space-y-3">
                 {data.map(tag => {
@@ -70,7 +70,7 @@ const ExpenseDistributionChart = ({ data }) => {
                                 </span>
                                 <span className="font-bold text-slate-600 dark:text-slate-200">{formatCurrency(tag.valor)}</span>
                             </div>
-                            <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 relative">
+                            <div className="w-full bg-slate-100 dark:bg-[#2A2A2A] rounded-full h-2.5 relative">
                                 <div 
                                     className="h-full rounded-full" 
                                     style={{ width: `${width}%`, backgroundColor: tag.cor }}
@@ -98,7 +98,7 @@ const PatrimonyEvolutionChart = ({ data }) => {
     }).join(' ');
 
     return (
-        <Card>
+        <Card className="bg-white dark:bg-[#1F1F1F]">
             <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4 flex items-center gap-2"><PiggyBank size={16}/> Evolução do Patrimônio</h3>
             <div className="h-48 w-full relative">
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
@@ -211,13 +211,13 @@ export const AnnualDashboard = ({ data }) => {
     return (
         <div className="space-y-6 animate-in fade-in">
             {/* Year Selector */}
-            <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl shadow-sm border border-slate-100 dark:border-[#2A2A2A]">
                 <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-                    <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
+                    <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
                     <span className="text-lg font-bold text-[#1B1B35] dark:text-slate-100 uppercase text-center">
                         {currentYear}
                     </span>
-                    <button onClick={handleNextYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
+                    <button onClick={handleNextYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
                 </div>
             </div>
 

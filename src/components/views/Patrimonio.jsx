@@ -63,13 +63,13 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
        </div>
        <div className="space-y-2">
           {filteredData.poupanca.map(item => (
-            <Card key={item.id} className="py-3 flex justify-between items-center">
+            <Card key={item.id} className="py-3 flex justify-between items-center bg-white dark:bg-[#1F1F1F]">
                <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-full ${item.tipoPoupanca === 'entrada' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                      <PiggyBank size={20} />
                   </div>
                   <div>
-                     <p className="font-semibold text-slate-600">{item.descricao}</p>
+                     <p className="font-semibold text-slate-600 dark:text-slate-200">{item.descricao}</p>
                      <p className="text-xs text-slate-400">{item.tipoPoupanca === 'entrada' ? 'Aporte' : 'Resgate'}</p>
                   </div>
                </div>

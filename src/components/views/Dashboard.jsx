@@ -17,7 +17,7 @@ const BarChart = ({ data }) => {
             </span>
             <span className="font-bold text-slate-600 dark:text-slate-200">{formatCurrency(item.valor)}</span>
           </div>
-          <div className="w-full bg-slate-100 rounded-full h-2">
+          <div className="w-full bg-slate-100 dark:bg-[#2A2A2A] rounded-full h-2">
             <div className="h-2 rounded-full" style={{ width: `${maxValue > 0 ? (item.valor / maxValue) * 100 : 0}%`, backgroundColor: item.cor }}></div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export const Dashboard = ({
     <div className="space-y-6 pb-20 animate-in fade-in">
       
       {/* 1. Hero Card: Sobra Projetada */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden">
+      <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#2A2A2A] relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-10">
            <img src="/piggy.png" alt="" className="w-[140px] h-[140px] object-contain" />
          </div>
@@ -105,9 +105,9 @@ export const Dashboard = ({
       </div>
 
       {/* 1.5 Indicador de Compromissos Pendentes */}
-      <Card className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+      <Card className="flex items-center justify-between bg-slate-50 dark:bg-[#1F1F1F] border border-slate-200 dark:border-[#2A2A2A] shadow-sm">
          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white dark:bg-slate-700 rounded-lg border border-slate-100 dark:border-slate-600 text-slate-500 dark:text-slate-300">
+            <div className="p-2 bg-white dark:bg-[#2A2A2A] rounded-lg border border-slate-100 dark:border-[#333] text-slate-500 dark:text-slate-300">
                <Clock size={20} />
             </div>
             <span className="text-sm font-bold text-slate-600 dark:text-slate-200">Compromissos Pendentes <span className="block text-xs font-normal text-slate-400 dark:text-slate-500">Fixos em Aberto + Envelopes</span></span>
@@ -118,7 +118,7 @@ export const Dashboard = ({
       {/* 2. Barra de Saúde Financeira */}
       <div>
          <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-3 flex items-center gap-2"><PieChart size={16}/> Comprometimento da Renda</h3>
-         <div className="h-4 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden flex shadow-inner">
+         <div className="h-4 bg-slate-100 dark:bg-[#1F1F1F] rounded-full overflow-hidden flex shadow-inner">
             {/* Fixos */}
             <div style={{ width: `${totalEntradas > 0 ? Math.min((totalFixos / totalEntradas) * 100, 100) : 0}%` }} className="bg-slate-400" title="Fixos"></div>
             {/* Envelopes */}
@@ -144,7 +144,7 @@ export const Dashboard = ({
               const isVencido = dataConta < today;
 
               return (
-                <div key={conta.id} className={`min-w-[200px] border p-3 rounded-xl snap-start ${isVencido ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-800' : 'bg-yellow-50 border-yellow-100 dark:bg-yellow-900/20 dark:border-yellow-800'}`}>
+                <div key={conta.id} className={`min-w-[200px] border p-3 rounded-xl snap-start ${isVencido ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-900' : 'bg-yellow-50 border-yellow-100 dark:bg-yellow-900/20 dark:border-yellow-900'}`}>
                   <div className={`flex items-center gap-2 mb-1 ${isVencido ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'}`}>
                     <AlertTriangle size={16} />
                     <span className="text-xs font-bold uppercase">{isVencido ? 'Vencido / Atrasado' : 'Vence em breve'}</span>
@@ -155,7 +155,7 @@ export const Dashboard = ({
               );
             })}
             {envelopesCriticos.map(env => (
-              <div key={env.id} className="min-w-[200px] bg-orange-50 border border-orange-100 dark:bg-orange-900/20 dark:border-orange-800 p-3 rounded-xl snap-start">
+              <div key={env.id} className="min-w-[200px] bg-orange-50 border border-orange-100 dark:bg-orange-900/20 dark:border-orange-900 p-3 rounded-xl snap-start">
                 <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400 mb-1">
                   <AlertTriangle size={16} />
                   <span className="text-xs font-bold uppercase">Envelope Crítico</span>
@@ -170,7 +170,7 @@ export const Dashboard = ({
 
       {/* 4. Análise de Gastos */}
       <div className="grid grid-cols-1 gap-3">
-        <Card>
+        <Card className="bg-white dark:bg-[#1F1F1F]">
           <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">Distribuição de Gastos</h3>
           <BarChart data={chartData} />
         </Card>
