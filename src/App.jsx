@@ -71,7 +71,7 @@ export default function App() {
     };
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
+  }, [theme]);
 
   // Salva a aba ativa no localStorage sempre que ela mudar
   useEffect(() => {
