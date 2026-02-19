@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { Fab } from '../ui/Fab';
-import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock } from 'lucide-react';
+import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 const BarChart = ({ data }) => {
@@ -93,6 +92,18 @@ export const Dashboard = ({
          </div>
       </div>
 
+      {/* 1.2 Botões de Ação Rápida */}
+      <div className="flex gap-3">
+         <button onClick={() => openModal('entrada')} className="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm active:scale-95">
+            <TrendingUp size={20} />
+            Nova Entrada
+         </button>
+         <button onClick={() => openModal('variavel')} className="flex-1 bg-red-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-colors shadow-sm active:scale-95">
+            <TrendingDown size={20} />
+            Novo Gasto
+         </button>
+      </div>
+
       {/* 1.5 Indicador de Compromissos Pendentes */}
       <Card className="flex items-center justify-between bg-slate-50 border border-slate-200 shadow-sm">
          <div className="flex items-center gap-3">
@@ -164,7 +175,6 @@ export const Dashboard = ({
           <BarChart data={chartData} />
         </Card>
       </div>
-      <Fab onClick={() => openModal('variavel')} className="bg-[#E95415] text-[#12111C]" />
     </div>
   );
 };
