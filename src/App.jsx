@@ -246,7 +246,13 @@ export default function App() {
         day = formData.get('day') || editingItem.data.split('-')[2];
       } else { // Para novos itens
         const dayFromForm = formData.get('day');
-        day = dayFromForm || '1';
+        if (dayFromForm) {
+          day = dayFromForm;
+        } else {
+          const today = new Date();
+          const isCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+          day = isCurrentMonth ? today.getDate() : '1';
+        }
       }
       values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;
     }
@@ -335,15 +341,7 @@ export default function App() {
     if (item) {
       setEditingItem(item);
     } else {
-      // Lógica para novos itens: Se for mês atual, define data de hoje
-      const today = new Date();
-      const isViewingCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
-      
-      if (isViewingCurrentMonth && type.toLowerCase() !== 'tag') {
-        setEditingItem({ data: toLocalISO(today).split('T')[0] });
-      } else {
-        setEditingItem(null);
-      }
+      setEditingItem(null);
     }
     setModalOpen(true);
   };
