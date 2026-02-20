@@ -81,7 +81,8 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
         <div className="p-3 mt-auto">
           <div className="w-full h-px bg-slate-200 dark:bg-slate-800 mb-2"></div>
           <div className="flex justify-center">
-            <img src="/logopiggy.png" alt="Logo" className="w-28 mb-2 object-contain" />
+            <img src="/logopiggy.png" alt="Logo" className="w-28 mb-2 object-contain dark:hidden" />
+            <img src="/logopiggydark.png" alt="Logo" className="w-28 mb-2 object-contain hidden dark:block" />
           </div>
           <div className="w-full h-px bg-slate-200 dark:bg-slate-800 mb-2"></div>
 
