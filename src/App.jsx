@@ -374,7 +374,7 @@ export default function App() {
   if (!session) return <Login />;
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-[#0C0C0C] font-sans text-slate-600 dark:text-slate-300 pb-10">
+    <div className="min-h-screen bg-[#E6EAF7] dark:bg-[#0C0C0C] font-sans text-slate-600 dark:text-slate-300 pb-10">
       <Sidebar 
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
