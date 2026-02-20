@@ -23,6 +23,10 @@ export const PaywallModal = ({ setShowPaywall }) => {
         throw error;
       }
 
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
       const { checkoutUrl } = data;
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
