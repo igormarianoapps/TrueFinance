@@ -37,7 +37,6 @@ const ItemRow = ({ description, value, valueColor, tag }) => (
         <div>
             <p className="font-semibold text-slate-700 dark:text-slate-200">{description}</p>
             {tag && <p className="text-xs text-slate-400 dark:text-slate-500">{tag}</p>}
-            {tag && <p className="text-xs text-slate-400 dark:text-slate-400">{tag}</p>}
         </div>
         <span className={`font-bold ${valueColor} dark:opacity-90`}>
             {formatCurrency(value)}
@@ -126,7 +125,6 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                                 key={item.id}
                                 description={item.descricao}
                                 value={item.valor}
-                                valueColor="text-orange-500"
                                 valueColor="text-orange-500 dark:text-orange-400"
                             />
                         ))

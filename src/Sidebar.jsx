@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  PieChart, ArrowLeftRight, Tag, Wallet, LogOut, X, User, LineChart
+  PieChart, ArrowLeftRight, Tag, Wallet, LogOut, X, User, LineChart, HelpCircle
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
@@ -12,6 +12,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
     { id: 'Dashboard', icon: LineChart },
     { id: 'Tags', icon: Tag },
     { id: 'Perfil', icon: User },
+    { id: 'Ajuda', icon: HelpCircle },
   ];
 
   const [avatarUrl, setAvatarUrl] = useState(null);

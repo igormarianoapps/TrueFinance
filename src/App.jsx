@@ -17,6 +17,7 @@ import { Patrimonio } from './components/views/Patrimonio';
 import { Movimentacoes } from './components/views/Movimentacoes';
 import { AnnualDashboard } from './components/views/AnnualDashboard';
 import { Perfil } from './components/views/Perfil';
+import { Ajuda } from './components/views/Ajuda';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -433,7 +434,7 @@ export default function App() {
             <h1 className="font-bold text-lg text-white">{activeTab}</h1>
           </div>
         </header>
-        {!['Perfil', 'Tags', 'Dashboard'].includes(activeTab) && (
+        {!['Perfil', 'Tags', 'Dashboard', 'Ajuda'].includes(activeTab) && (
           <div className="bg-white dark:bg-[#1F1F1F] w-full">
             <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
               <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
@@ -467,6 +468,7 @@ export default function App() {
         {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}
         {activeTab === 'Patrimônio' && <Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} />}
+        {activeTab === 'Ajuda' && <Ajuda />}
       </main>
     </div>
   );
