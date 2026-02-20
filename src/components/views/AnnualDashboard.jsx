@@ -235,7 +235,7 @@ export const AnnualDashboard = ({ data }) => {
                     value={annualData.kpis.taxaPoupanca.toFixed(1)} 
                     isCurrency={false}
                     isPercentage={true}
-                    color="text-sky-600"
+                    color="text-sky-600 dark:text-sky-400"
                 />
             </div>
 

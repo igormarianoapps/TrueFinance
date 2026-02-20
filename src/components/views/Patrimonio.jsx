@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <div className="bg-[#1B1B35] dark:bg-[#0B0C0C] text-white shadow-xl p-6 rounded-2xl">
+     <div className="bg-[#1B1B35] dark:bg-[#1F1F1F] text-white shadow-xl p-6 rounded-2xl">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Patrimônio Total</p>
