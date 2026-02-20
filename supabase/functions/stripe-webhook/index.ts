@@ -21,6 +21,8 @@ serve(async (req) => {
   const signature = req.headers.get('Stripe-Signature')
   const body = await req.text()
 
+  console.log('Webhook recebido. Iniciando processamento...')
+
   let event: Stripe.Event
   try {
     if (!signature || !webhookSecret) {
@@ -33,6 +35,8 @@ serve(async (req) => {
     return new Response(err.message, { status: 400 })
   }
 
+  console.log(`Evento verificado: ${event.type}`)
+
   // Lida com o evento
   try {
     switch (event.type) {
@@ -40,21 +44,30 @@ serve(async (req) => {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const customerId = session.customer as string
+        console.log(`Cliente identificado: ${customerId}`)
+
         const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
 
-        await supabaseAdmin
+        const { data, error } = await supabaseAdmin
           .from('profiles')
           .update({
             subscription_status: 'active',
             plan_interval: subscription.items.data[0].price.recurring?.interval,
           })
           .eq('stripe_customer_id', customerId)
+          .select()
+        
+        if (error) {
+          console.error('Erro ao atualizar perfil no banco:', error)
+        } else if (!data || data.length === 0) {
+          console.error('ALERTA: Nenhum perfil encontrado com esse stripe_customer_id:', customerId)
+        } else {
+          console.log('Perfil atualizado com sucesso para active!')
+        }
         break
       }
-      // Outros eventos úteis (cancelamento, falha, etc.) podem ser adicionados aqui
-      // case 'customer.subscription.deleted':
-      // case 'customer.subscription.updated':
-      // ...
+      default:
+        console.log(`Evento ${event.type} ignorado.`)
     }
   } catch (error) {
     console.error('Erro ao processar evento do webhook:', error.message)

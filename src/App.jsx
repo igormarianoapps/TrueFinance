@@ -92,11 +92,34 @@ export default function App() {
     
     const { data: transacoes, error: errorTransacoes } = await supabase.from('transacoes').select('*');
     const { data: tags, error: errorTags } = await supabase.from('tags').select('*');
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('subscription_status, plan_interval')
-      .eq('id', session.user.id)
-      .single();
+    
+    // Lógica de verificação de pagamento (Polling)
+    const params = new URLSearchParams(window.location.search);
+    let profileData = null;
+    let profileError = null;
+
+    if (params.get('payment') === 'success') {
+      // Se voltou do pagamento, tenta buscar o perfil atualizado por até 15 segundos
+      let retries = 15;
+      while (retries > 0) {
+        const res = await supabase.from('profiles').select('subscription_status, plan_interval').eq('id', session.user.id).single();
+        if (res.data?.subscription_status === 'active') {
+          profileData = res.data;
+          window.history.replaceState({}, document.title, window.location.pathname); // Limpa a URL
+          alert("Upgrade realizado com sucesso!");
+          break;
+        }
+        await new Promise(r => setTimeout(r, 1000)); // Espera 1s
+        retries--;
+      }
+    }
+
+    // Se não conseguiu via polling ou não é retorno de pagamento, busca normal
+    if (!profileData) {
+      const res = await supabase.from('profiles').select('subscription_status, plan_interval').eq('id', session.user.id).single();
+      profileData = res.data;
+      profileError = res.error;
+    }
 
     if (errorTransacoes || errorTags || profileError) {
       console.error('Erro ao buscar dados', { errorTransacoes, errorTags, profileError });
