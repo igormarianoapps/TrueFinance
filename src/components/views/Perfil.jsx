@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Card } from '../ui/Card';
-import { User, Lock, Camera } from 'lucide-react';
+import { User, Lock, Camera, Sun, Moon, Monitor } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
-export const Perfil = ({ user }) => {
+export const Perfil = ({ user, theme, setTheme }) => {
   const [fullName, setFullName] = useState('');
   const [loadingName, setLoadingName] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
@@ -124,15 +124,15 @@ export const Perfil = ({ user }) => {
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
       {message.text && (
-        <div className={`p-4 rounded-lg text-center ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+        <div className={`p-4 rounded-lg text-center ${message.type === 'error' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'}`}>
           {message.text}
         </div>
       )}
 
-      <Card>
+      <Card className="bg-white dark:bg-[#1F1F1F]">
         <div className="flex flex-col items-center p-6">
             <div className="relative mb-4">
-                <div className="w-24 h-24 rounded-full bg-slate-200 border-2 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-[#2A2A2A] border-2 border-white dark:border-[#1F1F1F] shadow-lg flex items-center justify-center overflow-hidden">
                     {avatarUrl ? (
                       <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
@@ -144,25 +144,45 @@ export const Perfil = ({ user }) => {
                     <input id="avatar-upload" type="file" className="hidden" onChange={uploadAvatar} disabled={uploading} accept="image/*" />
                 </label>
             </div>
-            <h2 className="text-xl font-bold text-slate-800">{userFullName}</h2>
-            <p className="text-sm text-slate-500">{user.email}</p>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">{userFullName}</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
         </div>
       </Card>
 
-      <Card>
+      <Card className="bg-white dark:bg-[#1F1F1F]">
         <div className="p-6">
-          <h3 className="text-lg font-bold text-slate-600 mb-4">Editar Nome</h3>
+          <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Editar Nome</h3>
           <form onSubmit={handleUpdateName} className="space-y-4">
-            <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 pl-10 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Seu nome de exibição" required /></div>
-            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#12111C] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
+            <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 pl-10 bg-slate-50 dark:bg-[#2A2A2A] dark:text-slate-200 rounded-lg border-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-600 outline-none" placeholder="Seu nome de exibição" required /></div>
+            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#1B1B35] dark:bg-[#0B0C0C] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
           </form>
         </div>
       </Card>
 
-      <Card>
+      <Card className="bg-white dark:bg-[#1F1F1F]">
         <div className="p-6">
-            <h3 className="text-lg font-bold text-slate-600 mb-4">Segurança</h3>
-            <button onClick={handlePasswordReset} disabled={loadingPassword || uploading} className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50"><Lock size={16} />Redefinir Senha por E-mail</button>
+          <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Aparência</h3>
+          <div className="flex gap-2">
+            <button onClick={() => setTheme('light')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'light' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+              <Sun size={20} />
+              <span className="text-sm font-semibold">Claro</span>
+            </button>
+            <button onClick={() => setTheme('dark')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'dark' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+              <Moon size={20} />
+              <span className="text-sm font-semibold">Escuro</span>
+            </button>
+            <button onClick={() => setTheme('system')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'system' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+              <Monitor size={20} />
+              <span className="text-sm font-semibold">Sistema</span>
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="bg-white dark:bg-[#1F1F1F]">
+        <div className="p-6">
+            <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Segurança</h3>
+            <button onClick={handlePasswordReset} disabled={loadingPassword || uploading} className="w-full flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-[#2A2A2A] dark:text-slate-200 dark:hover:bg-[#333] transition-colors disabled:opacity-50"><Lock size={16} />Redefinir Senha por E-mail</button>
         </div>
       </Card>
     </div>

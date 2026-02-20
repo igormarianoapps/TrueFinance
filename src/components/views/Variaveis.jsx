@@ -17,7 +17,7 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
         {filteredData.variaveis.map(item => {
           const tag = filteredData.tags.find(t => t.id === Number(item.tagId));
           return (
-            <Card key={item.id} className="flex flex-col gap-2 relative overflow-hidden group">
+            <Card key={item.id} className="flex flex-col gap-2 relative overflow-hidden group bg-white dark:bg-[#1F1F1F]">
                {tag && (
                  <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: tag.cor }}></div>
                )}
@@ -27,7 +27,7 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
                    {tag && <Badge color={tag.cor}>{tag.nome}</Badge>}
                  </div>
                  <div className="text-right">
-                   <p className="font-bold text-slate-800">{formatCurrency(item.valor)}</p>
+                   <p className="font-bold text-slate-800 dark:text-slate-200">{formatCurrency(item.valor)}</p>
                    <div className="flex gap-3 mt-2 justify-end">
                      <button onClick={() => openModal('variavel', item)} className="text-slate-400 hover:text-blue-500"><Edit2 size={16}/></button>
                      <button onClick={() => handleDelete(item.id, 'variavel')} className="text-slate-400 hover:text-red-500"><Trash2 size={16}/></button>
