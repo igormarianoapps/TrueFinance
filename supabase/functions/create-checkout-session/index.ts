@@ -85,6 +85,7 @@ serve(async (req) => {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
+      allow_promotion_codes: true, // Permite o uso de cupons de desconto
       success_url: `${siteUrl}?payment=success`, // Redireciona para a página principal em caso de sucesso
       cancel_url: siteUrl,   // Redireciona para a página principal em caso de cancelamento
     })
