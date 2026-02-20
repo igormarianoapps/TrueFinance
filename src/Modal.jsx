@@ -109,7 +109,7 @@ export const Modal = ({
               <label className="block text-sm text-slate-500 dark:text-slate-400 mb-2">Recorrência</label>
               <div className="flex gap-2 mb-3">
                 {['unico', 'mensal', 'parcelado'].map(type => (
-                  <button type="button" key={type} onClick={() => setRecurrenceType(type)} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${recurrenceType === type ? 'bg-[#1B1B35] text-white shadow-md' : 'bg-white dark:bg-[#1F1F1F] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#333]'}`}>
+                  <button type="button" key={type} onClick={() => setRecurrenceType(type)} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${recurrenceType === type ? 'bg-[#1B1B35] dark:bg-[#0B0C0C] text-white shadow-md' : 'bg-white dark:bg-[#1F1F1F] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-[#333]'}`}>
                     {type === 'unico' ? 'Único' : type === 'mensal' ? 'Fixo Mensal' : 'Parcelado'}
                   </button>
                 ))}
@@ -151,7 +151,7 @@ export const Modal = ({
                   {data.tags.map(tag => (
                     <label key={tag.id} className="cursor-pointer">
                       <input type="radio" name="tagId" value={tag.id} defaultChecked={editingItem?.tagId === tag.id} className="peer sr-only" />
-                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-[#1B1B35] peer-checked:text-white peer-checked:border-[#1B1B35] transition-all text-slate-600 dark:text-slate-300 border-slate-200 dark:border-[#333] hover:bg-slate-50 dark:hover:bg-[#2A2A2A]">
+                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-[#1B1B35] dark:peer-checked:bg-[#0B0C0C] peer-checked:text-white peer-checked:border-[#1B1B35] dark:peer-checked:border-[#0B0C0C] transition-all text-slate-600 dark:text-slate-300 border-slate-200 dark:border-[#333] hover:bg-slate-50 dark:hover:bg-[#2A2A2A]">
                         #{tag.nome}
                       </div>
                     </label>
