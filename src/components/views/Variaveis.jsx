@@ -9,8 +9,8 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
   return (
     <div className="space-y-4 pb-20 animate-in slide-in-from-right-4">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg text-slate-800">Gastos Variáveis</h3>
-        <span className="text-sm font-semibold bg-red-100 text-red-600 px-3 py-1 rounded-full">{formatCurrency(totalVariaveis)}</span>
+        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">Gastos Variáveis</h3>
+        <span className="text-sm font-semibold bg-red-100 text-red-600 px-3 py-1 rounded-full dark:bg-red-900/30 dark:text-red-400">{formatCurrency(totalVariaveis)}</span>
       </div>
 
       <div className="space-y-3">
@@ -23,14 +23,14 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
                )}
                <div className="flex justify-between items-start pl-2">
                  <div>
-                   <p className="font-semibold text-slate-800 text-base">{item.descricao}</p>
+                   <p className="font-semibold text-slate-800 text-base dark:text-slate-200">{item.descricao}</p>
                    {tag && <Badge color={tag.cor}>{tag.nome}</Badge>}
                  </div>
                  <div className="text-right">
                    <p className="font-bold text-slate-800 dark:text-slate-200">{formatCurrency(item.valor)}</p>
                    <div className="flex gap-3 mt-2 justify-end">
-                     <button onClick={() => openModal('variavel', item)} className="text-slate-400 hover:text-blue-500"><Edit2 size={16}/></button>
-                     <button onClick={() => handleDelete(item.id, 'variavel')} className="text-slate-400 hover:text-red-500"><Trash2 size={16}/></button>
+                     <button onClick={() => openModal('variavel', item)} className="text-slate-400 hover:text-blue-500 dark:text-slate-500 dark:hover:text-blue-400"><Edit2 size={16}/></button>
+                     <button onClick={() => handleDelete(item.id, 'variavel')} className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"><Trash2 size={16}/></button>
                    </div>
                  </div>
                </div>
