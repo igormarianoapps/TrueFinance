@@ -18,6 +18,7 @@ import { Movimentacoes } from './components/views/Movimentacoes';
 import { AnnualDashboard } from './components/views/AnnualDashboard';
 import { Perfil } from './components/views/Perfil';
 import { Ajuda } from './components/views/Ajuda';
+import { PaywallModal } from './components/views/PaywallModal';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -26,6 +27,11 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system');
   const [data, setData] = useState({ entradas: [], fixos: [], provisoes: [], tags: [], variaveis: [], poupanca: [] });
+  
+  // Estados de Monetização
+  const [profile, setProfile] = useState(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+
   const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 1));
   
   // Estados para Modais
@@ -35,6 +41,8 @@ export default function App() {
   const [recurrenceType, setRecurrenceType] = useState('unico'); 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+  const isPro = useMemo(() => profile?.subscription_status === 'active', [profile]);
 
   // --- Auth & Data Fetching ---
   useEffect(() => {
@@ -84,11 +92,19 @@ export default function App() {
     
     const { data: transacoes, error: errorTransacoes } = await supabase.from('transacoes').select('*');
     const { data: tags, error: errorTags } = await supabase.from('tags').select('*');
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('subscription_status, plan_interval')
+      .eq('id', session.user.id)
+      .single();
 
-    if (errorTransacoes || errorTags) {
-      console.error('Erro ao buscar dados', errorTransacoes, errorTags);
+    if (errorTransacoes || errorTags || profileError) {
+      console.error('Erro ao buscar dados', { errorTransacoes, errorTags, profileError });
       return;
     }
+
+    // Armazena o perfil do usuário
+    setProfile(profileData);
 
     // Mapeia do banco (snake_case) para o app (camelCase)
     const mapTransaction = (t) => ({
@@ -243,6 +259,23 @@ export default function App() {
                     modalType === 'poupanca' ? 'poupanca' : 'provisoes';
     
     if (values.valor) values.valor = parseFloat(values.valor);
+
+    // --- Lógica de Paywall ---
+    if (!isPro) {
+      if (listKey === 'fixos' && data.fixos.length >= 5 && !editingItem) {
+        setShowPaywall(true);
+        return;
+      }
+      if (listKey === 'provisoes' && data.provisoes.length >= 3 && !editingItem) {
+        setShowPaywall(true);
+        return;
+      }
+      if (listKey === 'tags' && data.tags.length >= 5 && !editingItem) {
+        setShowPaywall(true);
+        return;
+      }
+    }
+    // --- Fim da Lógica de Paywall ---
     
     if (modalType !== 'tag' && !values.valor) {
       alert("Por favor, insira um valor válido.");
@@ -380,9 +413,11 @@ export default function App() {
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={setActiveTab} // Manter para navegação normal
         setShowLogoutConfirm={setShowLogoutConfirm}
         user={session?.user}
+        isPro={isPro}
+        setShowPaywall={setShowPaywall}
       />
       <Modal 
         modalOpen={modalOpen}
@@ -395,6 +430,9 @@ export default function App() {
         recurrenceType={recurrenceType}
         setRecurrenceType={setRecurrenceType}
       />
+
+      {/* Modal Paywall */}
+      {showPaywall && <PaywallModal setShowPaywall={setShowPaywall} />}
 
       {/* Modal Logout Confirmation */}
       {showLogoutConfirm && (
@@ -457,11 +495,11 @@ export default function App() {
           totalGastosNaoProvisionados={totalGastosNaoProvisionados}
           filteredData={filteredData}
           chartData={chartData}
-          totalVariaveis={totalVariaveis}
+          totalVariaveis={totalVariaveis} // Este prop parece não ser usado no Dashboard
           openModal={openModal}
         />}
         {activeTab === 'Movimentações' && <Movimentacoes filteredData={filteredData} setActiveTab={setActiveTab} openModal={openModal} totalEntradas={totalEntradas} />}
-        {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}
+        {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}        
         {activeTab === 'Dashboard' && <AnnualDashboard data={data} />}
         {activeTab === 'Fixos & Provisões' && <FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />}
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}

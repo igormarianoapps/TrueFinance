@@ -4,12 +4,13 @@ import {
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
-export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user }) => {
+export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user, isPro, setShowPaywall }) => {
   const menuItems = [
     { id: 'Resumo Mensal', icon: PieChart },
+    // Adicione aqui outros itens gratuitos se houver
     { id: 'Movimentações', icon: ArrowLeftRight },
-    { id: 'Patrimônio', icon: Wallet },
-    { id: 'Dashboard', icon: LineChart },
+    { id: 'Patrimônio', icon: Wallet, pro: true },
+    { id: 'Dashboard', icon: LineChart, pro: true },
     { id: 'Tags', icon: Tag },
     { id: 'Perfil', icon: User },
     { id: 'Ajuda', icon: HelpCircle },
@@ -39,6 +40,17 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
     } catch (error) {
       console.log('Error downloading image: ', error.message);
     }
+  };
+
+  const handleTabClick = (item) => {
+    // Se o item for "Pro" e o usuário não for "Pro", mostra o paywall
+    if (item.pro && !isPro) {
+      setShowPaywall(true);
+    } else {
+      // Senão, navega normalmente
+      setActiveTab(item.id);
+    }
+    setIsMenuOpen(false);
   };
 
   return (
@@ -71,8 +83,8 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
           {menuItems.map(item => (
             <button
               key={item.id}
-              onClick={() => { setActiveTab(item.id); setIsMenuOpen(false); }}
-              className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all ${activeTab === item.id ? 'bg-[#3457A4] dark:bg-[#3457A4] text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2A2A2A]'}`}
+              onClick={() => handleTabClick(item)}
+              className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all relative ${activeTab === item.id ? 'bg-[#3457A4] dark:bg-[#3457A4] text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2A2A2A]'}`}
             >
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>
