@@ -70,7 +70,7 @@ export const Dashboard = ({
     <div className="space-y-6 pb-20 animate-in fade-in">
       
       {/* 1. Hero Card: Sobra Projetada */}
-      <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#2A2A2A] relative overflow-hidden">
+      <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1F1F1F] relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-10">
            <img src="/piggy.png" alt="" className="w-[140px] h-[140px] object-contain" />
          </div>
@@ -105,7 +105,7 @@ export const Dashboard = ({
       </div>
 
       {/* 1.5 Indicador de Compromissos Pendentes */}
-      <Card className="flex items-center justify-between bg-slate-50 dark:bg-[#1F1F1F] border border-slate-200 dark:border-[#2A2A2A] shadow-sm">
+      <Card className="flex items-center justify-between bg-slate-50 dark:bg-[#1F1F1F] border border-slate-200 dark:border-[#1F1F1F] shadow-sm">
          <div className="flex items-center gap-3">
             <div className="p-2 bg-white dark:bg-[#2A2A2A] rounded-lg border border-slate-100 dark:border-[#333] text-slate-500 dark:text-slate-300">
                <Clock size={20} />

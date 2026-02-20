@@ -6,7 +6,7 @@ import { formatCurrency } from '../../utils/formatters';
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 const KpiCard = ({ title, value, isCurrency = true, isPercentage = false, color = 'text-slate-800' }) => (
-    <div className="bg-slate-50 dark:bg-[#1F1F1F] p-4 rounded-lg border border-slate-100 dark:border-[#2A2A2A]">
+    <div className="bg-slate-50 dark:bg-[#1F1F1F] p-4 rounded-lg border border-slate-100 dark:border-[#1F1F1F]">
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{title}</p>
         <p className={`text-2xl font-bold ${color} dark:opacity-90`}>
             {isCurrency ? formatCurrency(value) : value}
@@ -211,7 +211,7 @@ export const AnnualDashboard = ({ data }) => {
     return (
         <div className="space-y-6 animate-in fade-in">
             {/* Year Selector */}
-            <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl shadow-sm border border-slate-100 dark:border-[#2A2A2A]">
+            <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl shadow-sm border border-slate-100 dark:border-[#1F1F1F]">
                 <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
                     <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
                     <span className="text-lg font-bold text-[#1B1B35] dark:text-slate-100 uppercase text-center">

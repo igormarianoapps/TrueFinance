@@ -23,7 +23,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
         {onAddClick && (
             <button 
                 onClick={onAddClick}
-                className="w-full bg-[#1B1B35] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#1B1B35] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
+                className="w-full bg-[#1B1B35] dark:bg-[#0B0C0C] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#1B1B35] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
             >
                 <PlusCircle size={16} />
                 {addLabel}

@@ -417,7 +417,7 @@ export default function App() {
             <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-[#2A2A2A] dark:text-slate-200 dark:hover:bg-[#333] transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#1B1B35] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#1B1B35] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
           </div>
         </div>
@@ -425,7 +425,7 @@ export default function App() {
 
       {/* Header Fixo */}
       <div className="sticky top-0 z-30 shadow-md">
-        <header className="bg-[#1B1B35] px-4 py-3 flex items-center justify-between">
+        <header className="bg-[#1B1B35] dark:bg-[#0B0C0C] px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
               <Menu size={24} />

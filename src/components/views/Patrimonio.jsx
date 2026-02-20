@@ -31,7 +31,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
-     <div className="bg-[#1B1B35] text-white shadow-xl p-6 rounded-2xl">
+     <div className="bg-[#1B1B35] dark:bg-[#0B0C0C] text-white shadow-xl p-6 rounded-2xl">
        <div className="flex flex-col gap-4">
          <div>
            <p className="text-slate-400 text-sm mb-1">Patrimônio Total</p>
@@ -59,7 +59,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
      <div>
        <div className="flex justify-between items-end mb-3 ml-1 mr-1">
           <h3 className="text-sm font-bold text-slate-500 uppercase">Histórico da Poupança</h3>
-          <button onClick={() => openModal('poupanca')} className="text-xs text-[#1B1B35] font-semibold hover:underline">+ Movimentação</button>
+          <button onClick={() => openModal('poupanca')} className="text-xs text-[#1B1B35] dark:text-white font-semibold hover:underline">+ Movimentação</button>
        </div>
        <div className="space-y-2">
           {filteredData.poupanca.map(item => (
@@ -86,7 +86,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
           )}
        </div>
      </div>
-     <Fab onClick={() => openModal('poupanca')} className="bg-[#E95415] text-[#1B1B35]" />
+     <Fab onClick={() => openModal('poupanca')} className="bg-[#E95415] text-[#1B1B35] dark:text-[#0B0C0C]" />
     </div>
   );
 };
