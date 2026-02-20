@@ -213,11 +213,11 @@ export const AnnualDashboard = ({ data }) => {
             {/* Year Selector */}
             <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl shadow-sm border border-slate-100 dark:border-[#1F1F1F]">
                 <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-                    <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
-                    <span className="text-lg font-bold text-[#1B1B35] dark:text-slate-100 uppercase text-center">
+                    <button onClick={handlePrevYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
+                    <span className="text-lg font-bold text-[#3457A4] dark:text-slate-100 uppercase text-center">
                         {currentYear}
                     </span>
-                    <button onClick={handleNextYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
+                    <button onClick={handleNextYear} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
                 </div>
             </div>
 

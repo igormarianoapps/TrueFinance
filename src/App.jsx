@@ -417,7 +417,7 @@ export default function App() {
             <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-[#2A2A2A] dark:text-slate-200 dark:hover:bg-[#333] transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#1B1B35] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
           </div>
         </div>
@@ -425,7 +425,7 @@ export default function App() {
 
       {/* Header Fixo */}
       <div className="sticky top-0 z-30 shadow-md">
-        <header className="bg-[#1B1B35] dark:bg-[#0B0C0C] px-4 py-3 flex items-center justify-between">
+        <header className="bg-[#3457A4] dark:bg-[#0B0C0C] px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
               <Menu size={24} />
@@ -436,11 +436,11 @@ export default function App() {
         {!['Perfil', 'Tags', 'Dashboard'].includes(activeTab) && (
           <div className="bg-white dark:bg-[#1F1F1F] w-full">
             <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
-              <span className="text-lg font-bold text-[#1B1B35] dark:text-slate-100 uppercase text-center">
+              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
+              <span className="text-lg font-bold text-[#3457A4] dark:text-slate-100 uppercase text-center">
                 {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
               </span>
-              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#1B1B35] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
+              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
             </div>
           </div>
         )}

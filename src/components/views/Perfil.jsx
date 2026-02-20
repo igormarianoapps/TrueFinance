@@ -154,7 +154,7 @@ export const Perfil = ({ user, theme, setTheme }) => {
           <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Editar Nome</h3>
           <form onSubmit={handleUpdateName} className="space-y-4">
             <div className="relative"><User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full p-3 pl-10 bg-slate-50 dark:bg-[#2A2A2A] dark:text-slate-200 rounded-lg border-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-600 outline-none" placeholder="Seu nome de exibição" required /></div>
-            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#1B1B35] dark:bg-[#0B0C0C] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
+            <button type="submit" disabled={loadingName || uploading} className="w-full bg-[#3457A4] dark:bg-[#0B0C0C] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform disabled:opacity-50">{loadingName ? 'Salvando...' : 'Salvar Nome'}</button>
           </form>
         </div>
       </Card>
@@ -163,15 +163,15 @@ export const Perfil = ({ user, theme, setTheme }) => {
         <div className="p-6">
           <h3 className="text-lg font-bold text-slate-600 dark:text-slate-300 mb-4">Aparência</h3>
           <div className="flex gap-2">
-            <button onClick={() => setTheme('light')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'light' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+            <button onClick={() => setTheme('light')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'light' ? 'border-[#3457A4] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
               <Sun size={20} />
               <span className="text-sm font-semibold">Claro</span>
             </button>
-            <button onClick={() => setTheme('dark')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'dark' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+            <button onClick={() => setTheme('dark')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'dark' ? 'border-[#3457A4] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
               <Moon size={20} />
               <span className="text-sm font-semibold">Escuro</span>
             </button>
-            <button onClick={() => setTheme('system')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'system' ? 'border-[#1B1B35] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
+            <button onClick={() => setTheme('system')} className={`flex-1 flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${theme === 'system' ? 'border-[#3457A4] dark:border-[#0B0C0C] bg-blue-50 dark:bg-[#2A2A2A]' : 'border-transparent bg-slate-100 dark:bg-[#2A2A2A] hover:bg-slate-200 dark:hover:bg-[#333]'}`}>
               <Monitor size={20} />
               <span className="text-sm font-semibold">Sistema</span>
             </button>

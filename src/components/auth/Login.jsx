@@ -74,7 +74,7 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1B1B35] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#3457A4] p-4">
       <div className="bg-white dark:bg-[#1F1F1F] p-8 rounded-xl shadow-md w-full max-w-sm">
         <div className="flex justify-center mb-6">
           <img src="/logopiggy.png" alt="True Finance" className="w-32 object-contain" />
@@ -82,7 +82,7 @@ export const Login = () => {
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200 dark:bg-[#2A2A2A] dark:border-[#333] dark:text-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200 dark:bg-[#2A2A2A] dark:border-[#333] dark:text-slate-200" type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
-          <button type="submit" disabled={loading} className="w-full bg-[#1B1B35] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
+          <button type="submit" disabled={loading} className="w-full bg-[#3457A4] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
             <button type="button" onClick={() => { setShowSignUp(true); setTermsAccepted(false); }} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>
@@ -109,10 +109,10 @@ export const Login = () => {
                   id="terms" 
                   checked={termsAccepted} 
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="mt-1 rounded border-slate-300 text-[#1B1B35] focus:ring-[#1B1B35] cursor-pointer"
+                  className="mt-1 rounded border-slate-300 text-[#3457A4] focus:ring-[#3457A4] cursor-pointer"
                 />
                 <label htmlFor="terms" className="text-sm text-slate-500 dark:text-slate-400 cursor-pointer select-none">
-                  Li e aceito os <button type="button" onClick={() => setActiveDoc('terms')} className="text-[#1B1B35] font-bold hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setActiveDoc('privacy')} className="text-[#1B1B35] font-bold hover:underline">Política de Privacidade</button>.
+                  Li e aceito os <button type="button" onClick={() => setActiveDoc('terms')} className="text-[#3457A4] font-bold hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setActiveDoc('privacy')} className="text-[#3457A4] font-bold hover:underline">Política de Privacidade</button>.
                 </label>
               </div>
 
