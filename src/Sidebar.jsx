@@ -77,7 +77,14 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
               <span className="text-xl font-bold text-slate-600 dark:text-slate-300">{initials}</span>
             )}
           </div>
-          <h2 className="font-bold text-lg text-slate-700 dark:text-slate-200">Bem-vindo, {firstName}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-bold text-lg text-slate-700 dark:text-slate-200">Bem-vindo, {firstName}</h2>
+            {isPro ? (
+              <span className="text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full">PRO</span>
+            ) : (
+              <span className="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full dark:bg-slate-700 dark:text-slate-300">FREE</span>
+            )}
+          </div>
         </div>
         <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
           {menuItems.map(item => (
@@ -88,6 +95,9 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             >
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>
+              {!isPro && item.pro && (
+                <span className="ml-auto text-[10px] font-bold bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full">PRO</span>
+              )}
             </button>
           ))}
         </nav>
