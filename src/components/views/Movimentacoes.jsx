@@ -23,7 +23,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
         {onAddClick && (
             <button 
                 onClick={onAddClick}
-                className="w-full bg-[#1B1B35] dark:bg-[#0B0C0C] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#1B1B35] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
+                className="w-full bg-[#1B1B35] dark:bg-[#E95415] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#1B1B35] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
             >
                 <PlusCircle size={16} />
                 {addLabel}
@@ -37,6 +37,7 @@ const ItemRow = ({ description, value, valueColor, tag }) => (
         <div>
             <p className="font-semibold text-slate-700 dark:text-slate-200">{description}</p>
             {tag && <p className="text-xs text-slate-400 dark:text-slate-500">{tag}</p>}
+            {tag && <p className="text-xs text-slate-400 dark:text-slate-400">{tag}</p>}
         </div>
         <span className={`font-bold ${valueColor} dark:opacity-90`}>
             {formatCurrency(value)}
@@ -126,6 +127,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                                 description={item.descricao}
                                 value={item.valor}
                                 valueColor="text-orange-500"
+                                valueColor="text-orange-500 dark:text-orange-400"
                             />
                         ))
                     ) : (
