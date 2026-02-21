@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import Stripe from 'https://esm.sh/stripe@11.1.0?target=deno'
+import Stripe from 'https://esm.sh/stripe@14.23.0?target=deno'
 
 // Definimos o CORS aqui mesmo para evitar erros de importação
 const corsHeaders = {
@@ -33,7 +33,7 @@ serve(async (req) => {
 
     // 2. Inicialização dos Clientes
     const stripe = new Stripe(stripeKey, {
-      apiVersion: '2022-11-15',
+      apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     })
     
