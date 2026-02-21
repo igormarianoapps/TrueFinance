@@ -74,6 +74,11 @@ Deno.serve(async (req) => {
 
     let customerId = profile?.stripe_customer_id
 
+    // Sanitiza valores inválidos que podem ter sido salvos como string no banco
+    if (customerId === 'null' || customerId === 'undefined') {
+      customerId = null
+    }
+
     if (!customerId) {
       console.log("Criando novo cliente no Stripe...")
       const customerParams = new URLSearchParams()
