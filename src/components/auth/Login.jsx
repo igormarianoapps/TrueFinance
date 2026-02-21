@@ -59,9 +59,13 @@ export const Login = ({ showNotification }) => {
     const { error } = await supabase.auth.signUp({ 
       email: newEmail, 
       password: newPassword,
-      options: { data: { full_name: newName } }
+      options: { 
+        data: { full_name: newName },
+        emailRedirectTo: window.location.origin
+      }
     });
     if (error) {
+      console.error("Erro detalhado do Cadastro:", error); // Ajuda a ver o código do erro no F12
       if (showNotification) showNotification('Erro', error.message, 'error');
       else alert(error.message);
     } else {
