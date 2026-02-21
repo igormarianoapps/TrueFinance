@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.44.4'
-import Stripe from 'https://esm.sh/stripe@16.2.0?target=deno&no-check'
+import Stripe from 'npm:stripe@^16.2.0'
 
 // Definimos o CORS aqui mesmo para evitar erros de importação
 const corsHeaders = {
