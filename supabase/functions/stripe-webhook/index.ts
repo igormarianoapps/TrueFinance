@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.44.4'
+import { createClient } from 'npm:@supabase/supabase-js@2'
 import Stripe from 'npm:stripe@15.12.0'
 
 const supabaseAdmin = createClient(
