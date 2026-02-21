@@ -14,6 +14,8 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log("Iniciando create-checkout-session...")
+
     // 1. Verificação de Variáveis de Ambiente
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
@@ -33,7 +35,6 @@ Deno.serve(async (req) => {
     // 2. Inicialização dos Clientes
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
-      httpClient: Stripe.createFetchHttpClient(),
     })
     
     // 3. Parse do Corpo da Requisição

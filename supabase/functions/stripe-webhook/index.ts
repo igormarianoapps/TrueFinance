@@ -3,7 +3,6 @@ import Stripe from 'npm:stripe@^16.2.0'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
   apiVersion: '2023-10-16',
-  httpClient: Stripe.createFetchHttpClient(),
 })
 
 const supabaseAdmin = createClient(
