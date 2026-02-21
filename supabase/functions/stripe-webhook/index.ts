@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.44.4'
-import Stripe from 'npm:stripe@^16.2.0'
-
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
-  apiVersion: '2023-10-16',
-})
+import Stripe from 'npm:stripe@15.12.0'
 
 const supabaseAdmin = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -25,6 +21,11 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Inicializa o Stripe dentro do handler para capturar erros de inicialização
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
+      apiVersion: '2023-10-16',
+    })
+
     const signature = req.headers.get('Stripe-Signature')
     const body = await req.text()
 
