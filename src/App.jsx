@@ -570,7 +570,7 @@ export default function App() {
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}
         {activeTab === 'Patrimônio' && <Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />}
-        {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} />}
+        {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} profile={profile} setShowPaywall={setShowPaywall} />}
         {activeTab === 'Ajuda' && <Ajuda />}
       </main>
     </div>

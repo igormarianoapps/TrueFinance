@@ -80,7 +80,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
           <div className="flex items-center gap-2">
             <h2 className="font-bold text-lg text-slate-700 dark:text-slate-200">Bem-vindo, {firstName}</h2>
             {isPro ? (
-              <span className="text-xs font-bold bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full">PRO</span>
+              <span className="text-xs font-bold bg-[#E95415] text-white px-2 py-0.5 rounded-full">PRO</span>
             ) : (
               <span className="text-xs font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full dark:bg-slate-700 dark:text-slate-300">FREE</span>
             )}
@@ -96,7 +96,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>
               {!isPro && item.pro && (
-                <span className="ml-auto text-[10px] font-bold bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full">PRO</span>
+                <span className="ml-auto text-[10px] font-bold bg-[#E95415] text-white px-1.5 py-0.5 rounded-full">PRO</span>
               )}
             </button>
           ))}
