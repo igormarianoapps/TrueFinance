@@ -116,7 +116,7 @@ serve(async (req) => {
     // Retorna o erro detalhado para o frontend
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
+      status: 500,
     })
   }
 })

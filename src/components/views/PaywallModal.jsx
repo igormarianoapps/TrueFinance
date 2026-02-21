@@ -20,7 +20,14 @@ export const PaywallModal = ({ setShowPaywall }) => {
       });
 
       if (error) {
-        throw error;
+        // Tenta extrair a mensagem de erro detalhada da resposta da função
+        try {
+          const errorBody = await error.context.json();
+          throw new Error(errorBody.error || `A função retornou um erro inesperado.`);
+        } catch {
+          // Se não conseguir extrair, lança o erro original
+          throw error;
+        }
       }
 
       if (data?.error) {
