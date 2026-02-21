@@ -1,6 +1,5 @@
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import Stripe from 'https://esm.sh/stripe@14.23.0?target=deno'
+import Stripe from 'https://esm.sh/stripe@14.23.0?target=deno&deno-std=0.224.0'
 
 // Definimos o CORS aqui mesmo para evitar erros de importação
 const corsHeaders = {
@@ -8,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // 0. Handle CORS (Pre-flight request)
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
