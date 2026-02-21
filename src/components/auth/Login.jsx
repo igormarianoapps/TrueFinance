@@ -3,7 +3,7 @@ import { supabase } from '../../supabaseClient';
 import { X } from 'lucide-react';
 import { TermsOfUse, PrivacyPolicy } from './LegalDocs';
 
-export const Login = () => {
+export const Login = ({ showNotification }) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,18 +29,30 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
+    if (error) {
+      if (showNotification) showNotification('Erro', error.message, 'error');
+      else alert(error.message);
+    }
     setLoading(false);
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("As senhas não conferem.");
+      if (showNotification) showNotification('Erro', "As senhas não conferem.", 'error');
+      else alert("As senhas não conferem.");
       return;
     }
     if (!termsAccepted) {
-      alert("Você deve aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.");
+      if (showNotification) {
+        showNotification(
+          'Atenção', 
+          "Você deve aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.", 
+          'error'
+        );
+      } else {
+        alert("Você deve aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.");
+      }
       return;
     }
     setLoading(true);
@@ -50,9 +62,11 @@ export const Login = () => {
       options: { data: { full_name: newName } }
     });
     if (error) {
-      alert(error.message);
+      if (showNotification) showNotification('Erro', error.message, 'error');
+      else alert(error.message);
     } else {
-      alert('Cadastro realizado! Verifique seu email para confirmar.');
+      if (showNotification) showNotification('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.', 'success');
+      else alert('Cadastro realizado! Verifique seu email para confirmar.');
       setShowSignUp(false);
     }
     setLoading(false);
@@ -65,9 +79,11 @@ export const Login = () => {
       redirectTo: window.location.origin,
     });
     if (error) {
-      alert(error.message);
+      if (showNotification) showNotification('Erro', error.message, 'error');
+      else alert(error.message);
     } else {
-      alert('Email de redefinição enviado! Verifique sua caixa de entrada.');
+      if (showNotification) showNotification('Sucesso', 'Email de redefinição enviado! Verifique sua caixa de entrada.', 'success');
+      else alert('Email de redefinição enviado! Verifique sua caixa de entrada.');
       setShowForgot(false);
     }
     setLoading(false);

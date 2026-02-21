@@ -242,6 +242,17 @@ export default function App() {
   // --- Handlers ---
 
   const showNotification = (title, message, type = 'success') => {
+    // Intercepta e melhora mensagens de erro padrão do Supabase
+    if (message === 'Invalid login credentials') {
+      title = 'Credenciais Inválidas';
+      message = 'E-mail ou senha incorretos. Verifique seus dados e tente novamente.';
+      type = 'error';
+    }
+    if (message === 'Email not confirmed') {
+      title = 'E-mail não confirmado';
+      message = 'Por favor, verifique sua caixa de entrada e confirme seu e-mail antes de fazer login.';
+      type = 'error';
+    }
     setNotification({ isOpen: true, title, message, type });
   };
 
@@ -450,11 +461,32 @@ export default function App() {
     setModalOpen(true);
   };
 
+  // Componente do Modal de Notificação (definido aqui para reutilização no Login e no App)
+  const notificationModal = notification.isOpen && (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+      <div className="bg-white dark:bg-[#1F1F1F] w-full max-w-sm rounded-2xl p-6 shadow-xl flex flex-col items-center text-center">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${notification.type === 'error' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'}`}>
+            {notification.type === 'error' ? <AlertTriangle size={24} /> : <CheckCircle size={24} />}
+        </div>
+        <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">{notification.title}</h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-6">{notification.message}</p>
+        <button onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))} className="w-full p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
+          OK
+        </button>
+      </div>
+    </div>
+  );
+
   if (authEvent === 'PASSWORD_RECOVERY') {
     return <UpdatePassword onPasswordUpdated={() => setAuthEvent(null)} />;
   }
 
-  if (!session) return <Login />;
+  if (!session) return (
+    <>
+      <Login showNotification={showNotification} />
+      {notificationModal}
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-[#E6EAF7] dark:bg-[#0C0C0C] font-sans text-slate-600 dark:text-slate-300 pb-10">
@@ -512,20 +544,7 @@ export default function App() {
       )}
 
       {/* Modal Notification (Success/Error) */}
-      {notification.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-[#1F1F1F] w-full max-w-sm rounded-2xl p-6 shadow-xl flex flex-col items-center text-center">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${notification.type === 'error' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'}`}>
-                {notification.type === 'error' ? <AlertTriangle size={24} /> : <CheckCircle size={24} />}
-            </div>
-            <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">{notification.title}</h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-6">{notification.message}</p>
-            <button onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))} className="w-full p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
-              OK
-            </button>
-          </div>
-        </div>
-      )}
+      {notificationModal}
 
       {/* Header Fixo */}
       <div className="sticky top-0 z-30 shadow-md">
