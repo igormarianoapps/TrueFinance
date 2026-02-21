@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Menu, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle } from 'lucide-react';
 import { supabase } from './supabaseClient';
 import { toLocalISO } from './utils/formatters';
 
@@ -41,6 +41,7 @@ export default function App() {
   const [recurrenceType, setRecurrenceType] = useState('unico'); 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+  const [notification, setNotification] = useState({ isOpen: false, title: '', message: '', type: 'success' });
 
   const isPro = useMemo(() => profile?.subscription_status === 'active', [profile]);
 
@@ -106,7 +107,7 @@ export default function App() {
         if (res.data?.subscription_status === 'active') {
           profileData = res.data;
           window.history.replaceState({}, document.title, window.location.pathname); // Limpa a URL
-          alert("Upgrade realizado com sucesso!");
+          showNotification("Upgrade realizado!", "Agora você é um membro PRO e tem acesso ilimitado.", "success");
           break;
         }
         await new Promise(r => setTimeout(r, 1000)); // Espera 1s
@@ -240,6 +241,22 @@ export default function App() {
 
   // --- Handlers ---
 
+  const showNotification = (title, message, type = 'success') => {
+    setNotification({ isOpen: true, title, message, type });
+  };
+
+  const openConfirmModal = (title, message, onConfirm) => {
+    setConfirmConfig({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: async () => {
+        await onConfirm();
+        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
+
   const handleDelete = (id, type) => {
     setConfirmConfig({
       isOpen: true,
@@ -301,7 +318,7 @@ export default function App() {
     // --- Fim da Lógica de Paywall ---
     
     if (modalType !== 'tag' && !values.valor) {
-      alert("Por favor, insira um valor válido.");
+      showNotification("Valor Inválido", "Por favor, insira um valor válido para continuar.", "error");
       return;
     }
 
@@ -464,7 +481,7 @@ export default function App() {
       />
 
       {/* Modal Paywall */}
-      {showPaywall && <PaywallModal setShowPaywall={setShowPaywall} />}
+      {showPaywall && <PaywallModal setShowPaywall={setShowPaywall} showNotification={showNotification} />}
 
       {/* Modal Logout Confirmation */}
       {showLogoutConfirm && (
@@ -490,6 +507,22 @@ export default function App() {
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-[#2A2A2A] dark:text-slate-200 dark:hover:bg-[#333] transition-colors">Cancelar</button>
               <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Notification (Success/Error) */}
+      {notification.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-[#1F1F1F] w-full max-w-sm rounded-2xl p-6 shadow-xl flex flex-col items-center text-center">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${notification.type === 'error' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'}`}>
+                {notification.type === 'error' ? <AlertTriangle size={24} /> : <CheckCircle size={24} />}
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">{notification.title}</h2>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">{notification.message}</p>
+            <button onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))} className="w-full p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
+              OK
+            </button>
           </div>
         </div>
       )}
@@ -537,7 +570,7 @@ export default function App() {
         {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
         {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}
         {activeTab === 'Patrimônio' && <Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />}
-        {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} />}
+        {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} />}
         {activeTab === 'Ajuda' && <Ajuda />}
       </main>
     </div>

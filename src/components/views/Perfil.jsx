@@ -4,7 +4,7 @@ import { Card } from '../ui/Card';
 import { User, Lock, Camera, Sun, Moon, Monitor } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
-export const Perfil = ({ user, theme, setTheme }) => {
+export const Perfil = ({ user, theme, setTheme, openConfirmModal }) => {
   const [fullName, setFullName] = useState('');
   const [loadingName, setLoadingName] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
@@ -57,21 +57,26 @@ export const Perfil = ({ user, theme, setTheme }) => {
   };
 
   const handlePasswordReset = async () => {
-    if (!window.confirm('Você receberá um e-mail para redefinir sua senha. Deseja continuar?')) {
-      return;
-    }
-    setLoadingPassword(true);
-    setMessage({ type: '', text: '' });
-    const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin,
-    });
+    const action = async () => {
+      setLoadingPassword(true);
+      setMessage({ type: '', text: '' });
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+          redirectTo: window.location.origin,
+      });
 
-    if (error) {
-      setMessage({ type: 'error', text: 'Erro ao enviar e-mail de redefinição: ' + error.message });
+      if (error) {
+        setMessage({ type: 'error', text: 'Erro ao enviar e-mail de redefinição: ' + error.message });
+      } else {
+        setMessage({ type: 'success', text: 'E-mail para redefinição de senha enviado! Verifique sua caixa de entrada.' });
+      }
+      setLoadingPassword(false);
+    };
+
+    if (openConfirmModal) {
+      openConfirmModal('Redefinir Senha', 'Você receberá um e-mail para redefinir sua senha. Deseja continuar?', action);
     } else {
-      setMessage({ type: 'success', text: 'E-mail para redefinição de senha enviado! Verifique sua caixa de entrada.' });
+      if (window.confirm('Você receberá um e-mail para redefinir sua senha. Deseja continuar?')) action();
     }
-    setLoadingPassword(false);
   };
 
   const uploadAvatar = async (event) => {

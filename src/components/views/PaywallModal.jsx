@@ -9,7 +9,7 @@ const ProFeature = ({ children }) => (
   </li>
 );
 
-export const PaywallModal = ({ setShowPaywall }) => {  
+export const PaywallModal = ({ setShowPaywall, showNotification }) => {  
   const [loading, setLoading] = useState(''); // 'monthly' | 'yearly' | ''
 
   const handleCheckout = async (plan) => {
@@ -43,7 +43,11 @@ export const PaywallModal = ({ setShowPaywall }) => {
 
     } catch (error) {
       console.error('Stripe Checkout Error:', error);
-      alert(`Erro ao iniciar o pagamento: ${error.message}`);
+      if (showNotification) {
+        showNotification("Erro no Pagamento", error.message, "error");
+      } else {
+        alert(`Erro ao iniciar o pagamento: ${error.message}`);
+      }
     } finally {
       setLoading('');
     }
