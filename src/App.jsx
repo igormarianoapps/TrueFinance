@@ -253,6 +253,21 @@ export default function App() {
       message = 'Por favor, verifique sua caixa de entrada e confirme seu e-mail antes de fazer login.';
       type = 'error';
     }
+    if (message === 'Error sending confirmation email') {
+      title = 'Erro no envio';
+      message = 'Não foi possível enviar o e-mail de confirmação. Tente novamente mais tarde.';
+      type = 'error';
+    }
+    if (message === 'User already registered') {
+      title = 'E-mail já cadastrado';
+      message = 'Este endereço de e-mail já está em uso. Tente fazer login ou recupere sua senha.';
+      type = 'error';
+    }
+    if (message === 'Password should be at least 6 characters') {
+      title = 'Senha muito curta';
+      message = 'A senha deve ter pelo menos 6 caracteres para sua segurança.';
+      type = 'error';
+    }
     setNotification({ isOpen: true, title, message, type });
   };
 

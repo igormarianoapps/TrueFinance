@@ -102,8 +102,8 @@ export const Login = ({ showNotification }) => {
           <button type="submit" disabled={loading} className="w-full bg-[#3457A4] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
-            <button type="button" onClick={() => { setShowSignUp(true); setTermsAccepted(false); }} className="text-slate-600 font-semibold hover:underline">Cadastrar</button>
-            <button type="button" onClick={() => setShowForgot(true)} className="text-slate-500 hover:text-slate-700">Esqueci minha senha</button>
+            <button type="button" onClick={() => { setShowSignUp(true); setTermsAccepted(false); }} className="text-[#E95415] font-semibold hover:underline">Cadastrar</button>
+            <button type="button" onClick={() => setShowForgot(true)} className="text-[#3458A4] hover:opacity-80">Esqueci minha senha</button>
           </div>
         </form>
       </div>
@@ -133,7 +133,7 @@ export const Login = ({ showNotification }) => {
                 </label>
               </div>
 
-              <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors mt-2">{loading ? 'Enviando...' : 'Cadastrar'}</button>
+              <button type="submit" disabled={loading} className="w-full bg-[#3457A4] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity mt-2">{loading ? 'Enviando...' : 'Cadastrar'}</button>
             </form>
           </div>
         </div>
