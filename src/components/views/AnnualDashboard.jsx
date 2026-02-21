@@ -92,7 +92,7 @@ const PatrimonyEvolutionChart = ({ data }) => {
     const range = max - min;
 
     const points = data.map((d, i) => {
-        const x = (i / (data.length - 1)) * 100;
+        const x = data.length > 1 ? (i / (data.length - 1)) * 100 : 50;
         const y = 100 - (range > 0 ? ((d.total - min) / range) * 100 : 50);
         return `${x},${y}`;
     }).join(' ');

@@ -419,7 +419,16 @@ export default function App() {
     if (item) {
       setEditingItem(item);
     } else {
-      setEditingItem(null);
+      // Define o dia padrão: Hoje (se estiver no mês atual) ou dia 1
+      const today = new Date();
+      const isCurrentMonth = currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() === today.getMonth();
+      const day = isCurrentMonth ? today.getDate() : 1;
+      
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const dayStr = String(day).padStart(2, '0');
+      
+      setEditingItem({ data: `${year}-${month}-${dayStr}` });
     }
     setModalOpen(true);
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Card } from '../ui/Card';
 import { User, Lock, Camera, Sun, Moon, Monitor } from 'lucide-react';
@@ -15,18 +15,7 @@ export const Perfil = ({ user, theme, setTheme }) => {
   const userFullName = user?.user_metadata?.full_name || 'Usuário';
   const userInitials = userFullName.substring(0, 2).toUpperCase();
 
-  useEffect(() => {
-    if (user?.user_metadata?.full_name) {
-      setFullName(user.user_metadata.full_name);
-    }
-    if (user?.user_metadata?.avatar_url) {
-      downloadImage(user.user_metadata.avatar_url);
-    } else {
-      setAvatarUrl(null);
-    }
-  }, [user]);
-
-  const downloadImage = async (path) => {
+  const downloadImage = useCallback(async (path) => {
     try {
       const { data, error } = await supabase.storage.from('avatars').download(path);
       if (error) {
@@ -37,7 +26,18 @@ export const Perfil = ({ user, theme, setTheme }) => {
     } catch (error) {
       console.log('Error downloading image: ', error.message);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user?.user_metadata?.full_name) {
+      setFullName(user.user_metadata.full_name);
+    }
+    if (user?.user_metadata?.avatar_url) {
+      downloadImage(user.user_metadata.avatar_url);
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [user, downloadImage]);
 
   const handleUpdateName = async (e) => {
     e.preventDefault();

@@ -66,12 +66,12 @@ export const PaywallModal = ({ setShowPaywall }) => {
         <div className="space-y-3">
             <button onClick={() => handleCheckout('yearly')} disabled={!!loading} className="w-full bg-[#3457A4] text-white p-4 rounded-xl font-bold shadow-lg hover:opacity-90 transition-opacity relative disabled:opacity-70">
                 <span className="absolute top-1 right-3 text-xs bg-yellow-400 text-black font-bold px-2 py-0.5 rounded-full">ECONOMIZE 2 MESES</span>
-                <p>{loading === 'yearly' ? 'Redirecionando...' : 'Plano Anual'}</p>
-                <p className="text-sm font-normal opacity-80">R$ 149,90/ano</p>
+                <span className="block">{loading === 'yearly' ? 'Redirecionando...' : 'Plano Anual'}</span>
+                <span className="block text-sm font-normal opacity-80">R$ 149,90/ano</span>
             </button>
             <button onClick={() => handleCheckout('monthly')} disabled={!!loading} className="w-full bg-slate-700 text-white p-3 rounded-xl font-bold hover:bg-slate-800 transition-colors disabled:opacity-70">
-                <p>{loading === 'monthly' ? 'Redirecionando...' : 'Plano Mensal'}</p>
-                <p className="text-sm font-normal opacity-80">R$ 14,90/mês</p>
+                <span className="block">{loading === 'monthly' ? 'Redirecionando...' : 'Plano Mensal'}</span>
+                <span className="block text-sm font-normal opacity-80">R$ 14,90/mês</span>
             </button>
         </div>
         <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-4">Você poderá cancelar quando quiser.</p>
