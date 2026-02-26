@@ -57,8 +57,17 @@ export default function App() {
 
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Set the session for all events
       setSession(session);
-      setAuthEvent(event);
+      
+      // The PASSWORD_RECOVERY event can be followed by a SIGNED_IN event if the user is already logged in.
+      // We give priority to the PASSWORD_RECOVERY event to ensure the update password form is shown.
+      // The authEvent state is reset to null inside the UpdatePassword component upon success.
+      if (event === 'PASSWORD_RECOVERY') {
+        setAuthEvent('PASSWORD_RECOVERY');
+      } else {
+        setAuthEvent(prev => prev === 'PASSWORD_RECOVERY' ? 'PASSWORD_RECOVERY' : event);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
