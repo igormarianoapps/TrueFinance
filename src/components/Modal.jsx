@@ -10,30 +10,34 @@ export const Modal = ({
   handleSave, 
   data, 
   currentDate, 
-  recurrenceType, 
-  setRecurrenceType 
+  // recurrenceType e setRecurrenceType removidos das props
 }) => {
   const [paymentMethod, setPaymentMethod] = useState('debit');
+  const [localRecurrenceType, setLocalRecurrenceType] = useState('unico');
 
   useEffect(() => {
     if (modalOpen) {
       setPaymentMethod(editingItem?.paymentMethod || 'debit');
+      // Inicializa o estado local de recorrência ao abrir o modal
+      setLocalRecurrenceType(
+        editingItem?.isRecurring ? 'mensal' : (editingItem?.parcelaInfo ? 'parcelado' : 'unico')
+      );
     }
-  }, [modalOpen, editingItem]);
+  }, [modalOpen, editingItem]); // Adicionado editingItem para resetar corretamente
 
   if (!modalOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in">
-      <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-in slide-in-from-bottom-10 duration-300">
+      <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-in slide-in-from-bottom-10 duration-300 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
            <h2 className="text-xl font-bold text-slate-800">
-             {editingItem ? 'Editar' : 'Novo'} {
+             {editingItem ? 'Adicionar' : 'Novo'} {
                modalType === 'variavel' ? 'Saída' :
                modalType === 'fixo' ? 'Gasto Fixo' :
                modalType === 'provisao' ? 'Envelope' :
                modalType === 'poupanca' ? 'Poupança' :
-               modalType === 'cartao' ? 'Cartão de Crédito' :
+               modalType === 'cartao' ? 'Cartão' :
                modalType
              }
            </h2>
@@ -141,7 +145,7 @@ export const Modal = ({
                 ))}
               </select>
               {data.creditCards?.length === 0 && (
-                <p className="text-xs text-red-500 mt-1">Nenhum cartão cadastrado. Vá em "Fixos" para adicionar.</p>
+                <p className="text-xs text-red-500 mt-1">Nenhum cartão cadastrado.</p>
               )}
             </div>
           )}
@@ -150,14 +154,16 @@ export const Modal = ({
           {((modalType === 'fixo' && !editingItem) || (modalType === 'variavel' && paymentMethod === 'credit')) && (
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
               <label className="block text-sm text-slate-500 mb-2">Recorrência</label>
+              {/* Input hidden para garantir o envio no formulário se necessário */}
+              <input type="hidden" name="recurrenceType" value={localRecurrenceType} />
               <div className="flex gap-2 mb-3">
                 {['unico', 'mensal', 'parcelado'].map(type => (
-                  <button type="button" key={type} onClick={() => setRecurrenceType(type)} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${recurrenceType === type ? 'bg-slate-800 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                  <button type="button" key={type} onClick={(e) => { e.preventDefault(); setLocalRecurrenceType(type); }} className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${localRecurrenceType === type ? 'bg-[#3457A4] text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200'}`}>
                     {type === 'unico' ? 'Único' : type === 'mensal' ? 'Fixo Mensal' : 'Parcelado'}
                   </button>
                 ))}
               </div>
-              {recurrenceType === 'parcelado' && (
+              {localRecurrenceType === 'parcelado' && (
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nº de Parcelas</label>
                   <input type="number" name="installments" min="2" defaultValue="12" className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-slate-200 outline-none" />
@@ -186,7 +192,7 @@ export const Modal = ({
                   {data.tags.map(tag => (
                     <label key={tag.id} className="cursor-pointer">
                       <input type="radio" name="tagId" value={tag.id} defaultChecked={editingItem?.tagId === tag.id} className="peer sr-only" required />
-                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 transition-all text-slate-600 border-slate-200 hover:bg-slate-50">
+                      <div className="px-3 py-1 rounded-full text-sm border peer-checked:bg-[#3457A4] peer-checked:text-white peer-checked:border-[#3457A4] transition-all text-slate-600 border-slate-200 hover:bg-slate-50">
                         #{tag.nome}
                       </div>
                     </label>
@@ -195,7 +201,7 @@ export const Modal = ({
             </div>
           )}
 
-          <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold mt-4 shadow-lg active:scale-95 transition-transform">
+          <button type="submit" className="w-full bg-[#3457A4] dark:bg-[#3457A4] text-white py-4 rounded-xl font-bold mt-4 shadow-lg active:scale-95 transition-transform">
             Salvar Registro
           </button>
         </form>

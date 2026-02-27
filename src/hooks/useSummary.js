@@ -48,7 +48,8 @@ export function useFinancialSummary(data, currentDate) {
         data: dueDate.toISOString().split('T')[0],
         pago: false, // Por enquanto, manual. Futuramente pode persistir status da fatura.
         isInvoice: true,
-        cardId: card.id
+        cardId: card.id,
+        transactions: cardTransactions // Adiciona as transações à fatura para visualização
       };
     }).filter(Boolean);
 
@@ -76,17 +77,24 @@ export function useFinancialSummary(data, currentDate) {
       variaveis: data.variaveis.filter(filterFn).sort((a, b) => b.id - a.id),
       provisoes: (data.provisoes || []).filter(filterFn),
       poupanca: (data.poupanca || []).filter(filterFn),
-      tags: data.tags 
+      tags: data.tags,
+      creditCards: data.creditCards || [],
+      invoices: invoices // Expõe as faturas calculadas
     };
   }, [data, currentDate]);
 
   const summary = useMemo(() => {
     const entradasCalc = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
     const fixosCalc = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
-    const variaveisCalc = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
+    
+    // IMPORTANTE: Para o cálculo de fluxo de caixa (saldo), consideramos apenas saídas em DÉBITO.
+    // As saídas em CRÉDITO já estão somadas dentro das faturas (em fixosCalc).
+    const variaveisCalc = filteredData.variaveis
+      .filter(item => item.paymentMethod !== 'credit')
+      .reduce((acc, item) => acc + item.valor, 0);
 
     const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
-    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId));
+    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId) && g.paymentMethod !== 'credit');
     const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
 
     let totalGastoProvisionadoEfetivo = 0;

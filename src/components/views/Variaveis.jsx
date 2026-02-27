@@ -9,7 +9,7 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
   return (
     <div className="space-y-4 pb-20 animate-in slide-in-from-right-4">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">Saídas (Variáveis)</h3>
+        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">Saídas Totais</h3>
         <span className="text-sm font-semibold bg-red-100 text-red-600 px-3 py-1 rounded-full dark:bg-red-900/30 dark:text-red-400">{formatCurrency(totalVariaveis)}</span>
       </div>
 

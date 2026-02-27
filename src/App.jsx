@@ -9,7 +9,7 @@ import { useFinancialSummary } from './hooks/useSummary';
 import { Login } from './components/auth/Login';
 import { UpdatePassword } from './components/auth/UpdatePassword';
 import { Sidebar } from './Sidebar';
-import { Modal } from './Modal';
+import { Modal } from './components/Modal';
 
 import { Dashboard } from './components/views/Dashboard';
 import { Entradas } from './components/views/Entradas';
@@ -18,6 +18,7 @@ import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
 import { Patrimonio } from './components/views/Patrimonio';
 import { Movimentacoes } from './components/views/Movimentacoes';
+import { Cards } from './components/views/cards';
 import { AnnualDashboard } from './components/views/AnnualDashboard';
 import { Perfil } from './components/views/Perfil';
 import { Ajuda } from './components/views/Ajuda';
@@ -31,6 +32,7 @@ const TAB_ROUTES = {
   'Dashboard': '/dashboard',
   'Fixos & Provisões': '/fixos',
   'Saídas': '/saidas',
+  'Cartões': '/cartoes',
   'Tags': '/tags',
   'Patrimônio': '/patrimonio',
   'Perfil': '/perfil',
@@ -57,7 +59,6 @@ function AppContent() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [modalType, setModalType] = useState(''); 
-  const [recurrenceType, setRecurrenceType] = useState('unico'); 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
   const [notification, setNotification] = useState({ isOpen: false, title: '', message: '', type: 'success' });
@@ -195,6 +196,9 @@ function AppContent() {
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData);
     
+    // Captura o tipo de recorrência diretamente do formulário (input hidden)
+    const recurrenceTypeFromForm = values.recurrenceType || 'unico';
+
     const listKey = modalType === 'variavel' ? 'variaveis' : 
                     modalType === 'entrada' ? 'entradas' : 
                     modalType === 'fixo' ? 'fixos' : 
@@ -264,7 +268,8 @@ function AppContent() {
       tagId: values.tagId || null,
       tipoPoupanca: values.tipoPoupanca || null,
       paymentMethod: values.paymentMethod || 'debit',
-      creditCardId: values.creditCardId ? parseInt(values.creditCardId) : null
+      creditCardId: values.creditCardId ? parseInt(values.creditCardId) : null,
+      parcelaInfo: editingItem?.parcelaInfo
     };
 
     if (modalType === 'tag') {
@@ -275,7 +280,8 @@ function AppContent() {
       await saveTransaction(
         transactionData, 
         editingItem?.id, 
-        { type: recurrenceType, installments: values.installments }
+        // Passa o recurrenceType lido do formulário
+        { type: recurrenceTypeFromForm, installments: values.installments }
       );
     }
     
@@ -294,7 +300,6 @@ function AppContent() {
 
   const openModal = (type, item = null) => {
     setModalType(type.toLowerCase());
-    setRecurrenceType(item?.isRecurring ? 'mensal' : item?.parcelaInfo ? 'parcelado' : 'unico'); 
     
     if (item) {
       setEditingItem(item);
@@ -362,8 +367,6 @@ function AppContent() {
         handleSave={handleSave}
         data={data}
         currentDate={currentDate}
-        recurrenceType={recurrenceType}
-        setRecurrenceType={setRecurrenceType}
       />
 
       {/* Modal Paywall */}
@@ -442,6 +445,7 @@ function AppContent() {
           <Route path="/anual" element={<AnnualDashboard data={data} />} />
           <Route path="/fixos" element={<FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />} />
           <Route path="/saidas" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/cartoes" element={<Cards creditCards={filteredData.creditCards || []} invoices={filteredData.invoices || []} openModal={openModal} />} />
           <Route path="/tags" element={<Tags filteredData={filteredData} openModal={openModal} />} />
           <Route path="/patrimonio" element={<Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />} />
           <Route path="/perfil" element={<Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} profile={profile} setShowPaywall={setShowPaywall} />} />

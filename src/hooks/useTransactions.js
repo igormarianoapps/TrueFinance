@@ -80,6 +80,7 @@ export function useTransactions(user) {
       const { error } = await supabase.from('credit_cards').insert(cardData);
       if (error) console.error('Erro ao criar cartão:', error);
     }
+
     fetchData();
   };
 
@@ -97,13 +98,36 @@ export function useTransactions(user) {
     };
 
     if (editingId) {
-      const { error } = await supabase.from('transacoes').update(commonData).eq('id', editingId);
+      const updateData = { ...commonData };
+
+      // Lógica para atualizar recorrência na edição
+      if (recurrence.type === 'mensal') {
+        updateData.is_recurring = true;
+        updateData.parcela_info = null;
+      } else if (recurrence.type === 'parcelado') {
+        updateData.is_recurring = false;
+        // Preserva a parcela atual se o número de parcelas não mudou, senão reinicia para 1/N
+        if (transactionData.parcelaInfo && transactionData.parcelaInfo.endsWith(`/${recurrence.installments}`)) {
+           updateData.parcela_info = transactionData.parcelaInfo;
+        } else {
+           updateData.parcela_info = `1/${recurrence.installments}`;
+        }
+      } else {
+        updateData.is_recurring = false;
+        updateData.parcela_info = null;
+      }
+
+      const { error } = await supabase.from('transacoes').update(updateData).eq('id', editingId);
       if (error) console.error('Erro ao atualizar transação:', error);
     } else {
       const newItems = [];
       const baseId = Date.now(); 
 
-      if (transactionData.tipo === 'fixo' && recurrence.type !== 'unico') {
+      // Verifica se deve gerar recorrência:
+      // 1. Gasto Fixo com recorrência (mensal/parcelado)
+      // 2. Gasto no Crédito com recorrência (mensal/parcelado)
+      if ((transactionData.tipo === 'fixo' && recurrence.type !== 'unico') || 
+          (transactionData.paymentMethod === 'credit' && recurrence.type !== 'unico')) {
         const groupId = baseId.toString();
         const [y, m, d] = transactionData.data.split('-').map(Number);
         const baseDate = new Date(y, m - 1, d);

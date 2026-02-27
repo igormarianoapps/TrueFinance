@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '../ui/Card';
 import { Fab } from '../ui/Fab';
 import { Badge } from '../ui/Badge';
-import { Edit2, Trash2, Repeat, CheckCheck, Package, CreditCard } from 'lucide-react';
+import { Edit2, Trash2, Repeat, CheckCheck, Package } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleTogglePaid, handleSettle }) => {
@@ -40,28 +40,6 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Seção de Cartões de Crédito */}
-      <div>
-        <div className="flex justify-between items-end mb-3 ml-1 mr-1">
-          <h3 className="text-sm font-bold text-slate-500 uppercase dark:text-slate-400">Meus Cartões</h3>
-          <button onClick={() => openModal('cartao')} className="text-xs text-blue-600 font-semibold hover:underline dark:text-blue-400">+ Adicionar</button>
-        </div>
-        <div className="space-y-2">
-          {(filteredData.creditCards || []).map(card => (
-            <Card key={card.id} className="bg-white dark:bg-[#1F1F1F] flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="bg-slate-100 dark:bg-[#2A2A2A] p-2 rounded-full text-slate-600 dark:text-slate-300"><CreditCard size={20} /></div>
-                <div>
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">{card.name}</p>
-                  <p className="text-xs text-slate-400">Fecha dia {card.closing_date} • Vence dia {card.due_date}</p>
-                </div>
-              </div>
-              <button onClick={() => openModal('cartao', card)} className="text-slate-400 hover:text-blue-500"><Edit2 size={16}/></button>
-            </Card>
           ))}
         </div>
       </div>

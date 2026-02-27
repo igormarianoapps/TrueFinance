@@ -1,9 +1,10 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { ArrowRight, TrendingUp, Calendar, TrendingDown, PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowRight, TrendingUp, Calendar, TrendingDown, PlusCircle, AlertTriangle, CheckCircle, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, addLabel, children }) => (
+
     <Card className="bg-white dark:bg-[#1F1F1F]">
         <div className="p-4">
             <div className="flex justify-between items-center mb-3">
@@ -22,6 +23,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
         </div>
         {onAddClick && (
             <button 
+
                 onClick={onAddClick}
                 className="w-full bg-[#3457A4] dark:bg-[#3457A4] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#3457A4] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
             >
@@ -34,6 +36,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
 
 const ItemRow = ({ description, value, valueColor, tag }) => (
     <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-[#2A2A2A] rounded-lg">
+
         <div>
             <p className="font-semibold text-slate-700 dark:text-slate-200">{description}</p>
             {tag && <p className="text-xs text-slate-400 dark:text-slate-500">{tag}</p>}
@@ -45,8 +48,13 @@ const ItemRow = ({ description, value, valueColor, tag }) => (
 );
 
 export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntradas }) => {
+
     const MAX_ITEMS = 3;
     const today = new Date();
+    console.log("Movimentacoes filteredData:", filteredData); // Add this line to inspect filteredData
+    const creditCards = filteredData.creditCards || [];
+    const invoices = filteredData.invoices || [];
+    const totalFaturas = invoices.reduce((acc, item) => acc + item.valor, 0);
     today.setHours(0, 0, 0, 0);
 
     const fixosPendentes = filteredData.fixos.filter(f => !f.pago);
@@ -86,6 +94,21 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
     return (
         <div className="space-y-6 animate-in fade-in">
             <Section 
+                title="Cartões de Crédito" 
+                icon={CreditCard} 
+                fullViewTab="Cartões" 
+                setActiveTab={setActiveTab}
+                onAddClick={() => openModal('cartao')}
+                addLabel="Adicionar Cartão"
+            >
+                <div className="text-center py-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Total de faturas este mês</p>
+                    <p className="text-3xl font-bold text-slate-800 dark:text-slate-200">{formatCurrency(totalFaturas)}</p>
+                </div>
+            </Section>
+
+            <Section 
+
                 title="Entradas" 
                 icon={TrendingUp} 
                 fullViewTab="Entradas" 
@@ -100,6 +123,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
             </Section>
 
             <Section 
+
                 title="Fixos & Provisões" 
                 icon={Calendar} 
                 fullViewTab="Fixos & Provisões" 
@@ -111,6 +135,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
             </Section>
 
             <Section 
+
                 title="Gastos Variáveis" 
                 icon={TrendingDown} 
                 fullViewTab="Gastos Variáveis" 
@@ -135,4 +160,5 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
             </Section>
         </div>
     );
+
 };
