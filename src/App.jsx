@@ -1,7 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle } from 'lucide-react';
-import { supabase } from './supabaseClient';
-import { toLocalISO } from './utils/formatters';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { useTransactions } from './hooks/useTransactions';
+import { useFinancialSummary } from './hooks/useSummary';
 
 import { Login } from './components/auth/Login';
 import { UpdatePassword } from './components/auth/UpdatePassword';
@@ -20,19 +23,35 @@ import { Perfil } from './components/views/Perfil';
 import { Ajuda } from './components/views/Ajuda';
 import { PaywallModal } from './components/views/PaywallModal';
 
-export default function App() {
-  const [session, setSession] = useState(null);
-  const [authEvent, setAuthEvent] = useState(null);
-  const [activeTab, setActiveTab] = useState('Resumo Mensal');
+// Mapeamento de Nomes de Abas para Rotas (URL)
+const TAB_ROUTES = {
+  'Resumo Mensal': '/',
+  'Movimentações': '/movimentacoes',
+  'Entradas': '/entradas',
+  'Dashboard': '/anual',
+  'Fixos & Provisões': '/fixos',
+  'Gastos Variáveis': '/variaveis',
+  'Tags': '/tags',
+  'Patrimônio': '/patrimonio',
+  'Perfil': '/perfil',
+  'Ajuda': '/ajuda'
+};
+
+function AppContent() {
+  // Consumindo o Contexto de Auth
+  const { user, session, authEvent, setAuthEvent, profile, isPro, signOut, refreshProfile, loading: authLoading } = useAuth();
+  // Consumindo o Contexto de Theme
+  const { theme, setTheme } = useTheme();
+
+  // activeTab removido em favor do Router
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system');
-  const [data, setData] = useState({ entradas: [], fixos: [], provisoes: [], tags: [], variaveis: [], poupanca: [] });
+  
+  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction } = useTransactions(user);
   
   // Estados de Monetização
-  const [profile, setProfile] = useState(null);
   const [showPaywall, setShowPaywall] = useState(false);
 
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 1));
+  const [currentDate, setCurrentDate] = useState(new Date());
   
   // Estados para Modais
   const [modalOpen, setModalOpen] = useState(false);
@@ -43,210 +62,56 @@ export default function App() {
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
   const [notification, setNotification] = useState({ isOpen: false, title: '', message: '', type: 'success' });
 
-  const isPro = useMemo(() => profile?.subscription_status === 'active', [profile]);
+  // Hooks do Router
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // --- Auth & Data Fetching ---
-  useEffect(() => {
-    document.title = 'True Finance';
+  // Determina a aba ativa baseada na URL atual (para compatibilidade com Sidebar e Header)
+  const activeTab = Object.keys(TAB_ROUTES).find(key => TAB_ROUTES[key] === location.pathname) || 'Resumo Mensal';
 
-    // Recupera a aba ativa do localStorage ao carregar
-    const savedTab = localStorage.getItem('activeTab');
-    if (savedTab) {
-      setActiveTab(savedTab);
-    }
-
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Set the session for all events
-      setSession(session);
-      
-      // The PASSWORD_RECOVERY event can be followed by a SIGNED_IN event if the user is already logged in.
-      // We give priority to the PASSWORD_RECOVERY event to ensure the update password form is shown.
-      // The authEvent state is reset to null inside the UpdatePassword component upon success.
-      if (event === 'PASSWORD_RECOVERY') {
-        setAuthEvent('PASSWORD_RECOVERY');
-      } else {
-        setAuthEvent(prev => prev === 'PASSWORD_RECOVERY' ? 'PASSWORD_RECOVERY' : event);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // --- Theme Management ---
-  useEffect(() => {
-    const root = window.document.documentElement;
-    const isDark =
-      theme === 'dark' ||
-      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    root.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', theme);
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e) => {
-      if (theme === 'system') {
-        root.classList.toggle('dark', e.matches);
-      }
-    };
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme]);
-
-  // Salva a aba ativa no localStorage sempre que ela mudar
-  useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
-  }, [activeTab]);
-
-  const fetchData = async () => {
-    if (!session) return;
-    
-    const { data: transacoes, error: errorTransacoes } = await supabase.from('transacoes').select('*');
-    const { data: tags, error: errorTags } = await supabase.from('tags').select('*');
-    
-    // Lógica de verificação de pagamento (Polling)
-    const params = new URLSearchParams(window.location.search);
-    let profileData = null;
-    let profileError = null;
-
-    if (params.get('payment') === 'success') {
-      // Se voltou do pagamento, tenta buscar o perfil atualizado por até 15 segundos
-      let retries = 15;
-      while (retries > 0) {
-        const res = await supabase.from('profiles').select('subscription_status, plan_interval').eq('id', session.user.id).single();
-        if (res.data?.subscription_status === 'active') {
-          profileData = res.data;
-          window.history.replaceState({}, document.title, window.location.pathname); // Limpa a URL
-          showNotification("Upgrade realizado!", "Agora você é um membro PRO e tem acesso ilimitado.", "success");
-          break;
-        }
-        await new Promise(r => setTimeout(r, 1000)); // Espera 1s
-        retries--;
-      }
-    }
-
-    // Se não conseguiu via polling ou não é retorno de pagamento, busca normal
-    if (!profileData) {
-      const res = await supabase.from('profiles').select('subscription_status, plan_interval').eq('id', session.user.id).single();
-      profileData = res.data;
-      profileError = res.error;
-    }
-
-    if (errorTransacoes || errorTags || profileError) {
-      console.error('Erro ao buscar dados', { errorTransacoes, errorTags, profileError });
-      return;
-    }
-
-    // Armazena o perfil do usuário
-    setProfile(profileData);
-
-    // Mapeia do banco (snake_case) para o app (camelCase)
-    const mapTransaction = (t) => ({
-      ...t,
-      tagId: t.tag_id,
-      groupId: t.group_id,
-      parcelaInfo: t.parcela_info,
-      isRecurring: t.is_recurring,
-      tipoPoupanca: t.tipo_poupanca
-    });
-
-    setData({
-      entradas: transacoes.filter(t => t.tipo === 'entrada').map(mapTransaction),
-      fixos: transacoes.filter(t => t.tipo === 'fixo').map(mapTransaction),
-      variaveis: transacoes.filter(t => t.tipo === 'variavel').map(mapTransaction),
-      provisoes: transacoes.filter(t => t.tipo === 'provisao').map(mapTransaction),
-      poupanca: transacoes.filter(t => t.tipo === 'poupanca').map(mapTransaction),
-      tags: tags || []
-    });
+  // Função adaptadora para o Sidebar (que espera receber setActiveTab)
+  const handleTabChange = (tabName) => {
+    const path = TAB_ROUTES[tabName];
+    if (path) navigate(path);
   };
 
-  useEffect(() => { fetchData(); }, [session]);
+  // Lógica de verificação de pagamento (Polling) separada do fetch de dados
+  useEffect(() => {
+    const checkPayment = async () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success' && user) {
+        let retries = 15;
+        while (retries > 0) {
+          const updatedProfile = await refreshProfile();
+          if (updatedProfile?.subscription_status === 'active') {
+            window.history.replaceState({}, document.title, window.location.pathname); // Limpa a URL
+            showNotification("Upgrade realizado!", "Agora você é um membro PRO e tem acesso ilimitado.", "success");
+            break;
+          }
+          await new Promise(r => setTimeout(r, 1000)); // Espera 1s
+          retries--;
+        }
+      }
+    };
+    checkPayment();
+  }, [user]); // Executa quando o usuário loga/carrega
 
   // --- Lógica de Navegação e Filtro ---
   
   const handlePrevMonth = () => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)));
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
 
-  const filteredData = useMemo(() => {
-    const month = currentDate.getMonth();
-    const year = currentDate.getFullYear();
-
-    const filterFn = (item) => {
-      if (!item.data) return false;
-      const [itemYear, itemMonth] = item.data.split('-').map(Number);
-      return (itemMonth - 1) === month && itemYear === year;
-    };
-
-    return {
-      entradas: data.entradas.filter(filterFn),
-      fixos: data.fixos.filter(filterFn).sort((a, b) => {
-        const dateDiff = new Date(a.data) - new Date(b.data);
-        if (dateDiff !== 0) return dateDiff;
-        return a.id > b.id ? 1 : -1;
-      }),
-      variaveis: data.variaveis.filter(filterFn).sort((a, b) => b.id - a.id),
-      provisoes: (data.provisoes || []).filter(filterFn),
-      poupanca: (data.poupanca || []).filter(filterFn),
-      tags: data.tags 
-    };
-  }, [data, currentDate]);
-
-  // Cálculos Derivados
-  const { saldoFinal, totalEntradas, totalFixos, totalVariaveis, totalProvisionado, totalGastosNaoProvisionados, totalGastoProvisionadoEfetivo } = useMemo(() => {
-    const entradasCalc = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
-    const fixosCalc = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
-    const variaveisCalc = filteredData.variaveis.reduce((acc, item) => acc + item.valor, 0);
-    const provisionadoCalc = (filteredData.provisoes || []).reduce((acc, item) => acc + item.valor, 0);
-
-    const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
-    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId));
-    const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
-
-    let totalGastoProvisionadoEfetivo = 0;
-    (filteredData.provisoes || []).forEach(provisao => {
-      if (provisao.tagId) {
-        const gastosNoEnvelope = filteredData.variaveis
-          .filter(g => g.tagId === provisao.tagId)
-          .reduce((acc, g) => acc + g.valor, 0);
-        
-        totalGastoProvisionadoEfetivo += Math.max(provisao.valor || 0, gastosNoEnvelope);
-      } else {
-        totalGastoProvisionadoEfetivo += provisao.valor || 0;
-      }
-    });
-
-    const movimentacaoPoupanca = (filteredData.poupanca || []).reduce((acc, item) => {
-      return acc + (item.tipoPoupanca === 'entrada' ? item.valor : -item.valor);
-    }, 0);
-
-    const totalGastoFinal = fixosCalc + totalGastosNaoProvisionados + totalGastoProvisionadoEfetivo;
-    const saldoCalc = entradasCalc - totalGastoFinal - movimentacaoPoupanca;
-
-    return { 
-      saldoFinal: saldoCalc, 
-      totalEntradas: entradasCalc, 
-      totalFixos: fixosCalc, 
-      totalVariaveis: variaveisCalc, 
-      totalProvisionado: provisionadoCalc,
-      totalGastosNaoProvisionados,
-      totalGastoProvisionadoEfetivo
-    };
-  }, [filteredData]);
-
-  // Dados para o Gráfico
-  const chartData = useMemo(() => {
-    const grouped = {};
-    filteredData.variaveis.forEach(item => {
-      const tag = filteredData.tags.find(t => t.id === Number(item.tagId));
-      if (!tag) return;
-      if (!grouped[tag.nome]) grouped[tag.nome] = { valor: 0, color: tag.cor };
-      grouped[tag.nome].valor += item.valor;
-    });
-    return Object.keys(grouped).map(key => ({
-      label: key,
-      valor: grouped[key].valor,
-      cor: grouped[key].color
-    })).sort((a, b) => b.valor - a.valor);
-  }, [filteredData.variaveis, filteredData.tags]);
+  // Cálculos financeiros movidos para o hook customizado
+  const { 
+    filteredData, 
+    saldoFinal, 
+    totalEntradas, 
+    totalFixos, 
+    totalVariaveis, 
+    totalGastosNaoProvisionados, 
+    totalGastoProvisionadoEfetivo,
+    chartData
+  } = useFinancialSummary(data, currentDate);
 
   // --- Handlers ---
 
@@ -299,11 +164,10 @@ export default function App() {
       message: 'Tem certeza que deseja excluir este item? Essa ação não pode ser desfeita.',
       onConfirm: async () => {
         if (type === 'tag') {
-          await supabase.from('tags').delete().eq('id', id);
+          await deleteTag(id);
         } else {
-          await supabase.from('transacoes').delete().eq('id', id);
+          await deleteTransaction(id);
         }
-        fetchData();
         setConfirmConfig(prev => ({ ...prev, isOpen: false }));
       }
     });
@@ -315,8 +179,7 @@ export default function App() {
       title: `Quitar "${item.descricao}"?`,
       message: 'Isso removerá todas as parcelas/cobranças futuras deste item.',
       onConfirm: async () => {
-        await supabase.from('transacoes').delete().eq('group_id', item.groupId).gt('data', item.data);
-        fetchData();
+        await settleTransaction(item.groupId, item.data);
         setConfirmConfig(prev => ({ ...prev, isOpen: false }));
       }
     });
@@ -387,80 +250,35 @@ export default function App() {
       values.data = `${year}-${month}-${String(day).padStart(2, '0')}`;
     }
 
-    const commonData = {
-      user_id: session.user.id,
+    const transactionData = {
       descricao: values.descricao,
       valor: values.valor,
       data: values.data,
       tipo: modalType === 'provisao' ? 'provisao' : modalType === 'poupanca' ? 'poupanca' : modalType,
-      tag_id: values.tagId || null,
-      tipo_poupanca: values.tipoPoupanca || null
+      tagId: values.tagId || null,
+      tipoPoupanca: values.tipoPoupanca || null
     };
 
-    if (editingItem && editingItem.id) {
-      if (modalType === 'tag') {
-        const { error } = await supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingItem.id);
-        if (error) console.error('Erro ao atualizar tag:', error);
-      } else {
-        const { error } = await supabase.from('transacoes').update(commonData).eq('id', editingItem.id);
-        if (error) console.error('Erro ao atualizar transação:', error);
-      }
+    if (modalType === 'tag') {
+      await saveTag(values, editingItem?.id);
     } else {
-      if (modalType === 'tag') {
-        const { error } = await supabase.from('tags').insert({ user_id: session.user.id, nome: values.nome, cor: values.cor });
-        if (error) console.error('Erro ao criar tag:', error);
-      } else {
-        const newItems = [];
-        const baseId = Date.now(); 
-
-        if (listKey === 'fixos' && recurrenceType !== 'unico') {
-          const groupId = baseId.toString();
-          const [y, m, d] = values.data.split('-').map(Number);
-          const baseDate = new Date(y, m - 1, d);
-          
-          const iterations = recurrenceType === 'parcelado' ? parseInt(values.installments || 1) : 24; 
-
-          for (let i = 0; i < iterations; i++) {
-            const nextDate = new Date(baseDate);
-            nextDate.setMonth(baseDate.getMonth() + i);
-            
-            newItems.push({
-              ...commonData,
-              data: toLocalISO(nextDate),
-              pago: false,
-              group_id: groupId,
-              parcela_info: recurrenceType === 'parcelado' ? `${i + 1}/${iterations}` : null,
-              is_recurring: recurrenceType === 'mensal'
-            });
-          }
-        } else {
-          const newItem = { ...commonData, pago: listKey === 'fixos' ? false : undefined };
-          if (newItem.pago === undefined) delete newItem.pago;
-          newItems.push(newItem);
-        }
-        
-        if (newItems.length > 0) {
-          const { error } = await supabase.from('transacoes').insert(newItems);
-          if (error) console.error('Erro ao criar transações:', error);
-        }
-      }
+      await saveTransaction(
+        transactionData, 
+        editingItem?.id, 
+        { type: recurrenceType, installments: values.installments }
+      );
     }
     
-    fetchData();
     setModalOpen(false);
     setEditingItem(null);
   };
 
   const handleTogglePaid = async (id) => {
-    const item = data.fixos.find(i => i.id === id);
-    if (item) {
-      await supabase.from('transacoes').update({ pago: !item.pago }).eq('id', id);
-      fetchData();
-    }
+    await togglePaid(id);
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     setShowLogoutConfirm(false);
   };
 
@@ -505,7 +323,9 @@ export default function App() {
     return <UpdatePassword onPasswordUpdated={() => setAuthEvent(null)} />;
   }
 
-  if (!session) return (
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-[#E6EAF7] dark:bg-[#0C0C0C] text-slate-500">Carregando...</div>;
+
+  if (!user) return (
     <>
       <Login showNotification={showNotification} />
       {notificationModal}
@@ -518,9 +338,9 @@ export default function App() {
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         activeTab={activeTab}
-        setActiveTab={setActiveTab} // Manter para navegação normal
+        setActiveTab={handleTabChange} // Usa o navegador do Router
         setShowLogoutConfirm={setShowLogoutConfirm}
-        user={session?.user}
+        user={user}
         isPro={isPro}
         setShowPaywall={setShowPaywall}
       />
@@ -595,27 +415,42 @@ export default function App() {
 
       {/* Área Principal */}
       <main className="p-4 max-w-lg mx-auto w-full">
-        {activeTab === 'Resumo Mensal' && <Dashboard 
-          saldoFinal={saldoFinal}
-          totalEntradas={totalEntradas}
-          totalFixos={totalFixos}
-          totalGastoProvisionadoEfetivo={totalGastoProvisionadoEfetivo}
-          totalGastosNaoProvisionados={totalGastosNaoProvisionados}
-          filteredData={filteredData}
-          chartData={chartData}
-          totalVariaveis={totalVariaveis} // Este prop parece não ser usado no Dashboard
-          openModal={openModal}
-        />}
-        {activeTab === 'Movimentações' && <Movimentacoes filteredData={filteredData} setActiveTab={setActiveTab} openModal={openModal} totalEntradas={totalEntradas} />}
-        {activeTab === 'Entradas' && <Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />}        
-        {activeTab === 'Dashboard' && <AnnualDashboard data={data} />}
-        {activeTab === 'Fixos & Provisões' && <FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />}
-        {activeTab === 'Gastos Variáveis' && <Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />}
-        {activeTab === 'Tags' && <Tags filteredData={filteredData} openModal={openModal} />}
-        {activeTab === 'Patrimônio' && <Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />}
-        {activeTab === 'Perfil' && <Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} profile={profile} setShowPaywall={setShowPaywall} />}
-        {activeTab === 'Ajuda' && <Ajuda />}
+        <Routes>
+          <Route path="/" element={<Dashboard 
+            saldoFinal={saldoFinal}
+            totalEntradas={totalEntradas}
+            totalFixos={totalFixos}
+            totalGastoProvisionadoEfetivo={totalGastoProvisionadoEfetivo}
+            totalGastosNaoProvisionados={totalGastosNaoProvisionados}
+            filteredData={filteredData}
+            chartData={chartData}
+            totalVariaveis={totalVariaveis}
+            openModal={openModal}
+          />} />
+          <Route path="/movimentacoes" element={<Movimentacoes filteredData={filteredData} setActiveTab={handleTabChange} openModal={openModal} totalEntradas={totalEntradas} />} />
+          <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/anual" element={<AnnualDashboard data={data} />} />
+          <Route path="/fixos" element={<FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />} />
+          <Route path="/variaveis" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/tags" element={<Tags filteredData={filteredData} openModal={openModal} />} />
+          <Route path="/patrimonio" element={<Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/perfil" element={<Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} profile={profile} setShowPaywall={setShowPaywall} />} />
+          <Route path="/ajuda" element={<Ajuda />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
