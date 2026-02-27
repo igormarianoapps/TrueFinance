@@ -136,12 +136,12 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
 
             <Section 
 
-                title="Gastos Variáveis" 
+                title="Saídas" 
                 icon={TrendingDown} 
-                fullViewTab="Gastos Variáveis" 
+                fullViewTab="Saídas" 
                 setActiveTab={setActiveTab}
                 onAddClick={() => openModal('variavel')}
-                addLabel="Adicionar Gasto"
+                addLabel="Adicionar Saída"
             >
                 <div className="space-y-2">
                     {filteredData.variaveis.length > 0 ? (
