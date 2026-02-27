@@ -30,7 +30,7 @@ const TAB_ROUTES = {
   'Entradas': '/entradas',
   'Dashboard': '/dashboard',
   'Fixos & Provisões': '/fixos',
-  'Gastos Variáveis': '/gastos',
+  'Saídas': '/saidas',
   'Tags': '/tags',
   'Patrimônio': '/patrimonio',
   'Perfil': '/perfil',
@@ -46,7 +46,7 @@ function AppContent() {
   // activeTab removido em favor do Router
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction } = useTransactions(user);
+  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction, saveCreditCard } = useTransactions(user);
   
   // Estados de Monetização
   const [showPaywall, setShowPaywall] = useState(false);
@@ -142,6 +142,11 @@ function AppContent() {
       message = 'A senha deve ter pelo menos 6 caracteres para sua segurança.';
       type = 'error';
     }
+    if (message === 'New password should be different from the old password.') {
+      title = 'Senha Inválida';
+      message = 'A nova senha deve ser diferente da senha antiga.';
+      type = 'error';
+    }
     setNotification({ isOpen: true, title, message, type });
   };
 
@@ -193,6 +198,7 @@ function AppContent() {
     const listKey = modalType === 'variavel' ? 'variaveis' : 
                     modalType === 'entrada' ? 'entradas' : 
                     modalType === 'fixo' ? 'fixos' : 
+                    modalType === 'cartao' ? 'cartoes' :
                     modalType === 'tag' ? 'tags' : 
                     modalType === 'poupanca' ? 'poupanca' : 'provisoes';
     
@@ -215,7 +221,7 @@ function AppContent() {
     }
     // --- Fim da Lógica de Paywall ---
     
-    if (modalType !== 'tag' && !values.valor) {
+    if (modalType !== 'tag' && modalType !== 'cartao' && !values.valor) {
       showNotification("Valor Inválido", "Por favor, insira um valor válido para continuar.", "error");
       return;
     }
@@ -256,11 +262,15 @@ function AppContent() {
       data: values.data,
       tipo: modalType === 'provisao' ? 'provisao' : modalType === 'poupanca' ? 'poupanca' : modalType,
       tagId: values.tagId || null,
-      tipoPoupanca: values.tipoPoupanca || null
+      tipoPoupanca: values.tipoPoupanca || null,
+      paymentMethod: values.paymentMethod || 'debit',
+      creditCardId: values.creditCardId ? parseInt(values.creditCardId) : null
     };
 
     if (modalType === 'tag') {
       await saveTag(values, editingItem?.id);
+    } else if (modalType === 'cartao') {
+      await saveCreditCard(values, editingItem?.id);
     } else {
       await saveTransaction(
         transactionData, 
@@ -284,7 +294,7 @@ function AppContent() {
 
   const openModal = (type, item = null) => {
     setModalType(type.toLowerCase());
-    setRecurrenceType('unico'); 
+    setRecurrenceType(item?.isRecurring ? 'mensal' : item?.parcelaInfo ? 'parcelado' : 'unico'); 
     
     if (item) {
       setEditingItem(item);
@@ -431,7 +441,7 @@ function AppContent() {
           <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />} />
           <Route path="/anual" element={<AnnualDashboard data={data} />} />
           <Route path="/fixos" element={<FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />} />
-          <Route path="/variaveis" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/saidas" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />
           <Route path="/tags" element={<Tags filteredData={filteredData} openModal={openModal} />} />
           <Route path="/patrimonio" element={<Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />} />
           <Route path="/perfil" element={<Perfil user={session?.user} theme={theme} setTheme={setTheme} openConfirmModal={openConfirmModal} profile={profile} setShowPaywall={setShowPaywall} />} />

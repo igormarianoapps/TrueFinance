@@ -8,7 +8,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
     { id: 'Dashboard', icon: PieChart },
     { id: 'Entradas', icon: TrendingUp },
     { id: 'Fixos & Provisões', icon: Calendar },
-    { id: 'Gastos Variáveis', icon: TrendingDown },
+    { id: 'Saídas', icon: TrendingDown },
     { id: 'Tags', icon: Tag },
     { id: 'Patrimônio', icon: Wallet },
   ];

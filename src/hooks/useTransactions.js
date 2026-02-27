@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { toLocalISO } from '../utils/formatters';
 
 export function useTransactions(user) {
-  const [data, setData] = useState({ entradas: [], fixos: [], provisoes: [], tags: [], variaveis: [], poupanca: [] });
+  const [data, setData] = useState({ entradas: [], fixos: [], provisoes: [], tags: [], variaveis: [], poupanca: [], creditCards: [] });
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -11,9 +11,10 @@ export function useTransactions(user) {
     
     const { data: transacoes, error: errorTransacoes } = await supabase.from('transacoes').select('*');
     const { data: tags, error: errorTags } = await supabase.from('tags').select('*');
+    const { data: creditCards, error: errorCards } = await supabase.from('credit_cards').select('*');
     
-    if (errorTransacoes || errorTags) {
-      console.error('Erro ao buscar dados', { errorTransacoes, errorTags });
+    if (errorTransacoes || errorTags || errorCards) {
+      console.error('Erro ao buscar dados', { errorTransacoes, errorTags, errorCards });
       return;
     }
 
@@ -24,7 +25,9 @@ export function useTransactions(user) {
       groupId: t.group_id,
       parcelaInfo: t.parcela_info,
       isRecurring: t.is_recurring,
-      tipoPoupanca: t.tipo_poupanca
+      tipoPoupanca: t.tipo_poupanca,
+      paymentMethod: t.payment_method,
+      creditCardId: t.credit_card_id
     });
 
     setData({
@@ -33,7 +36,8 @@ export function useTransactions(user) {
       variaveis: transacoes.filter(t => t.tipo === 'variavel').map(mapTransaction),
       provisoes: transacoes.filter(t => t.tipo === 'provisao').map(mapTransaction),
       poupanca: transacoes.filter(t => t.tipo === 'poupanca').map(mapTransaction),
-      tags: tags || []
+      tags: tags || [],
+      creditCards: creditCards || []
     });
   }, [user]);
 
@@ -57,6 +61,28 @@ export function useTransactions(user) {
     fetchData();
   };
 
+  const saveCreditCard = async (values, editingId = null) => {
+    const cardData = {
+      user_id: user.id,
+      name: values.name,
+      due_date: parseInt(values.dueDate),
+      closing_date: parseInt(values.closingDate)
+    };
+
+    if (editingId) {
+      const { error } = await supabase.from('credit_cards').update({ 
+        name: cardData.name, 
+        due_date: cardData.due_date, 
+        closing_date: cardData.closing_date 
+      }).eq('id', editingId);
+      if (error) console.error('Erro ao atualizar cartão:', error);
+    } else {
+      const { error } = await supabase.from('credit_cards').insert(cardData);
+      if (error) console.error('Erro ao criar cartão:', error);
+    }
+    fetchData();
+  };
+
   const saveTransaction = async (transactionData, editingId = null, recurrence = { type: 'unico', installments: 1 }) => {
     const commonData = {
       user_id: user.id,
@@ -65,7 +91,9 @@ export function useTransactions(user) {
       data: transactionData.data,
       tipo: transactionData.tipo,
       tag_id: transactionData.tagId || null,
-      tipo_poupanca: transactionData.tipoPoupanca || null
+      tipo_poupanca: transactionData.tipoPoupanca || null,
+      payment_method: transactionData.paymentMethod || 'debit',
+      credit_card_id: transactionData.creditCardId || null
     };
 
     if (editingId) {
@@ -115,7 +143,7 @@ export function useTransactions(user) {
   };
 
   const togglePaid = async (id) => {
-    const item = data.fixos.find(i => i.id === id);
+    const item = data.fixos.find((i) => i.id === id);
     if (item) {
       await supabase.from('transacoes').update({ pago: !item.pago }).eq('id', id);
       fetchData();
@@ -136,6 +164,7 @@ export function useTransactions(user) {
     saveTransaction, 
     deleteTransaction, 
     togglePaid, 
-    settleTransaction 
+    settleTransaction,
+    saveCreditCard
   };
 }

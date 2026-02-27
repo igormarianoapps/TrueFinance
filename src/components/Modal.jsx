@@ -1,5 +1,5 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, CreditCard, Wallet } from 'lucide-react';
 import { toLocalISO } from '../utils/formatters';
 
 export const Modal = ({ 
@@ -13,6 +13,14 @@ export const Modal = ({
   recurrenceType, 
   setRecurrenceType 
 }) => {
+  const [paymentMethod, setPaymentMethod] = useState('debit');
+
+  useEffect(() => {
+    if (modalOpen) {
+      setPaymentMethod(editingItem?.paymentMethod || 'debit');
+    }
+  }, [modalOpen, editingItem]);
+
   if (!modalOpen) return null;
 
   return (
@@ -21,10 +29,11 @@ export const Modal = ({
         <div className="flex justify-between items-center mb-6">
            <h2 className="text-xl font-bold text-slate-800">
              {editingItem ? 'Editar' : 'Novo'} {
-               modalType === 'variavel' ? 'Gasto Variável' :
+               modalType === 'variavel' ? 'Saída' :
                modalType === 'fixo' ? 'Gasto Fixo' :
                modalType === 'provisao' ? 'Envelope' :
                modalType === 'poupanca' ? 'Poupança' :
+               modalType === 'cartao' ? 'Cartão de Crédito' :
                modalType
              }
            </h2>
@@ -33,7 +42,7 @@ export const Modal = ({
         
         <form onSubmit={handleSave} className="space-y-4">
           
-          {modalType !== 'tag' && (
+          {modalType !== 'tag' && modalType !== 'cartao' && (
             <div>
               <label className="block text-sm text-slate-500 mb-1">Descrição</label>
               <input required name="descricao" defaultValue={editingItem?.descricao} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Ex: Mercado" />
@@ -49,6 +58,25 @@ export const Modal = ({
             <div>
               <label className="block text-sm text-slate-500 mb-1">Cor (Hex)</label>
               <input type="color" name="cor" defaultValue={editingItem?.cor || '#000000'} className="w-full h-12 p-1 rounded-lg cursor-pointer" />
+            </div>
+            </>
+          )}
+
+          {modalType === 'cartao' && (
+            <>
+            <div>
+              <label className="block text-sm text-slate-500 mb-1">Nome do Cartão</label>
+              <input required name="name" defaultValue={editingItem?.name} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Ex: Nubank" />
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-sm text-slate-500 mb-1">Dia Fechamento</label>
+                <input required type="number" min="1" max="31" name="closingDate" defaultValue={editingItem?.closing_date} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Ex: 1" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm text-slate-500 mb-1">Dia Vencimento</label>
+                <input required type="number" min="1" max="31" name="dueDate" defaultValue={editingItem?.due_date} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" placeholder="Ex: 10" />
+              </div>
             </div>
             </>
           )}
@@ -89,7 +117,37 @@ export const Modal = ({
             </>
           )}
 
-          {modalType === 'fixo' && !editingItem && (
+          {/* Seletor de Método de Pagamento para Saídas */}
+          {modalType === 'variavel' && (
+            <div className="bg-slate-50 p-1 rounded-xl flex mb-4">
+              <button type="button" onClick={() => setPaymentMethod('debit')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${paymentMethod === 'debit' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                <Wallet size={16} /> Débito
+              </button>
+              <button type="button" onClick={() => setPaymentMethod('credit')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all ${paymentMethod === 'credit' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
+                <CreditCard size={16} /> Crédito
+              </button>
+              <input type="hidden" name="paymentMethod" value={paymentMethod} />
+            </div>
+          )}
+
+          {/* Se for Crédito, mostra seleção de cartão */}
+          {modalType === 'variavel' && paymentMethod === 'credit' && (
+            <div>
+              <label className="block text-sm text-slate-500 mb-1">Cartão</label>
+              <select name="creditCardId" defaultValue={editingItem?.creditCardId || ''} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" required>
+                <option value="" disabled>Selecione um cartão</option>
+                {data.creditCards?.map(card => (
+                  <option key={card.id} value={card.id}>{card.name}</option>
+                ))}
+              </select>
+              {data.creditCards?.length === 0 && (
+                <p className="text-xs text-red-500 mt-1">Nenhum cartão cadastrado. Vá em "Fixos" para adicionar.</p>
+              )}
+            </div>
+          )}
+
+          {/* Recorrência: Aparece para 'fixo' OU para 'variavel' se for Crédito */}
+          {((modalType === 'fixo' && !editingItem) || (modalType === 'variavel' && paymentMethod === 'credit')) && (
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
               <label className="block text-sm text-slate-500 mb-2">Recorrência</label>
               <div className="flex gap-2 mb-3">
