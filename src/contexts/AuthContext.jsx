@@ -52,7 +52,8 @@ export function AuthProvider({ children }) {
         // Se acabou de logar, busca o perfil
         // Não usamos 'await' aqui para não bloquear a UI
         fetchProfile(session.user.id);
-        setAuthEvent(null);
+        // Previne que o evento SIGNED_IN anule o fluxo de recuperação de senha.
+        setAuthEvent(prev => prev === 'PASSWORD_RECOVERY' ? 'PASSWORD_RECOVERY' : null);
       } else if (event === 'SIGNED_OUT') {
         setProfile(null);
         setAuthEvent(null);

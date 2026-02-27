@@ -25,12 +25,12 @@ import { PaywallModal } from './components/views/PaywallModal';
 
 // Mapeamento de Nomes de Abas para Rotas (URL)
 const TAB_ROUTES = {
-  'Resumo Mensal': '/',
+  'Resumo Mensal': '/resumo',
   'Movimentações': '/movimentacoes',
   'Entradas': '/entradas',
-  'Dashboard': '/anual',
+  'Dashboard': '/dashboard',
   'Fixos & Provisões': '/fixos',
-  'Gastos Variáveis': '/variaveis',
+  'Gastos Variáveis': '/gastos',
   'Tags': '/tags',
   'Patrimônio': '/patrimonio',
   'Perfil': '/perfil',
