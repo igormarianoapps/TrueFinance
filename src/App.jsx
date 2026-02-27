@@ -18,7 +18,7 @@ import { Variaveis } from './components/views/Variaveis';
 import { Tags } from './components/views/Tags';
 import { Patrimonio } from './components/views/Patrimonio';
 import { Movimentacoes } from './components/views/Movimentacoes';
-import { Cards } from './components/views/cards';
+import { Cards } from './components/views/Cards';
 import { AnnualDashboard } from './components/views/AnnualDashboard';
 import { Perfil } from './components/views/Perfil';
 import { Ajuda } from './components/views/Ajuda';
