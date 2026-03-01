@@ -32,7 +32,7 @@ export const Modal = ({
       <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-in slide-in-from-bottom-10 duration-300 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
            <h2 className="text-xl font-bold text-slate-800">
-             {editingItem ? 'Adicionar' : 'Novo'} {
+             {editingItem?.id ? 'Editar' : 'Novo'} {
                modalType === 'variavel' ? 'Saída' :
                modalType === 'fixo' ? 'Gasto Fixo' :
                modalType === 'provisao' ? 'Envelope' :
@@ -112,7 +112,7 @@ export const Modal = ({
                   </div>
                   <div className="flex-1">
                       <label className="block text-sm text-slate-500 mb-1">Tipo</label>
-                      <select name="tipo" defaultValue={editingItem?.tipo || 'entrada'} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none">
+                      <select name="tipoPoupanca" defaultValue={editingItem?.tipoPoupanca || 'entrada'} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none">
                           <option value="entrada">Aporte (+)</option>
                           <option value="saida">Resgate (-)</option>
                       </select>
@@ -151,7 +151,7 @@ export const Modal = ({
           )}
 
           {/* Recorrência: Aparece para 'fixo' OU para 'variavel' se for Crédito */}
-          {((modalType === 'fixo' && !editingItem) || (modalType === 'variavel' && paymentMethod === 'credit')) && (
+          {(modalType === 'fixo' || (modalType === 'variavel' && paymentMethod === 'credit')) && (
             <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
               <label className="block text-sm text-slate-500 mb-2">Recorrência</label>
               {/* Input hidden para garantir o envio no formulário se necessário */}

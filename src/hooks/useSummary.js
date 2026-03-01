@@ -25,14 +25,31 @@ export function useFinancialSummary(data, currentDate) {
       
       const dueDate = new Date(year, month, card.due_date);
       
-      // Data de fechamento deste mês
-      const closingDateThisMonth = new Date(year, month, card.closing_date);
-      // Data de fechamento do mês anterior
-      const closingDateLastMonth = new Date(year, month - 1, card.closing_date);
+      const closingDay = parseInt(card.closing_date);
+      const dueDay = parseInt(card.due_date);
+
+      // Helper para evitar overflow de datas (ex: 30 de Fev virar 02 de Março)
+      const getClampedDate = (y, m, d) => {
+        const lastDay = new Date(y, m + 1, 0).getDate();
+        return new Date(y, m, Math.min(d, lastDay));
+      };
+
+      let closingDateThisMonth, closingDateLastMonth;
+
+      if (closingDay <= dueDay) {
+        // Fechamento e Vencimento no mesmo mês (ex: Fecha 03, Vence 10)
+        closingDateThisMonth = getClampedDate(year, month, closingDay);
+        closingDateLastMonth = getClampedDate(year, month - 1, closingDay);
+      } else {
+        // Fechamento no mês anterior ao vencimento (ex: Fecha 25, Vence 05)
+        closingDateThisMonth = getClampedDate(year, month - 1, closingDay);
+        closingDateLastMonth = getClampedDate(year, month - 2, closingDay);
+      }
 
       // Filtra transações que pertencem a esta fatura
       const cardTransactions = data.variaveis.filter(t => {
-        if (t.paymentMethod !== 'credit' || t.creditCardId !== card.id) return false;
+        // Confia no creditCardId como fonte da verdade. Se tem ID de cartão, pertence ao cartão.
+        if (t.creditCardId !== card.id) return false;
         const tDate = new Date(t.data + 'T00:00:00');
         return tDate > closingDateLastMonth && tDate <= closingDateThisMonth;
       });
@@ -83,28 +100,53 @@ export function useFinancialSummary(data, currentDate) {
     };
   }, [data, currentDate]);
 
+  // Helper para identificar transação de crédito (usa creditCardId como fallback seguro)
+  // Definido aqui para ser usado tanto no summary quanto no chartData
+  const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
+
   const summary = useMemo(() => {
     const entradasCalc = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
-    const fixosCalc = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
+    
+    // Soma apenas fixos normais e faturas PAGAS. Faturas em aberto não debitam do saldo.
+    const fixosCalc = filteredData.fixos.reduce((acc, item) => {
+      if (item.isInvoice && !item.pago) return acc;
+      return acc + item.valor;
+    }, 0);
     
     // IMPORTANTE: Para o cálculo de fluxo de caixa (saldo), consideramos apenas saídas em DÉBITO.
-    // As saídas em CRÉDITO já estão somadas dentro das faturas (em fixosCalc).
+    // As saídas em CRÉDITO só entram no fluxo quando a fatura é PAGA (via fixosCalc).
     const variaveisCalc = filteredData.variaveis
-      .filter(item => item.paymentMethod !== 'credit')
+      .filter(item => !isCredit(item))
       .reduce((acc, item) => acc + item.valor, 0);
 
     const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
-    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId) && g.paymentMethod !== 'credit');
+    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId) && !isCredit(g));
     const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
 
     let totalGastoProvisionadoEfetivo = 0;
+    
+    // Calcula quanto de cada tag está comprometido nas faturas PAGAS DESTE mês
+    const creditUsageInPaidInvoices = {};
+    (filteredData.invoices || []).forEach(inv => {
+       if (inv.pago) {
+         (inv.transactions || []).forEach(t => {
+            if (t.tagId) {
+               creditUsageInPaidInvoices[t.tagId] = (creditUsageInPaidInvoices[t.tagId] || 0) + t.valor;
+            }
+         });
+       }
+    });
+
     (filteredData.provisoes || []).forEach(provisao => {
       if (provisao.tagId) {
-        const gastosNoEnvelope = filteredData.variaveis
-          .filter(g => g.tagId === provisao.tagId && g.paymentMethod !== 'credit') // Remove credit
+        const gastosNoEnvelopeDebit = filteredData.variaveis
+          .filter(g => g.tagId === provisao.tagId && !isCredit(g))
           .reduce((acc, g) => acc + g.valor, 0);
         
-        totalGastoProvisionadoEfetivo += Math.max(provisao.valor || 0, gastosNoEnvelope);
+        const creditPaid = creditUsageInPaidInvoices[provisao.tagId] || 0;
+        
+        // Subtrai apenas o crédito de faturas PAGAS (que já estão em fixosCalc)
+        totalGastoProvisionadoEfetivo += Math.max(gastosNoEnvelopeDebit, (provisao.valor || 0) - creditPaid);
       } else {
         totalGastoProvisionadoEfetivo += provisao.valor || 0;
       }
@@ -130,6 +172,9 @@ export function useFinancialSummary(data, currentDate) {
   const chartData = useMemo(() => {
     const grouped = {};
     filteredData.variaveis.forEach(item => {
+      // Filtra crédito do gráfico também para manter consistência com o total de "Saídas" (Fluxo de Caixa)
+      if (isCredit(item)) return;
+
       const tag = filteredData.tags.find(t => t.id === Number(item.tagId));
       if (!tag) return;
       if (!grouped[tag.nome]) grouped[tag.nome] = { valor: 0, color: tag.cor };

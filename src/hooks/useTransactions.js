@@ -119,6 +119,26 @@ export function useTransactions(user) {
 
       const { error } = await supabase.from('transacoes').update(updateData).eq('id', editingId);
       if (error) console.error('Erro ao atualizar transação:', error);
+
+      // Propaga a edição para recorrências futuras (mesmo Group ID e data posterior)
+      const allItems = [...data.entradas, ...data.fixos, ...data.variaveis, ...data.provisoes, ...data.poupanca];
+      const originalItem = allItems.find(i => i.id === editingId);
+
+      if (!error && originalItem?.groupId) {
+        const futureUpdateData = { ...updateData };
+        delete futureUpdateData.data; // Preserva datas originais dos meses futuros
+        delete futureUpdateData.id;
+        if (recurrence.type === 'parcelado') delete futureUpdateData.parcela_info; // Preserva numeração (ex: 2/12)
+
+        const { error: futureError } = await supabase
+          .from('transacoes')
+          .update(futureUpdateData)
+          .eq('group_id', originalItem.groupId)
+          .gt('data', originalItem.data) // Apenas datas futuras em relação ao item original
+          .neq('id', editingId);
+          
+        if (futureError) console.error('Erro ao propagar edição:', futureError);
+      }
     } else {
       const newItems = [];
       const baseId = Date.now(); 
