@@ -29,7 +29,7 @@ const TAB_ROUTES = {
   'Resumo Mensal': '/resumo',
   'Movimentações': '/movimentacoes',
   'Entradas': '/entradas',
-  'Dashboard': '/dashboard',
+  'Dashboard': '/anual',
   'Fixos & Provisões': '/fixos',
   'Saídas': '/saidas',
   'Cartões': '/cartoes',

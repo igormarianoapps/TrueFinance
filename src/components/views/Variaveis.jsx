@@ -32,7 +32,7 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
           {filteredData.variaveis.map(item => {
             const tag = getTag(item.tagId);
             return (
-              <Card key={item.id} className="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-[#2A2A2A] transition-colors" onClick={() => openModal('variavel', item)}>
+              <Card key={item.id} className="p-3 flex justify-between items-center cursor-pointer bg-white dark:bg-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#2A2A2A] transition-colors" onClick={() => openModal('variavel', item)}>
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {tag ? (
                     <div className="p-2 rounded-full" style={{ backgroundColor: `${tag.cor}20`, color: tag.cor }}>

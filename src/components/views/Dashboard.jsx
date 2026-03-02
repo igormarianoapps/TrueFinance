@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../ui/Card';
-import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock, TrendingUp, TrendingDown } from 'lucide-react';
+import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock, TrendingUp, TrendingDown, Tag as TagIcon, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 const BarChart = ({ data }) => {
@@ -37,6 +38,8 @@ export const Dashboard = ({
   totalVariaveis,
   openModal
 }) => {
+  const navigate = useNavigate();
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -66,9 +69,60 @@ export const Dashboard = ({
 
   const totalComprometido = fixosPendentes + envelopesRestantes;
 
+  // Helper para identificar se a transação é no crédito
+  const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
+
+  // Helper para encontrar a tag associada
+  const getTag = (tagId) => {
+    return filteredData.tags?.find(t => t.id === tagId);
+  };
+
+  // Pega as últimas 5 saídas, ordenadas por data (mais recente primeiro)
+  const recentExpenses = filteredData.variaveis
+    .sort((a, b) => {
+      const dateDiff = new Date(b.data) - new Date(a.data);
+      return dateDiff !== 0 ? dateDiff : b.id - a.id;
+    })
+    .slice(0, 5);
+
   return (
     <div className="space-y-6 pb-20 animate-in fade-in">
       
+      {/* 3. Alertas e Atenção (Movido para o topo) */}
+      {(contasProximas.length > 0 || envelopesCriticos.length > 0) && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">Atenção Necessária</h3>
+          <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+            {contasProximas.map(conta => {
+              const [y, m, d] = conta.data.split('-').map(Number);
+              const dataConta = new Date(y, m - 1, d);
+              const isVencido = dataConta < today;
+
+              return (
+                <div key={conta.id} className={`min-w-[200px] border p-3 rounded-xl snap-start ${isVencido ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-900' : 'bg-yellow-50 border-yellow-100 dark:bg-yellow-900/20 dark:border-yellow-900'}`}>
+                  <div className={`flex items-center gap-2 mb-1 ${isVencido ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'}`}>
+                    <AlertTriangle size={16} />
+                    <span className="text-xs font-bold uppercase">{isVencido ? 'Vencido / Atrasado' : 'Vence em breve'}</span>
+                  </div>
+                  <p className="font-semibold text-slate-600 dark:text-slate-200 text-sm truncate">{conta.descricao}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">{new Date(conta.data).toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})} • {formatCurrency(conta.valor)}</p>
+                </div>
+              );
+            })}
+            {envelopesCriticos.map(env => (
+              <div key={env.id} className="min-w-[200px] bg-orange-50 border border-orange-100 dark:bg-orange-900/20 dark:border-orange-900 p-3 rounded-xl snap-start">
+                <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400 mb-1">
+                  <AlertTriangle size={16} />
+                  <span className="text-xs font-bold uppercase">Envelope Crítico</span>
+                </div>
+                <p className="font-semibold text-slate-600 dark:text-slate-200 text-sm truncate">{env.descricao}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Limite quase atingido</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* 1. Hero Card: Sobra Projetada */}
       <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1F1F1F] relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -133,47 +187,66 @@ export const Dashboard = ({
          </div>
       </div>
 
-      {/* 3. Alertas e Atenção */}
-      {(contasProximas.length > 0 || envelopesCriticos.length > 0) && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">Atenção Necessária</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
-            {contasProximas.map(conta => {
-              const [y, m, d] = conta.data.split('-').map(Number);
-              const dataConta = new Date(y, m - 1, d);
-              const isVencido = dataConta < today;
-
-              return (
-                <div key={conta.id} className={`min-w-[200px] border p-3 rounded-xl snap-start ${isVencido ? 'bg-red-100 border-red-200 dark:bg-red-900/30 dark:border-red-900' : 'bg-yellow-50 border-yellow-100 dark:bg-yellow-900/20 dark:border-yellow-900'}`}>
-                  <div className={`flex items-center gap-2 mb-1 ${isVencido ? 'text-red-700 dark:text-red-400' : 'text-yellow-700 dark:text-yellow-400'}`}>
-                    <AlertTriangle size={16} />
-                    <span className="text-xs font-bold uppercase">{isVencido ? 'Vencido / Atrasado' : 'Vence em breve'}</span>
-                  </div>
-                  <p className="font-semibold text-slate-600 dark:text-slate-200 text-sm truncate">{conta.descricao}</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">{new Date(conta.data).toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})} • {formatCurrency(conta.valor)}</p>
-                </div>
-              );
-            })}
-            {envelopesCriticos.map(env => (
-              <div key={env.id} className="min-w-[200px] bg-orange-50 border border-orange-100 dark:bg-orange-900/20 dark:border-orange-900 p-3 rounded-xl snap-start">
-                <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400 mb-1">
-                  <AlertTriangle size={16} />
-                  <span className="text-xs font-bold uppercase">Envelope Crítico</span>
-                </div>
-                <p className="font-semibold text-slate-600 dark:text-slate-200 text-sm truncate">{env.descricao}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Limite quase atingido</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 4. Análise de Gastos */}
+      {/* 4. Análise de Gastos (Movido para antes das Últimas Saídas) */}
       <div className="grid grid-cols-1 gap-3">
         <Card className="bg-white dark:bg-[#1F1F1F]">
           <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">Distribuição de Gastos</h3>
           <BarChart data={chartData} />
         </Card>
+      </div>
+
+      {/* 5. Últimas Saídas */}
+      <div>
+        <div className="flex justify-between items-center mb-3 px-1">
+          <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">Últimas Saídas</h3>
+          <button onClick={() => navigate('/saidas')} className="text-xs text-[#3457A4] dark:text-blue-400 font-bold hover:underline">
+            Ver todas
+          </button>
+        </div>
+        
+        <div className="space-y-2">
+          {recentExpenses.length > 0 ? recentExpenses.map(item => {
+            const tag = getTag(item.tagId);
+            return (
+              <Card key={item.id} className="p-3 flex justify-between items-center bg-white dark:bg-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#2A2A2A] transition-colors cursor-pointer" onClick={() => openModal('variavel', item)}>
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {tag ? (
+                    <div className="p-2 rounded-full flex-shrink-0" style={{ backgroundColor: `${tag.cor}20`, color: tag.cor }}>
+                      <TagIcon size={18} />
+                    </div>
+                  ) : (
+                    <div className="p-2 rounded-full bg-slate-100 text-slate-400 dark:bg-[#2A2A2A] dark:text-slate-500 flex-shrink-0">
+                      <TagIcon size={18} />
+                    </div>
+                  )}
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-slate-700 dark:text-slate-200 truncate text-sm">{item.descricao}</p>
+                      {isCredit(item) ? (
+                        <span className="flex-shrink-0 text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                          <CreditCard size={10} /> Crédito
+                        </span>
+                      ) : (
+                        <span className="flex-shrink-0 text-[10px] font-bold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                          <Wallet size={10} /> Débito
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-400">{tag?.nome || 'Sem Categoria'}</p>
+                  </div>
+                </div>
+                <span className="font-bold text-red-500 dark:text-red-400 text-sm whitespace-nowrap">
+                  {formatCurrency(item.valor)}
+                </span>
+              </Card>
+            );
+          }) : (
+            <div className="text-center py-8 text-slate-400 text-sm bg-white dark:bg-[#1F1F1F] rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+              Nenhuma saída registrada neste mês.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -94,17 +94,15 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
     return (
         <div className="space-y-6 animate-in fade-in">
             <Section 
-                title="Cartões de Crédito" 
-                icon={CreditCard} 
-                fullViewTab="Cartões" 
+
+                title="Fixos & Provisões" 
+                icon={Calendar} 
+                fullViewTab="Fixos & Provisões" 
                 setActiveTab={setActiveTab}
-                onAddClick={() => openModal('cartao')}
-                addLabel="Adicionar Cartão"
+                onAddClick={() => openModal('fixo')}
+                addLabel="Adicionar Fixo"
             >
-                <div className="text-center py-4">
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Total de faturas este mês</p>
-                    <p className="text-3xl font-bold text-slate-800 dark:text-slate-200">{formatCurrency(totalFaturas)}</p>
-                </div>
+                {renderAlerts()}
             </Section>
 
             <Section 
@@ -120,18 +118,6 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                     <p className="text-sm text-slate-500 dark:text-slate-400">Total de entradas no mês</p>
                     <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-500">{formatCurrency(totalEntradas)}</p>
                 </div>
-            </Section>
-
-            <Section 
-
-                title="Fixos & Provisões" 
-                icon={Calendar} 
-                fullViewTab="Fixos & Provisões" 
-                setActiveTab={setActiveTab}
-                onAddClick={() => openModal('fixo')}
-                addLabel="Adicionar Fixo"
-            >
-                {renderAlerts()}
             </Section>
 
             <Section 
@@ -156,6 +142,19 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
                     ) : (
                         <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Nenhum gasto variável este mês.</p>
                     )}
+                </div>
+            </Section>
+            <Section 
+                title="Cartões de Crédito" 
+                icon={CreditCard} 
+                fullViewTab="Cartões" 
+                setActiveTab={setActiveTab}
+                onAddClick={() => openModal('cartao')}
+                addLabel="Adicionar Cartão"
+            >
+                <div className="text-center py-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Total de faturas este mês</p>
+                    <p className="text-3xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalFaturas)}</p>
                 </div>
             </Section>
         </div>
