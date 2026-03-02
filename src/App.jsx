@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -67,7 +67,7 @@ function AppContent() {
   // activeTab removido em favor do Router
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction, saveCreditCard } = useTransactions(user);
+  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction, saveCreditCard, refresh } = useTransactions(user);
   
   // Estados de Monetização
   const [showPaywall, setShowPaywall] = useState(false);
@@ -81,6 +81,55 @@ function AppContent() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
   const [notification, setNotification] = useState({ isOpen: false, title: '', message: '', type: 'success' });
+
+  // Pull to Refresh State
+  const [pullStartPoint, setPullStartPoint] = useState(0);
+  const [pullChange, setPullChange] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        setPullStartPoint(e.touches[0].screenY);
+      }
+    };
+    
+    const handleTouchMove = (e) => {
+      if (pullStartPoint > 0 && window.scrollY === 0) {
+        const touchY = e.touches[0].screenY;
+        const diff = touchY - pullStartPoint;
+        if (diff > 0) {
+          setPullChange(diff);
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (pullChange > 120 && !isRefreshing) {
+        setIsRefreshing(true);
+        setPullChange(0);
+        try {
+          if (refresh) await refresh();
+          if (refreshProfile) await refreshProfile();
+        } finally {
+          setTimeout(() => setIsRefreshing(false), 1000);
+        }
+      } else {
+        setPullChange(0);
+      }
+      setPullStartPoint(0);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullStartPoint, pullChange, isRefreshing, refresh, refreshProfile]);
 
   // Hooks do Router
   const navigate = useNavigate();
@@ -399,6 +448,20 @@ function AppContent() {
         isPro={isPro}
         setShowPaywall={setShowPaywall}
       />
+      
+      {/* Pull to Refresh Indicator */}
+      <div 
+        className={`fixed left-0 right-0 z-40 flex justify-center transition-all duration-300 pointer-events-none ${isRefreshing ? 'top-24' : 'top-16'}`}
+        style={{ 
+          transform: isRefreshing ? 'none' : `translateY(${Math.min(pullChange * 0.4, 60) - 60}px)`,
+          opacity: isRefreshing ? 1 : Math.min(pullChange / 100, 1)
+        }}
+      >
+        <div className="bg-white dark:bg-[#1F1F1F] p-2 rounded-full shadow-md border border-slate-100 dark:border-[#333] flex items-center justify-center w-10 h-10">
+          <RefreshCw size={20} className={`text-[#3457A4] dark:text-blue-400 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: isRefreshing ? 'none' : `rotate(${pullChange * 2}deg)` }} />
+        </div>
+      </div>
+
       <Modal 
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
