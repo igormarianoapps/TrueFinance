@@ -144,6 +144,19 @@ function AppContent() {
     if (path) navigate(path);
   };
 
+  // Proteção de Rotas PRO
+  useEffect(() => {
+    // Não faz nada enquanto a autenticação está carregando para evitar redirecionamentos prematuros
+    if (authLoading) return;
+
+    const proRoutes = ['/patrimonio', '/anual'];
+    if (!isPro && proRoutes.includes(location.pathname)) {
+      // Mostra o paywall e redireciona o usuário para a home
+      setShowPaywall(true);
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, isPro, authLoading, navigate, setShowPaywall]);
+
   // Lógica de verificação de pagamento (Polling) separada do fetch de dados
   useEffect(() => {
     const checkPayment = async () => {
