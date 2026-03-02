@@ -39,6 +39,14 @@ const TAB_ROUTES = {
   'Ajuda': '/ajuda'
 };
 
+const DEFAULT_TAGS = [
+  { nome: 'Alimentação', cor: '#F44336' },
+  { nome: 'Moradia', cor: '#2196F3' },
+  { nome: 'Transporte', cor: '#FF9800' },
+  { nome: 'Lazer', cor: '#9C27B0' },
+  { nome: 'Saúde', cor: '#4CAF50' }
+];
+
 function AppContent() {
   // Consumindo o Contexto de Auth
   const { user, session, authEvent, setAuthEvent, profile, isPro, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -96,6 +104,27 @@ function AppContent() {
     };
     checkPayment();
   }, [user]); // Executa quando o usuário loga/carrega
+
+  // Onboarding: Cria tags padrão para novos usuários
+  useEffect(() => {
+    if (user && data && data.tags) {
+      const storageKey = `onboarding_tags_${user.id}`;
+      // Verifica se já rodamos o onboarding para este usuário neste dispositivo
+      if (!localStorage.getItem(storageKey)) {
+        // Aguarda um breve momento para garantir que o fetch inicial do banco terminou
+        const timer = setTimeout(async () => {
+          if (data.tags.length === 0) {
+            for (const tag of DEFAULT_TAGS) {
+              await saveTag(tag);
+            }
+            showNotification("Bem-vindo!", "Adicionamos algumas tags essenciais para você começar.", "success");
+          }
+          localStorage.setItem(storageKey, 'true');
+        }, 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, data]); // Monitora user e data
 
   // --- Lógica de Navegação e Filtro ---
   

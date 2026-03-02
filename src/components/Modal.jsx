@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X, CreditCard, Wallet } from 'lucide-react';
+import { X, CreditCard, Wallet, Check } from 'lucide-react';
 import { toLocalISO } from '../utils/formatters';
+
+const predefinedColors = [
+  '#F44336', '#E91E63', '#9C27B0', '#673AB7',
+  '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4',
+  '#009688', '#4CAF50', '#8BC34A', '#CDDC39',
+  '#FFEB3B', '#FFC107', '#FF9800', '#FF5722',
+  '#795548', '#9E9E9E', '#607D8B', '#455A64'
+];
 
 export const Modal = ({ 
   modalOpen, 
@@ -14,6 +22,7 @@ export const Modal = ({
 }) => {
   const [paymentMethod, setPaymentMethod] = useState('debit');
   const [localRecurrenceType, setLocalRecurrenceType] = useState('unico');
+  const [selectedTagColor, setSelectedTagColor] = useState(predefinedColors[0]);
 
   useEffect(() => {
     if (modalOpen) {
@@ -22,8 +31,11 @@ export const Modal = ({
       setLocalRecurrenceType(
         editingItem?.isRecurring ? 'mensal' : (editingItem?.parcelaInfo ? 'parcelado' : 'unico')
       );
+      if (modalType === 'tag') {
+        setSelectedTagColor(editingItem?.cor || predefinedColors[0]);
+      }
     }
-  }, [modalOpen, editingItem]); // Adicionado editingItem para resetar corretamente
+  }, [modalOpen, editingItem, modalType]); // Adicionado editingItem para resetar corretamente
 
   if (!modalOpen) return null;
 
@@ -59,9 +71,22 @@ export const Modal = ({
               <label className="block text-sm text-slate-500 mb-1">Nome da Tag</label>
               <input required name="nome" defaultValue={editingItem?.nome} className="w-full p-3 bg-slate-50 rounded-lg border-none focus:ring-2 focus:ring-slate-200 outline-none" />
             </div>
+            <input type="hidden" name="cor" value={selectedTagColor} />
             <div>
-              <label className="block text-sm text-slate-500 mb-1">Cor (Hex)</label>
-              <input type="color" name="cor" defaultValue={editingItem?.cor || '#000000'} className="w-full h-12 p-1 rounded-lg cursor-pointer" />
+              <label className="block text-sm text-slate-500 mb-2">Cor</label>
+              <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                {predefinedColors.map(color => (
+                  <button
+                    type="button"
+                    key={color}
+                    onClick={() => setSelectedTagColor(color)}
+                    className="w-8 h-8 rounded-full cursor-pointer transition-all transform hover:scale-110 focus:outline-none flex items-center justify-center"
+                    style={{ backgroundColor: color }}
+                  >
+                    {selectedTagColor === color && <Check size={18} className="text-white" />}
+                  </button>
+                ))}
+              </div>
             </div>
             </>
           )}
