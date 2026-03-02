@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
     // Timeout de segurança: 1 segundo é suficiente se não bloquearmos no fetchProfile
     const safetyTimer = setTimeout(() => { 
       if (mounted) setLoading(false);
-    }, 1000);
+    }, 3000); // Aumentado para 3s para dar tempo do fetchProfile em redes móveis
 
     // 2. Listener de Mudanças de Auth
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -48,10 +48,10 @@ export function AuthProvider({ children }) {
 
       if (event === 'PASSWORD_RECOVERY') {
         setAuthEvent('PASSWORD_RECOVERY');
-      } else if (event === 'SIGNED_IN' && session) {
-        // Se acabou de logar, busca o perfil
-        // Não usamos 'await' aqui para não bloquear a UI
-        fetchProfile(session.user.id);
+      } else if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        // Se acabou de logar ou iniciou a sessão, busca o perfil
+        // Usamos 'await' para garantir que o status PRO seja carregado antes de liberar a UI
+        await fetchProfile(session.user.id);
         // Previne que o evento SIGNED_IN anule o fluxo de recuperação de senha.
         setAuthEvent(prev => prev === 'PASSWORD_RECOVERY' ? 'PASSWORD_RECOVERY' : null);
       } else if (event === 'SIGNED_OUT') {
