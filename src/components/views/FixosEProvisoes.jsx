@@ -6,8 +6,24 @@ import { Edit2, Trash2, Repeat, CheckCheck, Package } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 
 export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleTogglePaid, handleSettle }) => {
+  const totalFixos = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
+  const totalProvisoes = filteredData.provisoes.reduce((acc, item) => acc + item.valor, 0);
+
   return (
     <div className="space-y-6 pb-20 animate-in slide-in-from-right-4">
+      <Card className="bg-white dark:bg-[#1F1F1F] shadow-sm border border-slate-100 dark:border-[#1F1F1F]">
+        <div className="p-4 grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800">
+          <div className="text-center px-2">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Fixos</p>
+            <p className="text-xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalFixos)}</p>
+          </div>
+          <div className="text-center px-2">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Envelopes</p>
+            <p className="text-xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalProvisoes)}</p>
+          </div>
+        </div>
+      </Card>
+
       <div>
         <div className="flex justify-between items-end mb-3 ml-1 mr-1">
           <h3 className="text-sm font-bold text-slate-500 uppercase dark:text-slate-400">Pagamentos Mensais Fixos</h3>
@@ -26,7 +42,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
                     {item.parcelaInfo && <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full font-bold dark:bg-slate-700 dark:text-slate-300">{item.parcelaInfo}</span>}
                     {item.isRecurring && <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full font-bold flex items-center gap-1 dark:bg-blue-900/30 dark:text-blue-400"><Repeat size={8}/> Fixo</span>}
                   </div>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">Vence: {new Date(item.data).toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Vence: {new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})}</p>
                 </div>
               </div>
               <div className="text-right">
