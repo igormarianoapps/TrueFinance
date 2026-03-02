@@ -84,12 +84,9 @@ export const Dashboard = ({
     return filteredData.tags?.find(t => t.id === tagId);
   };
 
-  // Pega as últimas 5 saídas, ordenadas por data (mais recente primeiro)
-  const recentExpenses = filteredData.variaveis
-    .sort((a, b) => {
-      const dateDiff = new Date(b.data) - new Date(a.data);
-      return dateDiff !== 0 ? dateDiff : b.id - a.id;
-    })
+  // Pega as últimas 5 saídas, ordenadas por cadastro (mais recente primeiro)
+  const recentExpenses = [...filteredData.variaveis]
+    .sort((a, b) => b.id - a.id)
     .slice(0, 5);
 
   return (
