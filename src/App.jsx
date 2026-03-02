@@ -53,6 +53,17 @@ function AppContent() {
   // Consumindo o Contexto de Theme
   const { theme, setTheme } = useTheme();
 
+  useEffect(() => {
+    document.title = "True Finance";
+  }, []);
+
+  // Define o tema claro como padrão se não houver preferência salva
+  useEffect(() => {
+    if (!localStorage.getItem('theme')) {
+      setTheme('light');
+    }
+  }, [setTheme]);
+
   // activeTab removido em favor do Router
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
