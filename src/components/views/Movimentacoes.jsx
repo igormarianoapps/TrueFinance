@@ -58,7 +58,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
     today.setHours(0, 0, 0, 0);
 
     const fixosPendentes = filteredData.fixos.filter(f => !f.pago);
-    const vencidos = fixosPendentes.filter(f => new Date(f.data) < today);
+    const vencidos = fixosPendentes.filter(f => new Date(f.data + 'T00:00:00') < today);
 
     const renderAlerts = () => {
         if (fixosPendentes.length === 0 && filteredData.fixos.length > 0) {

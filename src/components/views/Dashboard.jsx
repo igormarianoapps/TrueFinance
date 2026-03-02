@@ -44,7 +44,14 @@ export const Dashboard = ({
   today.setHours(0, 0, 0, 0);
 
   const contasProximas = filteredData.fixos
-    .filter(f => !f.pago)
+    .filter(f => {
+      if (f.pago) return false;
+      const [y, m, d] = f.data.split('-').map(Number);
+      const dataConta = new Date(y, m - 1, d);
+      const diffTime = dataConta - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 3;
+    })
     .sort((a, b) => new Date(a.data) - new Date(b.data))
     .slice(0, 5);
 
@@ -105,7 +112,7 @@ export const Dashboard = ({
                     <span className="text-xs font-bold uppercase">{isVencido ? 'Vencido / Atrasado' : 'Vence em breve'}</span>
                   </div>
                   <p className="font-semibold text-slate-600 dark:text-slate-200 text-sm truncate">{conta.descricao}</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">{new Date(conta.data).toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})} • {formatCurrency(conta.valor)}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">{dataConta.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'})} • {formatCurrency(conta.valor)}</p>
                 </div>
               );
             })}
