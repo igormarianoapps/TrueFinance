@@ -7,22 +7,34 @@ import { formatCurrency } from '../../utils/formatters';
 
 export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleTogglePaid, handleSettle }) => {
   const totalFixos = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
+  const fixosPagos = filteredData.fixos.filter(item => item.pago).reduce((acc, item) => acc + item.valor, 0);
+  const fixosEmAberto = totalFixos - fixosPagos;
   const totalProvisoes = filteredData.provisoes.reduce((acc, item) => acc + item.valor, 0);
 
   return (
     <div className="space-y-6 pb-20 animate-in slide-in-from-right-4">
-      <Card className="bg-white dark:bg-[#1F1F1F] shadow-sm border border-slate-100 dark:border-[#1F1F1F]">
-        <div className="p-4 grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800">
-          <div className="text-center px-2">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Fixos</p>
-            <p className="text-xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalFixos)}</p>
-          </div>
-          <div className="text-center px-2">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Envelopes</p>
-            <p className="text-xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalProvisoes)}</p>
-          </div>
-        </div>
-      </Card>
+      <div className="grid grid-cols-3 gap-3">
+        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-green-600 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pagos</p>
+          <p className="text-sm font-bold text-green-600 truncate">
+            {formatCurrency(fixosPagos)}
+          </p>
+        </Card>
+
+        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-red-500 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Em Aberto</p>
+          <p className="text-sm font-bold text-red-500 truncate">
+            {formatCurrency(fixosEmAberto)}
+          </p>
+        </Card>
+
+        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-blue-800 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total</p>
+          <p className="text-sm font-bold text-[#3457A4] truncate">
+            {formatCurrency(totalFixos)}
+          </p>
+        </Card>
+      </div>
 
       <div>
         <div className="flex justify-between items-end mb-3 ml-1 mr-1">
@@ -31,9 +43,9 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
         </div>
         <div className="space-y-2">
           {filteredData.fixos.map(item => (
-            <div key={item.id} className={`bg-white dark:bg-[#1F1F1F] p-3 rounded-lg shadow-sm border-l-4 flex justify-between items-center transition-all ${item.pago ? 'border-green-500 opacity-60 bg-slate-50 dark:bg-[#2A2A2A]' : 'border-red-400'}`}>
+            <div key={item.id} className={`bg-white dark:bg-[#1F1F1F] p-3 rounded-lg shadow-sm border-l-4 flex justify-between items-center transition-all ${item.pago ? 'border-green-600 opacity-60 bg-slate-50 dark:bg-[#2A2A2A]' : 'border-red-400'}`}>
               <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => handleTogglePaid(item.id)}>
-                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${item.pago ? 'bg-green-500 border-green-500' : 'border-slate-300 dark:border-slate-600'}`}>
+                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${item.pago ? 'bg-green-600 border-green-600' : 'border-slate-300 dark:border-slate-600'}`}>
                   {item.pago && <span className="text-white text-xs">✓</span>}
                 </div>
                 <div>
