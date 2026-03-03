@@ -21,25 +21,27 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
   const poupancaAtual = poupancaAnterior + movimentacaoPoupancaMes;
 
-  // 2. Cálculo do Saldo em Conta (Total Disponível: Conta + Poupança)
-  const totalEntradas = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
-  
-  // Helper para identificar transação de crédito (igual ao useSummary)
+  // 2. Cálculo do Patrimônio Total (Acumulado Histórico)
+  // Considera todo o histórico até o final do mês selecionado para incluir saldo remanescente de meses anteriores
+  const lastDay = new Date(year, currentDate.getMonth() + 1, 0).getDate();
+  const fimMesStr = `${year}-${month}-${lastDay}`;
+
   const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
 
-  // Filtra saídas que são crédito para não debitar do patrimônio agora
-  const totalVariaveis = filteredData.variaveis
-    .filter(item => !isCredit(item))
+  const totalEntradasAcumulado = (data.entradas || [])
+    .filter(item => item.data <= fimMesStr)
     .reduce((acc, item) => acc + item.valor, 0);
 
-  // Filtra faturas que ainda não foram pagas
-  const totalFixos = filteredData.fixos.reduce((acc, item) => {
-    if (item.isInvoice && !item.pago) return acc;
-    return acc + item.valor;
-  }, 0);
-  
-  // Saldo Total = (Entradas do mês - Gastos do mês) + Saldo anterior da poupança
-  const saldoContaCalculado = totalEntradas - totalVariaveis - totalFixos + poupancaAnterior;
+  const totalVariaveisAcumulado = (data.variaveis || [])
+    .filter(item => item.data <= fimMesStr && !isCredit(item))
+    .reduce((acc, item) => acc + item.valor, 0);
+
+  const totalFixosPagosAcumulado = (data.fixos || [])
+    .filter(item => item.data <= fimMesStr && item.pago)
+    .reduce((acc, item) => acc + item.valor, 0);
+
+  // Patrimônio Total = Entradas - Saídas (Débito) - Fixos (Pagos)
+  const saldoContaCalculado = totalEntradasAcumulado - totalVariaveisAcumulado - totalFixosPagosAcumulado;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4">
