@@ -58,12 +58,20 @@ export function useFinancialSummary(data, currentDate) {
 
       if (totalInvoice === 0) return null;
 
+      // Verifica se existe uma transação de pagamento para esta fatura neste mês
+      const paymentTransaction = data.fixos.find(t => 
+        t.parcelaInfo === `invoice_payment:${card.id}` &&
+        // Verifica se a data da transação pertence ao mês/ano da fatura atual
+        t.data.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`)
+      );
+
       return {
         id: `invoice-${card.id}-${month}-${year}`,
         descricao: `Fatura ${card.name}`,
         valor: totalInvoice,
         data: dueDate.toISOString().split('T')[0],
-        pago: false, // Por enquanto, manual. Futuramente pode persistir status da fatura.
+        pago: !!paymentTransaction,
+        paymentId: paymentTransaction?.id, // ID da transação real para poder desfazer o pagamento
         isInvoice: true,
         cardId: card.id,
         transactions: cardTransactions // Adiciona as transações à fatura para visualização
@@ -72,7 +80,10 @@ export function useFinancialSummary(data, currentDate) {
 
     return {
       entradas: data.entradas.filter(filterFn),
-      fixos: [...(data.fixos || []).filter(filterFn), ...invoices].map(item => {
+      fixos: [...(data.fixos || []).filter(filterFn)
+        .filter(t => !t.parcelaInfo?.startsWith('invoice_payment:')), // Oculta as transações de pagamento para não duplicar com a fatura
+        ...invoices
+      ].map(item => {
         let isDueSoon = false;
         // Verifica apenas se não estiver pago
         if (!item.pago) {

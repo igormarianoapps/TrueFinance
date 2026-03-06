@@ -67,7 +67,7 @@ function AppContent() {
   // activeTab removido em favor do Router
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, settleTransaction, saveCreditCard, refresh } = useTransactions(user);
+  const { data, saveTransaction, deleteTransaction, saveTag, deleteTag, togglePaid, payInvoice, unpayInvoice, settleTransaction, saveCreditCard, refresh } = useTransactions(user);
   
   // Estados de Monetização
   const [showPaywall, setShowPaywall] = useState(false);
@@ -392,7 +392,22 @@ function AppContent() {
   };
 
   const handleTogglePaid = async (id) => {
-    await togglePaid(id);
+    // Verifica se é uma fatura de cartão (ID começa com 'invoice-')
+    if (typeof id === 'string' && id.startsWith('invoice-')) {
+      const invoice = filteredData.fixos.find(i => i.id === id);
+      if (!invoice) return;
+
+      if (invoice.pago) {
+        // Se já está pago, remove o pagamento (unpay)
+        if (invoice.paymentId) await unpayInvoice(invoice.paymentId);
+      } else {
+        // Se não está pago, cria a transação de pagamento
+        const cardName = invoice.descricao.replace('Fatura ', '');
+        await payInvoice(invoice.cardId, cardName, invoice.valor, invoice.data);
+      }
+    } else {
+      await togglePaid(id);
+    }
   };
 
   const handleLogout = async () => {

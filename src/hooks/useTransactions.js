@@ -181,6 +181,27 @@ export function useTransactions(user) {
     fetchData();
   };
 
+  const payInvoice = async (cardId, cardName, valor, dataVencimento) => {
+    const { error } = await supabase.from('transacoes').insert({
+      user_id: user.id,
+      descricao: `Fatura ${cardName}`,
+      valor: valor,
+      data: dataVencimento,
+      tipo: 'fixo',
+      pago: true,
+      payment_method: 'debit',
+      parcela_info: `invoice_payment:${cardId}` // Identificador para vincular à fatura
+    });
+    if (error) console.error('Erro ao pagar fatura:', error);
+    fetchData();
+  };
+
+  const unpayInvoice = async (paymentId) => {
+    const { error } = await supabase.from('transacoes').delete().eq('id', paymentId);
+    if (error) console.error('Erro ao reabrir fatura:', error);
+    fetchData();
+  };
+
   const deleteTransaction = async (id) => {
     await supabase.from('transacoes').delete().eq('id', id);
     fetchData();
@@ -207,6 +228,8 @@ export function useTransactions(user) {
     deleteTag, 
     saveTransaction, 
     deleteTransaction, 
+    payInvoice,
+    unpayInvoice,
     togglePaid, 
     settleTransaction,
     saveCreditCard
