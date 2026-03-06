@@ -213,7 +213,8 @@ function AppContent() {
     totalVariaveis, 
     totalGastosNaoProvisionados, 
     totalGastoProvisionadoEfetivo,
-    chartData
+    chartData,
+    totalComprometido
   } = useFinancialSummary(data, currentDate);
 
   // --- Handlers ---
@@ -570,6 +571,7 @@ function AppContent() {
             chartData={chartData}
             totalVariaveis={totalVariaveis}
             openModal={openModal}
+            totalComprometido={totalComprometido}
           />} />
           <Route path="/movimentacoes" element={<Movimentacoes filteredData={filteredData} setActiveTab={handleTabChange} openModal={openModal} totalEntradas={totalEntradas} />} />
           <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />} />

@@ -117,15 +117,29 @@ export function useFinancialSummary(data, currentDate) {
 
   const summary = useMemo(() => {
     const entradasCalc = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
-    
-    // Soma apenas fixos normais e faturas PAGAS. Faturas em aberto não debitam do saldo.
-    const fixosCalc = filteredData.fixos.reduce((acc, item) => {
-      if (item.isInvoice && !item.pago) return acc;
-      return acc + item.valor;
-    }, 0);
-    
-    // IMPORTANTE: Para o cálculo de fluxo de caixa (saldo), consideramos apenas saídas em DÉBITO.
-    // As saídas em CRÉDITO só entram no fluxo quando a fatura é PAGA (via fixosCalc).
+
+    // --- NOVOS CÁLCULOS CONFORME SOLICITADO ---
+
+    // 1. Total de pagamentos fixos (inclui faturas de cartão, pagas ou não)
+    const totalFixosMensal = filteredData.fixos.reduce((acc, item) => acc + item.valor, 0);
+
+    // Total de envelopes (provisões) para o mês
+    const totalEnvelopes = (filteredData.provisoes || []).reduce((acc, item) => acc + item.valor, 0);
+
+    // Total de aportes na poupança no mês
+    const totalPoupancaEntradas = (filteredData.poupanca || [])
+      .filter(p => p.tipoPoupanca === 'entrada')
+      .reduce((acc, item) => acc + item.valor, 0);
+
+    // 2. Valor "Comprometido"
+    const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas;
+
+    // 3. "Sobra Projetada"
+    const saldoCalc = entradasCalc - totalComprometido;
+
+    // --- CÁLCULOS MANTIDOS PARA OUTRAS PARTES DO APP (GRÁFICOS, ETC) ---
+
+    // Saídas em DÉBITO. Crédito entra via pagamento de fatura.
     const variaveisCalc = filteredData.variaveis
       .filter(item => !isCredit(item))
       .reduce((acc, item) => acc + item.valor, 0);
@@ -135,17 +149,17 @@ export function useFinancialSummary(data, currentDate) {
     const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
 
     let totalGastoProvisionadoEfetivo = 0;
-    
+
     // Calcula quanto de cada tag está comprometido nas faturas PAGAS DESTE mês
     const creditUsageInPaidInvoices = {};
     (filteredData.invoices || []).forEach(inv => {
-       if (inv.pago) {
-         (inv.transactions || []).forEach(t => {
-            if (t.tagId) {
-               creditUsageInPaidInvoices[t.tagId] = (creditUsageInPaidInvoices[t.tagId] || 0) + t.valor;
-            }
-         });
-       }
+      if (inv.pago) {
+        (inv.transactions || []).forEach(t => {
+          if (t.tagId) {
+            creditUsageInPaidInvoices[t.tagId] = (creditUsageInPaidInvoices[t.tagId] || 0) + t.valor;
+          }
+        });
+      }
     });
 
     (filteredData.provisoes || []).forEach(provisao => {
@@ -153,30 +167,24 @@ export function useFinancialSummary(data, currentDate) {
         const gastosNoEnvelopeDebit = filteredData.variaveis
           .filter(g => g.tagId === provisao.tagId && !isCredit(g))
           .reduce((acc, g) => acc + g.valor, 0);
-        
+
         const creditPaid = creditUsageInPaidInvoices[provisao.tagId] || 0;
-        
-        // Subtrai apenas o crédito de faturas PAGAS (que já estão em fixosCalc)
+
+        // Subtrai apenas o crédito de faturas PAGAS
         totalGastoProvisionadoEfetivo += Math.max(gastosNoEnvelopeDebit, (provisao.valor || 0) - creditPaid);
       } else {
         totalGastoProvisionadoEfetivo += provisao.valor || 0;
       }
     });
 
-    const movimentacaoPoupanca = (filteredData.poupanca || []).reduce((acc, item) => {
-      return acc + (item.tipoPoupanca === 'entrada' ? item.valor : -item.valor);
-    }, 0);
-
-    const totalGastoFinal = fixosCalc + totalGastosNaoProvisionados + totalGastoProvisionadoEfetivo;
-    const saldoCalc = entradasCalc - totalGastoFinal - movimentacaoPoupanca;
-
     return { 
-      saldoFinal: saldoCalc, 
+      saldoFinal: saldoCalc,                 // Usa o novo cálculo de "Sobra Projetada"
       totalEntradas: entradasCalc, 
-      totalFixos: fixosCalc, 
+      totalFixos: totalFixosMensal,          // Usa o novo cálculo de "Total de Fixos"
       totalVariaveis: variaveisCalc, 
       totalGastosNaoProvisionados,
-      totalGastoProvisionadoEfetivo
+      totalGastoProvisionadoEfetivo,
+      totalComprometido: totalComprometido   // Exporta o novo valor "Comprometido"
     };
   }, [filteredData]);
 

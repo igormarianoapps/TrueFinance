@@ -36,7 +36,8 @@ export const Dashboard = ({
   filteredData,
   chartData,
   totalVariaveis,
-  openModal
+  openModal,
+  totalComprometido
 }) => {
   const navigate = useNavigate();
 
@@ -60,21 +61,6 @@ export const Dashboard = ({
     const gasto = filteredData.variaveis.filter(v => v.tagId === p.tagId).reduce((acc, v) => acc + v.valor, 0);
     return p.valor > 0 && gasto > p.valor * 0.9;
   });
-
-  // Cálculo do "Compromissos Pendentes" (Fixos em Aberto + Restante de Envelopes)
-  const fixosPendentes = filteredData.fixos
-    .filter(f => !f.pago)
-    .reduce((acc, item) => acc + item.valor, 0);
-
-  const envelopesRestantes = filteredData.provisoes.reduce((acc, item) => {
-    if (!item.tagId) return acc + item.valor;
-    const gasto = filteredData.variaveis
-      .filter(v => v.tagId === item.tagId)
-      .reduce((sum, v) => sum + v.valor, 0);
-    return acc + Math.max(0, item.valor - gasto);
-  }, 0);
-
-  const totalComprometido = fixosPendentes + envelopesRestantes;
 
   // Helper para identificar se a transação é no crédito
   const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
@@ -168,7 +154,7 @@ export const Dashboard = ({
             <div className="p-2 bg-white dark:bg-[#2A2A2A] rounded-lg border border-slate-100 dark:border-[#333] text-slate-500 dark:text-slate-300">
                <Clock size={20} />
             </div>
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-200">Compromissos Pendentes <span className="block text-xs font-normal text-slate-400 dark:text-slate-500">Fixos em Aberto + Envelopes</span></span>
+            <span className="text-sm font-bold text-slate-600 dark:text-slate-200">Total Comprometido <span className="block text-xs font-normal text-slate-400 dark:text-slate-500">Fixos + Envelopes + Poupança</span></span>
          </div>
          <span className="text-xl font-bold text-slate-600 dark:text-slate-100">{formatCurrency(totalComprometido)}</span>
       </Card>
