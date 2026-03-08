@@ -134,8 +134,14 @@ export function useFinancialSummary(data, currentDate) {
     // 2. Valor "Comprometido"
     const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas;
 
+    // Calcula gastos não provisionados (Débito) para deduzir da sobra
+    const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
+    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId) && !isCredit(g));
+    const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
+
     // 3. "Sobra Projetada"
-    const saldoCalc = entradasCalc - totalComprometido;
+    // Deduz o comprometido E os gastos variáveis que não estavam previstos nos envelopes
+    const saldoCalc = entradasCalc - totalComprometido - totalGastosNaoProvisionados;
 
     // --- CÁLCULOS MANTIDOS PARA OUTRAS PARTES DO APP (GRÁFICOS, ETC) ---
 
@@ -143,10 +149,6 @@ export function useFinancialSummary(data, currentDate) {
     const variaveisCalc = filteredData.variaveis
       .filter(item => !isCredit(item))
       .reduce((acc, item) => acc + item.valor, 0);
-
-    const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
-    const gastosNaoProvisionados = filteredData.variaveis.filter(g => !provisionedTagIds.includes(g.tagId) && !isCredit(g));
-    const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
 
     let totalGastoProvisionadoEfetivo = 0;
 
