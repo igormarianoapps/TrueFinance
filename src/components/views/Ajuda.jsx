@@ -5,7 +5,7 @@ import { HelpCircle, Calculator, Package, Calendar, TrendingUp } from 'lucide-re
 export const Ajuda = () => {
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 pb-20">
-      <div className="bg-[#3457A4] dark:bg-[#1F1F1F] text-white p-6 rounded-2xl shadow-lg">
+      <div className="bg-[var(--primary)] dark:bg-[#1F1F1F] text-white p-6 rounded-2xl shadow-lg">
         <div className="flex items-center gap-3 mb-2">
           <HelpCircle size={32} className="text-white/80" />
           <h2 className="text-2xl font-bold">Central de Ajuda</h2>

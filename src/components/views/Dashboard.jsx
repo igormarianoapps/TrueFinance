@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../ui/Card';
 import { Wallet, ArrowUpRight, ArrowDownRight, PieChart, AlertTriangle, Clock, TrendingUp, TrendingDown, Tag as TagIcon, CreditCard } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { currentTheme } from '../../themes';
 
 const BarChart = ({ data }) => {
   const maxValue = data.reduce((max, item) => Math.max(max, item.valor), 0);
@@ -116,7 +117,7 @@ export const Dashboard = ({
       {/* 1. Hero Card: Sobra Projetada */}
       <div className="bg-white dark:bg-[#1F1F1F] rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-[#1F1F1F] relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-10">
-           <img src="/piggy.png" alt="" className="w-[140px] h-[140px] object-contain" />
+           <img src={currentTheme.assets.heroImage} alt="" className="w-[140px] h-[140px] object-contain" />
          </div>
          <span className="text-sm font-medium text-slate-500 dark:text-slate-400 relative z-10">Sobra Projetada (Poder de Compra)</span>
          <div className="flex items-baseline gap-2 mt-1 relative z-10">
@@ -189,7 +190,7 @@ export const Dashboard = ({
       <div>
         <div className="flex justify-between items-center mb-3 px-1">
           <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">Últimas Saídas</h3>
-          <button onClick={() => navigate('/saidas')} className="text-xs text-[#3457A4] dark:text-blue-400 font-bold hover:underline">
+          <button onClick={() => navigate('/saidas')} className="text-xs text-[var(--primary)] dark:text-blue-400 font-bold hover:underline">
             Ver todas
           </button>
         </div>

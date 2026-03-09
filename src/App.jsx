@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
 import { useFinancialSummary } from './hooks/useSummary';
+import { applyTheme } from './themes';
 
 import { Login } from './components/auth/Login';
 import { UpdatePassword } from './components/auth/UpdatePassword';
@@ -54,7 +55,7 @@ function AppContent() {
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    document.title = "True Finance";
+    applyTheme();
   }, []);
 
   // Define o tema claro como padrão se não houver preferência salva
@@ -445,7 +446,7 @@ function AppContent() {
         </div>
         <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">{notification.title}</h2>
         <p className="text-slate-500 dark:text-slate-400 mb-6">{notification.message}</p>
-        <button onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))} className="w-full p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
+        <button onClick={() => setNotification(prev => ({ ...prev, isOpen: false }))} className="w-full p-3 rounded-xl font-bold text-white bg-[var(--primary)] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
           OK
         </button>
       </div>
@@ -466,7 +467,7 @@ function AppContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#E6EAF7] dark:bg-[#0C0C0C] font-sans text-slate-600 dark:text-slate-300 pb-10">
+    <div className="min-h-screen bg-[var(--background)] dark:bg-[#0C0C0C] font-sans text-slate-600 dark:text-slate-300 pb-10">
       <Sidebar 
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
@@ -487,7 +488,7 @@ function AppContent() {
         }}
       >
         <div className="bg-white dark:bg-[#1F1F1F] p-2 rounded-full shadow-md border border-slate-100 dark:border-[#333] flex items-center justify-center w-10 h-10">
-          <RefreshCw size={20} className={`text-[#3457A4] dark:text-blue-400 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: isRefreshing ? 'none' : `rotate(${pullChange * 2}deg)` }} />
+          <RefreshCw size={20} className={`text-[var(--primary)] dark:text-blue-400 ${isRefreshing ? 'animate-spin' : ''}`} style={{ transform: isRefreshing ? 'none' : `rotate(${pullChange * 2}deg)` }} />
         </div>
       </div>
 
@@ -526,7 +527,7 @@ function AppContent() {
             <p className="text-slate-500 dark:text-slate-400 mb-6">{confirmConfig.message}</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 p-3 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-[#2A2A2A] dark:text-slate-200 dark:hover:bg-[#333] transition-colors">Cancelar</button>
-              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[#3457A4] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
+              <button onClick={confirmConfig.onConfirm} className="flex-1 p-3 rounded-xl font-bold text-white bg-[var(--primary)] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">Sim, confirmar</button>
             </div>
           </div>
         </div>
@@ -537,7 +538,7 @@ function AppContent() {
 
       {/* Header Fixo */}
       <div className="sticky top-0 z-30 shadow-md">
-        <header className="bg-[#3457A4] dark:bg-[#0B0C0C] px-4 py-3 flex items-center justify-between">
+        <header className="bg-[var(--primary)] dark:bg-[#0B0C0C] px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setIsMenuOpen(true)} className="p-2 text-white hover:bg-white/10 rounded-lg transition-colors">
               <Menu size={24} />
@@ -548,11 +549,11 @@ function AppContent() {
         {!['Perfil', 'Tags', 'Dashboard', 'Ajuda'].includes(activeTab) && (
           <div className="bg-white dark:bg-[#1F1F1F] w-full">
             <div className="flex items-center justify-between gap-4 p-3 max-w-lg mx-auto">
-              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
-              <span className="text-lg font-bold text-[#3457A4] dark:text-slate-100 uppercase text-center">
+              <button onClick={handlePrevMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[var(--primary)] dark:text-slate-200 transition-all active:scale-95"><ChevronLeft size={24}/></button>
+              <span className="text-lg font-bold text-[var(--primary)] dark:text-slate-100 uppercase text-center">
                 {currentDate.toLocaleDateString('pt-BR', { month: 'long' })} {currentDate.getFullYear()}
               </span>
-              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[#3457A4] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
+              <button onClick={handleNextMonth} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2A2A2A] text-[var(--primary)] dark:text-slate-200 transition-all active:scale-95"><ChevronRight size={24}/></button>
             </div>
           </div>
         )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { X } from 'lucide-react';
 import { TermsOfUse, PrivacyPolicy } from './LegalDocs';
+import { currentTheme } from '../../themes';
 
 export const Login = ({ showNotification }) => {
   const [loading, setLoading] = useState(false);
@@ -94,20 +95,20 @@ export const Login = ({ showNotification }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#3457A4] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--primary)] p-4">
       <div className="bg-white dark:bg-[#1F1F1F] p-8 rounded-xl shadow-md w-full max-w-sm">
         <div className="flex justify-center mb-6">
-          <img src="/logopiggy.png" alt="True Finance" className="w-32 object-contain dark:hidden" />
-          <img src="/logopiggydark.png" alt="True Finance" className="w-32 object-contain hidden dark:block" />
+          <img src={currentTheme.assets.logo} alt={currentTheme.labels.appName} className="w-32 object-contain dark:hidden" />
+          <img src={currentTheme.assets.logoDark} alt={currentTheme.labels.appName} className="w-32 object-contain hidden dark:block" />
         </div>
         <form className="space-y-4" onSubmit={handleLogin}>
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200 dark:bg-[#2A2A2A] dark:border-[#333] dark:text-slate-200" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
           <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200 dark:bg-[#2A2A2A] dark:border-[#333] dark:text-slate-200" type="password" placeholder="Senha" value={password} onChange={e => setPassword(e.target.value)} required />
-          <button type="submit" disabled={loading} className="w-full bg-[#3457A4] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
+          <button type="submit" disabled={loading} className="w-full bg-[var(--primary)] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity">{loading ? 'Carregando...' : 'Entrar'}</button>
           
           <div className="flex justify-between text-sm mt-4">
             <button type="button" onClick={() => { setShowSignUp(true); setTermsAccepted(false); }} className="text-[#E95415] font-semibold hover:underline">Cadastrar</button>
-            <button type="button" onClick={() => setShowForgot(true)} className="text-[#3458A4] hover:opacity-80">Esqueci minha senha</button>
+            <button type="button" onClick={() => setShowForgot(true)} className="text-[var(--primary)] hover:opacity-80">Esqueci minha senha</button>
           </div>
         </form>
       </div>
@@ -130,14 +131,14 @@ export const Login = ({ showNotification }) => {
                   id="terms" 
                   checked={termsAccepted} 
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="mt-1 rounded border-slate-300 text-[#3457A4] focus:ring-[#3457A4] cursor-pointer"
+                  className="mt-1 rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)] cursor-pointer"
                 />
                 <label htmlFor="terms" className="text-sm text-slate-500 dark:text-slate-400 cursor-pointer select-none">
-                  Li e aceito os <button type="button" onClick={() => setActiveDoc('terms')} className="text-[#3457A4] font-bold hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setActiveDoc('privacy')} className="text-[#3457A4] font-bold hover:underline">Política de Privacidade</button>.
+                  Li e aceito os <button type="button" onClick={() => setActiveDoc('terms')} className="text-[var(--primary)] font-bold hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setActiveDoc('privacy')} className="text-[var(--primary)] font-bold hover:underline">Política de Privacidade</button>.
                 </label>
               </div>
 
-              <button type="submit" disabled={loading} className="w-full bg-[#3457A4] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity mt-2">{loading ? 'Enviando...' : 'Cadastrar'}</button>
+              <button type="submit" disabled={loading} className="w-full bg-[var(--primary)] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity mt-2">{loading ? 'Enviando...' : 'Cadastrar'}</button>
             </form>
           </div>
         </div>
@@ -152,7 +153,7 @@ export const Login = ({ showNotification }) => {
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Digite seu email para receber o link de redefinição.</p>
             <form onSubmit={handleForgotPassword} className="space-y-3">
               <input className="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-slate-200 dark:bg-[#2A2A2A] dark:border-[#333] dark:text-slate-200" type="email" placeholder="Email cadastrado" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required />
-              <button type="submit" disabled={loading} className="w-full bg-slate-900 text-white p-3 rounded-lg font-bold hover:bg-slate-800 transition-colors mt-2">{loading ? 'Enviando...' : 'Enviar Email'}</button>
+              <button type="submit" disabled={loading} className="w-full bg-[var(--primary)] text-white p-3 rounded-lg font-bold hover:opacity-90 transition-opacity mt-2">{loading ? 'Enviando...' : 'Enviar Email'}</button>
             </form>
           </div>
         </div>

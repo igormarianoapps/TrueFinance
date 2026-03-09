@@ -30,7 +30,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
 
         <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-blue-800 shadow-sm">
           <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total</p>
-          <p className="text-sm font-bold text-[#3457A4] truncate">
+          <p className="text-sm font-bold text-[var(--primary)] truncate">
             {formatCurrency(totalFixos)}
           </p>
         </Card>
@@ -39,7 +39,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
       <div>
         <div className="flex justify-between items-end mb-3 ml-1 mr-1">
           <h3 className="text-sm font-bold text-slate-500 uppercase dark:text-slate-400">Pagamentos Mensais Fixos</h3>
-          <button onClick={() => openModal('fixo')} className="text-xs text-blue-600 font-semibold hover:underline dark:text-blue-400">+ Adicionar</button>
+          <button onClick={() => openModal('fixo')} className="text-xs text-[var(--primary)] font-semibold hover:underline dark:text-[var(--primary)]">+ Adicionar</button>
         </div>
         <div className="space-y-2">
           {filteredData.fixos.map(item => (
@@ -75,7 +75,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
       <div>
         <div className="flex justify-between items-end mb-3 ml-1 mr-1">
           <h3 className="text-sm font-bold text-slate-500 uppercase dark:text-slate-400">Envelopes (Provisões)</h3>
-          <button onClick={() => openModal('provisao')} className="text-xs text-blue-600 font-semibold hover:underline dark:text-blue-400">+ Adicionar</button>
+          <button onClick={() => openModal('provisao')} className="text-xs text-[var(--primary)] font-semibold hover:underline dark:text-[var(--primary)]">+ Adicionar</button>
         </div>
         <div className="space-y-3">
           {filteredData.provisoes.map(provisao => {
@@ -106,7 +106,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2.5 dark:bg-slate-700">
                   <div 
-                    className={`h-2.5 rounded-full ${percentual > 100 ? 'bg-red-500' : 'bg-blue-600'}`}
+                    className={`h-2.5 rounded-full ${percentual > 100 ? 'bg-red-500' : 'bg-[var(--primary)]'}`}
                     style={{ width: `${Math.min(percentual, 100)}%` }}
                   ></div>
                 </div>

@@ -14,7 +14,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
                 </div>
                 <button 
                     onClick={() => setActiveTab(fullViewTab)}
-                    className="flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-[#3457A4] dark:hover:text-white"
+                    className="flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-[var(--primary)] dark:hover:text-white"
                 >
                     Ver tudo <ArrowRight size={14} />
                 </button>
@@ -25,7 +25,7 @@ const Section = ({ title, icon: Icon, fullViewTab, setActiveTab, onAddClick, add
             <button 
 
                 onClick={onAddClick}
-                className="w-full bg-[#3457A4] dark:bg-[#3457A4] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[#3457A4] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
+                className="w-full bg-[var(--primary)] dark:bg-[var(--primary)] hover:opacity-90 text-white font-semibold p-3 text-sm border-t border-[var(--primary)] dark:border-[#0B0C0C] rounded-b-lg flex items-center justify-center gap-2 transition-colors"
             >
                 <PlusCircle size={16} />
                 {addLabel}
@@ -154,7 +154,7 @@ export const Movimentacoes = ({ filteredData, setActiveTab, openModal, totalEntr
             >
                 <div className="text-center py-4">
                     <p className="text-sm text-slate-500 dark:text-slate-400">Total de faturas este mês</p>
-                    <p className="text-3xl font-bold text-[#3457A4] dark:text-[#3457A4]">{formatCurrency(totalFaturas)}</p>
+                    <p className="text-3xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">{formatCurrency(totalFaturas)}</p>
                 </div>
             </Section>
         </div>

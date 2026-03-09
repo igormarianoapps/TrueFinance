@@ -3,6 +3,7 @@ import {
   PieChart, ArrowLeftRight, Tag, Wallet, LogOut, X, User, LineChart, HelpCircle
 } from 'lucide-react';
 import { supabase } from './supabaseClient';
+import { currentTheme } from './themes';
 
 export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, setShowLogoutConfirm, user, isPro, setShowPaywall }) => {
   const menuItems = [
@@ -91,7 +92,7 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
             <button
               key={item.id}
               onClick={() => handleTabClick(item)}
-              className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all relative ${activeTab === item.id ? 'bg-[#3457A4] dark:bg-[#3457A4] text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2A2A2A]'}`}
+              className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all relative ${activeTab === item.id ? 'bg-[var(--primary)] dark:bg-[var(--primary)] text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2A2A2A]'}`}
             >
               <item.icon size={20} />
               <span className="font-medium">{item.id}</span>
@@ -104,8 +105,8 @@ export const Sidebar = ({ isMenuOpen, setIsMenuOpen, activeTab, setActiveTab, se
         <div className="p-3 mt-auto">
           <div className="w-full h-px bg-slate-200 dark:bg-slate-800 mb-2"></div>
           <div className="flex justify-center">
-            <img src="/logopiggy.png" alt="Logo" className="w-28 mb-2 object-contain dark:hidden" />
-            <img src="/logopiggydark.png" alt="Logo" className="w-28 mb-2 object-contain hidden dark:block" />
+            <img src={currentTheme.assets.logo} alt={currentTheme.labels.appName} className="w-28 mb-2 object-contain dark:hidden" />
+            <img src={currentTheme.assets.logoDark} alt={currentTheme.labels.appName} className="w-28 mb-2 object-contain hidden dark:block" />
           </div>
           <div className="w-full h-px bg-slate-200 dark:bg-slate-800 mb-2"></div>
 
