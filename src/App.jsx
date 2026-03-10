@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle, RefreshCw, Info } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { useTransactions } from './hooks/useTransactions';
@@ -82,6 +82,7 @@ function AppContent() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
   const [notification, setNotification] = useState({ isOpen: false, title: '', message: '', type: 'success' });
+  const [showLeftoverInfo, setShowLeftoverInfo] = useState(false);
 
   // Pull to Refresh State
   const [pullStartPoint, setPullStartPoint] = useState(0);
@@ -533,6 +534,25 @@ function AppContent() {
         </div>
       )}
 
+      {/* Modal de Informação da Sobra */}
+      {showLeftoverInfo && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white dark:bg-[#1F1F1F] w-full max-w-sm rounded-2xl p-6 shadow-xl text-center">
+            <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-4 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <Info size={24} />
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-slate-800 dark:text-slate-100">Sobra do Mês Anterior</h2>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">
+                Este valor corresponde ao saldo positivo da sua "Sobra Projetada" do mês passado.
+                Ele é adicionado aqui automaticamente para ajudar no seu planejamento, sem afetar o cálculo do seu patrimônio.
+            </p>
+            <button onClick={() => setShowLeftoverInfo(false)} className="w-full p-3 rounded-xl font-bold text-white bg-[var(--primary)] dark:bg-[#0B0C0C] hover:opacity-90 transition-opacity shadow-lg">
+                Entendi
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modal Notification (Success/Error) */}
       {notificationModal}
 
@@ -575,7 +595,7 @@ function AppContent() {
             totalComprometido={totalComprometido}
           />} />
           <Route path="/movimentacoes" element={<Movimentacoes filteredData={filteredData} setActiveTab={handleTabChange} openModal={openModal} totalEntradas={totalEntradas} />} />
-          <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} setShowLeftoverInfo={setShowLeftoverInfo} />} />
           <Route path="/anual" element={<AnnualDashboard data={data} />} />
           <Route path="/fixos" element={<FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />} />
           <Route path="/saidas" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />

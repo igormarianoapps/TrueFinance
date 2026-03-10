@@ -1,6 +1,69 @@
 import { useMemo } from 'react';
 
 export function useFinancialSummary(data, currentDate) {
+  const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
+
+  const previousMonthSaldo = useMemo(() => {
+    const prevDate = new Date(currentDate);
+    prevDate.setDate(1);
+    prevDate.setMonth(prevDate.getMonth() - 1);
+
+    const month = prevDate.getMonth();
+    const year = prevDate.getFullYear();
+
+    const filterFn = (item) => {
+      if (!item.data) return false;
+      const [itemYear, itemMonth] = item.data.split('-').map(Number);
+      return (itemMonth - 1) === month && itemYear === year;
+    };
+
+    const invoices = (data.creditCards || []).map(card => {
+      const closingDay = parseInt(card.closing_date);
+      const dueDay = parseInt(card.due_date);
+
+      const getClampedDate = (y, m, d) => {
+        const lastDay = new Date(y, m + 1, 0).getDate();
+        return new Date(y, m, Math.min(d, lastDay));
+      };
+
+      let closingDateThisMonth, closingDateLastMonth;
+
+      if (closingDay <= dueDay) {
+        closingDateThisMonth = getClampedDate(year, month, closingDay);
+        closingDateLastMonth = getClampedDate(year, month - 1, closingDay);
+      } else {
+        closingDateThisMonth = getClampedDate(year, month - 1, closingDay);
+        closingDateLastMonth = getClampedDate(year, month - 2, closingDay);
+      }
+
+      const cardTransactions = data.variaveis.filter(t => {
+        if (t.creditCardId !== card.id) return false;
+        const tDate = new Date(t.data + 'T00:00:00');
+        return tDate > closingDateLastMonth && tDate <= closingDateThisMonth;
+      });
+
+      const totalInvoice = cardTransactions.reduce((acc, t) => acc + t.valor, 0);
+      return { valor: totalInvoice };
+    });
+
+    const prevMonthEntradas = data.entradas.filter(filterFn);
+    const prevMonthFixos = [...(data.fixos || []).filter(filterFn).filter(t => !t.parcelaInfo?.startsWith('invoice_payment:')), ...invoices];
+    const prevMonthVariaveis = data.variaveis.filter(filterFn);
+    const prevMonthProvisoes = (data.provisoes || []).filter(filterFn);
+    const prevMonthPoupanca = (data.poupanca || []).filter(filterFn);
+    
+    const entradasCalc = prevMonthEntradas.reduce((acc, item) => acc + item.valor, 0);
+    const totalFixosMensal = prevMonthFixos.reduce((acc, item) => acc + item.valor, 0);
+    const totalEnvelopes = prevMonthProvisoes.reduce((acc, item) => acc + item.valor, 0);
+    const totalPoupancaEntradas = prevMonthPoupanca.filter(p => p.tipoPoupanca === 'entrada').reduce((acc, item) => acc + item.valor, 0);
+    const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas;
+    const provisionedTagIds = prevMonthProvisoes.map(p => p.tagId).filter(Boolean);
+    const gastosNaoProvisionados = prevMonthVariaveis.filter(g => !provisionedTagIds.includes(g.tagId) && !isCredit(g));
+    const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
+    const saldoCalc = entradasCalc - totalComprometido - totalGastosNaoProvisionados;
+    return saldoCalc > 0 ? saldoCalc : 0;
+  }, [data, currentDate]);
+
   const filteredData = useMemo(() => {
     const month = currentDate.getMonth();
     const year = currentDate.getFullYear();
@@ -78,8 +141,21 @@ export function useFinancialSummary(data, currentDate) {
       };
     }).filter(Boolean);
 
+    const currentMonthEntradas = data.entradas.filter(filterFn);
+
+    if (previousMonthSaldo > 0) {
+      const leftoverEntry = {
+        id: 'leftover-previous-month',
+        descricao: 'Sobra do mês anterior',
+        valor: previousMonthSaldo,
+        data: new Date(year, month, 1).toISOString().split('T')[0],
+        isLeftover: true,
+      };
+      currentMonthEntradas.unshift(leftoverEntry);
+    }
+
     return {
-      entradas: data.entradas.filter(filterFn),
+      entradas: currentMonthEntradas,
       fixos: [...(data.fixos || []).filter(filterFn)
         .filter(t => !t.parcelaInfo?.startsWith('invoice_payment:')), // Oculta as transações de pagamento para não duplicar com a fatura
         ...invoices
@@ -107,13 +183,9 @@ export function useFinancialSummary(data, currentDate) {
       poupanca: (data.poupanca || []).filter(filterFn),
       tags: data.tags,
       creditCards: data.creditCards || [],
-      invoices: invoices // Expõe as faturas calculadas
+      invoices: invoices,
     };
-  }, [data, currentDate]);
-
-  // Helper para identificar transação de crédito (usa creditCardId como fallback seguro)
-  // Definido aqui para ser usado tanto no summary quanto no chartData
-  const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
+  }, [data, currentDate, previousMonthSaldo]);
 
   const summary = useMemo(() => {
     const entradasCalc = filteredData.entradas.reduce((acc, item) => acc + item.valor, 0);
@@ -188,7 +260,7 @@ export function useFinancialSummary(data, currentDate) {
       totalGastoProvisionadoEfetivo,
       totalComprometido: totalComprometido   // Exporta o novo valor "Comprometido"
     };
-  }, [filteredData]);
+  }, [filteredData, isCredit]);
 
   const chartData = useMemo(() => {
     const grouped = {};
@@ -206,7 +278,7 @@ export function useFinancialSummary(data, currentDate) {
       valor: grouped[key].valor,
       cor: grouped[key].color
     })).sort((a, b) => b.valor - a.valor);
-  }, [filteredData.variaveis, filteredData.tags]);
+  }, [filteredData.variaveis, filteredData.tags, isCredit]);
 
   return { ...summary, filteredData, chartData };
 }

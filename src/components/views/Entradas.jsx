@@ -1,42 +1,68 @@
 import React from 'react';
 import { Card } from '../ui/Card';
 import { Fab } from '../ui/Fab';
-import { TrendingUp, Edit2, Trash2 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import { TrendingUp, Edit, Trash2, Info, Plus } from 'lucide-react';
 
-export const Entradas = ({ filteredData, totalEntradas, openModal, handleDelete }) => {
+export const Entradas = ({ filteredData, totalEntradas, openModal, handleDelete, setShowLeftoverInfo }) => {
   return (
-    <div className="space-y-4 pb-20 animate-in slide-in-from-right-4">
-      <Card className="bg-green-50 border-green-100 dark:bg-green-900/20 dark:border-green-900">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-100 rounded-full text-green-600 dark:bg-green-900/40 dark:text-green-400">
-            <TrendingUp size={20} />
-          </div>
+    <div className="space-y-6 pb-20 animate-in slide-in-from-right-4">
+      {/* Total Card */}
+      <Card className="bg-white dark:bg-[#1F1F1F]">
+        <div className="flex justify-between items-center">
           <div>
-            <p className="text-xs text-green-700 font-semibold uppercase dark:text-green-400">Total Recebido</p>
-            <p className="text-2xl font-bold text-green-800 dark:text-green-300">{formatCurrency(totalEntradas)}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Total de Entradas no Mês</p>
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">{formatCurrency(totalEntradas)}</p>
+          </div>
+          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+            <TrendingUp className="text-emerald-600 dark:text-emerald-500" size={24} />
           </div>
         </div>
       </Card>
-      
-      <div className="space-y-3">
-        {filteredData.entradas.map(item => (
-          <Card key={item.id} className="flex justify-between items-center py-3 bg-white dark:bg-[#1F1F1F]">
-            <div>
-              <p className="font-semibold text-slate-800 dark:text-slate-200">{item.descricao}</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500">{new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</p>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <span className="font-bold text-green-600 dark:text-green-500">{formatCurrency(item.valor)}</span>
-              <div className="flex gap-2">
-                <button onClick={() => openModal('entrada', item)} className="text-slate-400 hover:text-blue-500"><Edit2 size={14}/></button>
-                <button onClick={() => handleDelete(item.id, 'entrada')} className="text-slate-400 hover:text-red-500"><Trash2 size={14}/></button>
+
+      {/* List of Entries */}
+      <div className="space-y-2">
+        {filteredData.entradas.map(item => {
+          const isLeftover = item.isLeftover;
+
+          return (
+            <Card 
+              key={item.id} 
+              className={`p-3 flex justify-between items-center bg-white dark:bg-[#1F1F1F] transition-opacity ${isLeftover ? 'opacity-70' : ''}`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                {isLeftover && (
+                  <button onClick={() => setShowLeftoverInfo(true)} className="p-2 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex-shrink-0 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                    <Info size={18} />
+                  </button>
+                )}
+                <div className="min-w-0">
+                  <p className={`font-semibold text-slate-700 dark:text-slate-200 truncate ${isLeftover ? 'italic' : ''}`}>{item.descricao}</p>
+                  <p className="text-xs text-slate-400">{new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-emerald-600 dark:text-emerald-500 whitespace-nowrap">{formatCurrency(item.valor)}</span>
+                
+                {!isLeftover && (
+                  <>
+                    <button onClick={() => openModal('entrada', item)} className="p-2 text-slate-400 hover:text-blue-500 rounded-md hover:bg-slate-100 dark:hover:bg-[#2A2A2A]"><Edit size={16}/></button>
+                    <button onClick={() => handleDelete(item.id, 'entrada')} className="p-2 text-slate-400 hover:text-red-500 rounded-md hover:bg-slate-100 dark:hover:bg-[#2A2A2A]"><Trash2 size={16}/></button>
+                  </>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+
+        {filteredData.entradas.length === 0 && (
+          <div className="text-center py-8 text-slate-400 text-sm bg-white dark:bg-[#1F1F1F] rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+            Nenhuma entrada registrada neste mês.
+          </div>
+        )}
       </div>
-      <Fab onClick={() => openModal('entrada')} />
+
+      <Fab onClick={() => openModal('entrada')}><Plus size={24} /></Fab>
     </div>
   );
 };
