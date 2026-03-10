@@ -11,6 +11,22 @@ export function useFinancialSummary(data, currentDate) {
     const month = prevDate.getMonth();
     const year = prevDate.getFullYear();
 
+    // --- NOVA ESTRATÉGIA ---
+    // Verifica se o mês para o qual estamos calculando a sobra já terminou.
+    // A sobra só deve ser contabilizada após o fechamento completo do mês de origem.
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normaliza para o início do dia
+
+    // O primeiro dia do mês SEGUINTE ao que estamos calculando a sobra.
+    // Ex: Se a sobra é de Março (mês 2), esta data será 1º de Abril (mês 3).
+    const firstDayOfNextMonth = new Date(year, month + 1, 1);
+
+    // Se hoje for ANTES do primeiro dia do mês seguinte, significa que o mês de origem ainda não acabou.
+    // Neste caso, a sobra deve ser 0 para não atrapalhar o planejamento.
+    if (today < firstDayOfNextMonth) {
+      return 0;
+    }
+
     const filterFn = (item) => {
       if (!item.data) return false;
       const [itemYear, itemMonth] = item.data.split('-').map(Number);
