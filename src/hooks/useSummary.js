@@ -7,9 +7,14 @@ export function useFinancialSummary(data, currentDate) {
     const prevDate = new Date(currentDate);
     prevDate.setDate(1);
     prevDate.setMonth(prevDate.getMonth() - 1);
+    
+    // Mês e ano de ORIGEM da sobra (ex: se estou em Abril, a sobra vem de Março)
+    const prevMonth = prevDate.getMonth();
+    const prevYear = prevDate.getFullYear();
 
-    const month = prevDate.getMonth();
-    const year = prevDate.getFullYear();
+    // Mês e ano ATUAL da visualização (ex: Abril)
+    const viewMonth = currentDate.getMonth();
+    const viewYear = currentDate.getFullYear();
 
     // --- NOVA ESTRATÉGIA ---
     // Verifica se o mês para o qual estamos calculando a sobra já terminou.
@@ -19,66 +24,44 @@ export function useFinancialSummary(data, currentDate) {
 
     // O primeiro dia do mês SEGUINTE ao que estamos calculando a sobra.
     // Ex: Se a sobra é de Março (mês 2), esta data será 1º de Abril (mês 3).
-    const firstDayOfNextMonth = new Date(year, month + 1, 1);
+    const firstDayOfNextMonth = new Date(prevYear, prevMonth + 1, 1);
 
     // Se hoje for ANTES do primeiro dia do mês seguinte, significa que o mês de origem ainda não acabou.
-    // Neste caso, a sobra deve ser 0 para não atrapalhar o planejamento.
     if (today < firstDayOfNextMonth) {
       return 0;
     }
 
-    const filterFn = (item) => {
-      if (!item.data) return false;
-      const [itemYear, itemMonth] = item.data.split('-').map(Number);
-      return (itemMonth - 1) === month && itemYear === year;
-    };
-
-    const invoices = (data.creditCards || []).map(card => {
-      const closingDay = parseInt(card.closing_date);
-      const dueDay = parseInt(card.due_date);
-
-      const getClampedDate = (y, m, d) => {
-        const lastDay = new Date(y, m + 1, 0).getDate();
-        return new Date(y, m, Math.min(d, lastDay));
-      };
-
-      let closingDateThisMonth, closingDateLastMonth;
-
-      if (closingDay <= dueDay) {
-        closingDateThisMonth = getClampedDate(year, month, closingDay);
-        closingDateLastMonth = getClampedDate(year, month - 1, closingDay);
-      } else {
-        closingDateThisMonth = getClampedDate(year, month - 1, closingDay);
-        closingDateLastMonth = getClampedDate(year, month - 2, closingDay);
-      }
-
-      const cardTransactions = data.variaveis.filter(t => {
-        if (t.creditCardId !== card.id) return false;
-        const tDate = new Date(t.data + 'T00:00:00');
-        return tDate > closingDateLastMonth && tDate <= closingDateThisMonth;
-      });
-
-      const totalInvoice = cardTransactions.reduce((acc, t) => acc + t.valor, 0);
-      return { valor: totalInvoice };
-    });
-
-    const prevMonthEntradas = data.entradas.filter(filterFn);
-    const prevMonthFixos = [...(data.fixos || []).filter(filterFn).filter(t => !t.parcelaInfo?.startsWith('invoice_payment:')), ...invoices];
-    const prevMonthVariaveis = data.variaveis.filter(filterFn);
-    const prevMonthProvisoes = (data.provisoes || []).filter(filterFn);
-    const prevMonthPoupanca = (data.poupanca || []).filter(filterFn);
+    // Data limite: Primeiro dia do mês que estamos visualizando agora
+    // Usamos formatação manual para evitar deslocamento de fuso horário do toISOString
+    const limitDate = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-01`;
     
-    const entradasCalc = prevMonthEntradas.reduce((acc, item) => acc + item.valor, 0);
-    const totalFixosMensal = prevMonthFixos.reduce((acc, item) => acc + item.valor, 0);
-    const totalEnvelopes = prevMonthProvisoes.reduce((acc, item) => acc + item.valor, 0);
-    const totalPoupancaEntradas = prevMonthPoupanca.filter(p => p.tipoPoupanca === 'entrada').reduce((acc, item) => acc + item.valor, 0);
-    const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas;
-    const provisionedTagIds = prevMonthProvisoes.map(p => p.tagId).filter(Boolean);
-    const gastosNaoProvisionados = prevMonthVariaveis.filter(g => !provisionedTagIds.includes(g.tagId) && !isCredit(g));
-    const totalGastosNaoProvisionados = gastosNaoProvisionados.reduce((acc, g) => acc + g.valor, 0);
-    const saldoCalc = entradasCalc - totalComprometido - totalGastosNaoProvisionados;
-    return saldoCalc > 0 ? saldoCalc : 0;
-  }, [data, currentDate]);
+    // 1. Soma de TODAS as entradas da história até o mês passado
+    const totalEntradasHistorico = (data.entradas || [])
+      .filter(item => item.data < limitDate)
+      .reduce((acc, item) => acc + item.valor, 0);
+
+    // 2. Soma de TODOS os gastos efetivos (Débito) da história até o mês passado
+    const totalGastosEfetivosHistorico = (data.variaveis || [])
+      .filter(item => item.data < limitDate && !isCredit(item))
+      .reduce((acc, item) => acc + item.valor, 0);
+
+    // 3. Soma de saídas de dinheiro da conta (Fixos pagos e Aportes na Poupança)
+    const totalSaidasPatrimoniais = [
+      ...data.fixos.filter(item => item.pago),
+      ...data.poupanca.filter(item => item.tipoPoupanca === 'entrada')
+    ].filter(item => item.data < limitDate)
+     .reduce((acc, item) => acc + item.valor, 0);
+
+    // 4. Soma de entradas de dinheiro na conta vindo da poupança (Resgates)
+    const totalResgatesPoupanca = (data.poupanca || [])
+      .filter(item => item.data < limitDate && item.tipoPoupanca === 'saida')
+      .reduce((acc, item) => acc + item.valor, 0);
+
+    const saldoRealAcumulado = (totalEntradasHistorico + totalResgatesPoupanca) - totalGastosEfetivosHistorico - totalSaidasPatrimoniais;
+    
+    // Arredondamos para evitar problemas de precisão do JS (ex: 0.000000001)
+    return saldoRealAcumulado > 0.01 ? Math.round(saldoRealAcumulado * 100) / 100 : 0;
+  }, [data, currentDate, isCredit]);
 
   const filteredData = useMemo(() => {
     const month = currentDate.getMonth();
