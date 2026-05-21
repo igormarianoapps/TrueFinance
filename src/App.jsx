@@ -285,18 +285,22 @@ function AppContent() {
   };
 
   const handleSettle = (item) => {
-    if (!item.groupId) {
+    // Se não tiver groupId, não é uma recorrência, então avisamos o usuário
+    if (!item || !item.groupId) {
       showNotification("Ação inválida", "Apenas pagamentos recorrentes podem ser quitados.", "error");
       return;
     }
 
     setConfirmConfig({
       isOpen: true,
-      title: `Quitar "${item.descricao}"?`,
-      message: 'Isso removerá este item e todas as cobranças futuras desta recorrência. Os meses anteriores serão preservados.',
+      title: `Quitar Recorrência?`,
+      message: `Isso removerá "${item.descricao}" deste mês e de todos os meses futuros. O histórico dos meses passados será mantido.`,
       onConfirm: async () => {
-        await settleTransaction(item.groupId, item.data);
-        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        try {
+          await settleTransaction(item.groupId, item.data);
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        }
       }
     });
   };
@@ -599,11 +603,11 @@ function AppContent() {
             openModal={openModal}
             totalComprometido={totalComprometido}
           />} />
-          <Route path="/movimentacoes" element={<Movimentacoes filteredData={filteredData} setActiveTab={handleTabChange} openModal={openModal} totalEntradas={totalEntradas} />} />
+          <Route path="/movimentacoes" element={<Movimentacoes filteredData={filteredData} setActiveTab={handleTabChange} openModal={openModal} totalEntradas={totalEntradas} handleSettle={handleSettle} />} />
           <Route path="/entradas" element={<Entradas filteredData={filteredData} totalEntradas={totalEntradas} openModal={openModal} handleDelete={handleDelete} setShowLeftoverInfo={setShowLeftoverInfo} />} />
           <Route path="/anual" element={<AnnualDashboard data={data} />} />
           <Route path="/fixos" element={<FixosEProvisoes filteredData={filteredData} openModal={openModal} handleDelete={handleDelete} handleTogglePaid={handleTogglePaid} handleSettle={handleSettle} />} />
-          <Route path="/saidas" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} />} />
+          <Route path="/saidas" element={<Variaveis filteredData={filteredData} totalVariaveis={totalVariaveis} openModal={openModal} handleDelete={handleDelete} handleSettle={handleSettle} />} />
           <Route path="/cartoes" element={<Cards creditCards={filteredData.creditCards || []} invoices={filteredData.invoices || []} openModal={openModal} />} />
           <Route path="/tags" element={<Tags filteredData={filteredData} openModal={openModal} />} />
           <Route path="/patrimonio" element={<Patrimonio data={data} filteredData={filteredData} currentDate={currentDate} openModal={openModal} handleDelete={handleDelete} />} />

@@ -216,18 +216,20 @@ export function useTransactions(user) {
   };
 
   const settleTransaction = async (groupId, dateLimit) => {
-    if (!groupId) {
-      console.warn('Tentativa de quitar transação sem Group ID');
-      return;
-    }
+    try {
+      if (!groupId) return;
 
-    const { error } = await supabase.from('transacoes')
-      .delete()
-      .eq('group_id', groupId)
-      .gte('data', dateLimit); // Alterado para gte para incluir o mês atual
-    
-    if (error) console.error('Erro ao quitar transação:', error);
-    fetchData();
+      const { error } = await supabase
+        .from('transacoes')
+        .delete()
+        .eq('group_id', groupId)
+        .gte('data', dateLimit);
+
+      if (error) throw error;
+      await fetchData();
+    } catch (error) {
+      console.error('Erro ao quitar transação:', error);
+    }
   };
 
   return { 
