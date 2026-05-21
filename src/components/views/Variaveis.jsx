@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/Card';
 import { Fab } from '../ui/Fab';
 import { formatCurrency } from '../../utils/formatters';
-import { Trash2, Tag as TagIcon, CreditCard, Wallet, CheckCheck } from 'lucide-react';
+import { Trash2, Tag as TagIcon, CreditCard, Wallet, CheckCheck, Edit2, MoreVertical } from 'lucide-react';
 
 export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelete, handleSettle }) => {
+  const [activeMenu, setActiveMenu] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => setActiveMenu(null);
+    if (activeMenu) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeMenu]);
+
   // Helper para identificar se a transação é no crédito
   const isCredit = (item) => item.paymentMethod === 'credit' || (item.creditCardId !== null && item.creditCardId !== undefined);
 
@@ -59,21 +69,40 @@ export const Variaveis = ({ filteredData, totalVariaveis, openModal, handleDelet
                     <p className="text-xs text-slate-400">{tag?.nome || 'Sem Categoria'}</p>
                   </div>
                 </div>
-                <div className="text-right">
+              <div className="flex items-center gap-2">
                   <p className="font-bold text-red-500 dark:text-red-400">{formatCurrency(item.valor)}</p>
-                  <div className="flex gap-2 justify-end mt-1">
-                    {item.groupId && (
+                <div className="relative">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === item.id ? null : item.id); }}
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-[#2A2A2A] rounded-full transition-colors"
+                  >
+                    <MoreVertical size={20} className="text-slate-400" />
+                  </button>
+                  
+                  {activeMenu === item.id && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#2A2A2A] rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 overflow-hidden py-1 animate-in fade-in zoom-in-95">
+                      {item.groupId && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleSettle(item); setActiveMenu(null); }} 
+                          className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-[#333] text-slate-700 dark:text-slate-200 transition-colors"
+                        >
+                          <CheckCheck size={14} className="text-green-600"/> Quitar Recorrência
+                        </button>
+                      )}
                       <button 
-                        onClick={(e) => { e.stopPropagation(); handleSettle(item); }} 
-                        className="text-slate-400 hover:text-green-600 dark:text-slate-500 dark:hover:text-green-400"
-                        title="Quitar recorrência/parcelas futuras"
+                        onClick={(e) => { e.stopPropagation(); openModal('variavel', item); setActiveMenu(null); }}
+                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-[#333] text-slate-700 dark:text-slate-200 transition-colors"
                       >
-                        <CheckCheck size={12} />
+                        <Edit2 size={14} className="text-blue-500"/> Editar
                       </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'variavel'); setActiveMenu(null); }}
+                        className="w-full px-4 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-[#333] text-red-600 transition-colors"
+                      >
+                        <Trash2 size={14}/> Excluir
+                      </button>
+                    </div>
                     )}
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(item.id, 'variavel'); }}>
-                      <Trash2 size={12} className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400" />
-                    </button>
                   </div>
                 </div>
               </Card>
