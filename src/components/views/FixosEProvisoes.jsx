@@ -32,7 +32,7 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
         </Card>
 
         <Card className="p-2 bg-white dark:bg-[#1F1F1F] border-l-4 border-red-500 shadow-sm">
-          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Em Aberto (R$)</p>
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">A pagar (R$)</p>
           <p className="text-sm font-bold text-red-500 truncate text-right">
             {formatCurrency(fixosEmAberto).replace('R$', '').trim()}
           </p>
