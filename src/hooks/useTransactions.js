@@ -216,7 +216,17 @@ export function useTransactions(user) {
   };
 
   const settleTransaction = async (groupId, dateLimit) => {
-    await supabase.from('transacoes').delete().eq('group_id', groupId).gt('data', dateLimit);
+    if (!groupId) {
+      console.warn('Tentativa de quitar transação sem Group ID');
+      return;
+    }
+
+    const { error } = await supabase.from('transacoes')
+      .delete()
+      .eq('group_id', groupId)
+      .gte('data', dateLimit); // Alterado para gte para incluir o mês atual
+    
+    if (error) console.error('Erro ao quitar transação:', error);
     fetchData();
   };
 

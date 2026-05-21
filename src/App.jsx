@@ -285,10 +285,15 @@ function AppContent() {
   };
 
   const handleSettle = (item) => {
+    if (!item.groupId) {
+      showNotification("Ação inválida", "Apenas pagamentos recorrentes podem ser quitados.", "error");
+      return;
+    }
+
     setConfirmConfig({
       isOpen: true,
       title: `Quitar "${item.descricao}"?`,
-      message: 'Isso removerá todas as parcelas/cobranças futuras deste item.',
+      message: 'Isso removerá este item e todas as cobranças futuras desta recorrência. Os meses anteriores serão preservados.',
       onConfirm: async () => {
         await settleTransaction(item.groupId, item.data);
         setConfirmConfig(prev => ({ ...prev, isOpen: false }));
