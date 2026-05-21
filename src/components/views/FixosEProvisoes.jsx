@@ -23,25 +23,25 @@ export const FixosEProvisoes = ({ filteredData, openModal, handleDelete, handleT
 
   return (
     <div className="space-y-6 pb-20 animate-in slide-in-from-right-4">
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-green-600 shadow-sm">
-          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pagos</p>
-          <p className="text-sm font-bold text-green-600 truncate">
-            {formatCurrency(fixosPagos)}
+      <div className="grid grid-cols-3 gap-2">
+        <Card className="p-2 bg-white dark:bg-[#1F1F1F] border-l-4 border-green-600 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Pagos (R$)</p>
+          <p className="text-sm font-bold text-green-600 truncate text-right">
+            {formatCurrency(fixosPagos).replace('R$', '').trim()}
           </p>
         </Card>
 
-        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-red-500 shadow-sm">
-          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Em Aberto</p>
-          <p className="text-sm font-bold text-red-500 truncate">
-            {formatCurrency(fixosEmAberto)}
+        <Card className="p-2 bg-white dark:bg-[#1F1F1F] border-l-4 border-red-500 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Em Aberto (R$)</p>
+          <p className="text-sm font-bold text-red-500 truncate text-right">
+            {formatCurrency(fixosEmAberto).replace('R$', '').trim()}
           </p>
         </Card>
 
-        <Card className="p-3 bg-white dark:bg-[#1F1F1F] border-l-4 border-blue-800 shadow-sm">
-          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total</p>
-          <p className="text-sm font-bold text-[var(--primary)] truncate">
-            {formatCurrency(totalFixos)}
+        <Card className="p-2 bg-white dark:bg-[#1F1F1F] border-l-4 border-blue-800 shadow-sm">
+          <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Total (R$)</p>
+          <p className="text-sm font-bold text-[var(--primary)] truncate text-right">
+            {formatCurrency(totalFixos).replace('R$', '').trim()}
           </p>
         </Card>
       </div>
