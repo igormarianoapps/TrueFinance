@@ -59,7 +59,7 @@ export const Patrimonio = ({ data, filteredData, currentDate, openModal, handleD
 
          <div className="grid grid-cols-2 gap-4">
            <div>
-              <p className="text-slate-400 text-xs mb-1">Terminei o mês com (Poupança)</p>
+              <p className="text-slate-400 text-xs mb-1">Iniciei o mês com</p>
               <span className="text-lg font-semibold">{formatCurrency(poupancaAnterior)}</span>
            </div>
            <div>

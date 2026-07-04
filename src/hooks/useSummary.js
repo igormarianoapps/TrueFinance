@@ -197,13 +197,19 @@ export function useFinancialSummary(data, currentDate) {
     // Total de envelopes (provisões) para o mês
     const totalEnvelopes = (filteredData.provisoes || []).reduce((acc, item) => acc + item.valor, 0);
 
-    // Total de aportes na poupança no mês
+    // Total de aportes na poupança no mês (dinheiro guardado)
     const totalPoupancaEntradas = (filteredData.poupanca || [])
       .filter(p => p.tipoPoupanca === 'entrada')
       .reduce((acc, item) => acc + item.valor, 0);
 
+    // Total de resgates da poupança no mês (dinheiro que volta para a conta)
+    const totalPoupancaSaidas = (filteredData.poupanca || [])
+      .filter(p => p.tipoPoupanca === 'saida')
+      .reduce((acc, item) => acc + item.valor, 0);
+
     // 2. Valor "Comprometido"
-    const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas;
+    // Aportes aumentam o comprometimento, enquanto resgates reduzem (liberando saldo para a sobra)
+    const totalComprometido = totalFixosMensal + totalEnvelopes + totalPoupancaEntradas - totalPoupancaSaidas;
 
     // Calcula gastos não provisionados (Débito) para deduzir da sobra
     const provisionedTagIds = (filteredData.provisoes || []).map(p => p.tagId).filter(Boolean);
