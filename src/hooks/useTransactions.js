@@ -9,9 +9,38 @@ export function useTransactions(user) {
   const fetchData = useCallback(async () => {
     if (!user) return;
     
-    const { data: transacoes, error: errorTransacoes } = await supabase.from('transacoes').select('*');
-    const { data: tags, error: errorTags } = await supabase.from('tags').select('*');
-    const { data: creditCards, error: errorCards } = await supabase.from('credit_cards').select('*');
+    let allTransactions = [];
+    let page = 0;
+    let errorTransacoes = null;
+    const pageSize = 1000; // O Supabase tem um limite padrão de 1000
+
+    while (true) {
+      const { data: pageData, error } = await supabase
+        .from('transacoes')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('id', { ascending: true }) // Mantém a ordem cronológica original
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (error) {
+        errorTransacoes = error;
+        break;
+      }
+
+      if (pageData) {
+        allTransactions = allTransactions.concat(pageData);
+      }
+
+      // Se a página retornou menos que o tamanho máximo, é a última página.
+      if (!pageData || pageData.length < pageSize) {
+        break;
+      }
+
+      page++;
+    }
+
+    const { data: tags, error: errorTags } = await supabase.from('tags').select('*').eq('user_id', user.id);
+    const { data: creditCards, error: errorCards } = await supabase.from('credit_cards').select('*').eq('user_id', user.id);
     
     if (errorTransacoes || errorTags || errorCards) {
       console.error('Erro ao buscar dados', { errorTransacoes, errorTags, errorCards });
@@ -31,11 +60,11 @@ export function useTransactions(user) {
     });
 
     setData({
-      entradas: transacoes.filter(t => t.tipo === 'entrada').map(mapTransaction),
-      fixos: transacoes.filter(t => t.tipo === 'fixo').map(mapTransaction),
-      variaveis: transacoes.filter(t => t.tipo === 'variavel').map(mapTransaction),
-      provisoes: transacoes.filter(t => t.tipo === 'provisao').map(mapTransaction),
-      poupanca: transacoes.filter(t => t.tipo === 'poupanca').map(mapTransaction),
+      entradas: allTransactions.filter(t => t.tipo === 'entrada').map(mapTransaction),
+      fixos: allTransactions.filter(t => t.tipo === 'fixo').map(mapTransaction),
+      variaveis: allTransactions.filter(t => t.tipo === 'variavel').map(mapTransaction),
+      provisoes: allTransactions.filter(t => t.tipo === 'provisao').map(mapTransaction),
+      poupanca: allTransactions.filter(t => t.tipo === 'poupanca').map(mapTransaction),
       tags: tags || [],
       creditCards: creditCards || []
     });
