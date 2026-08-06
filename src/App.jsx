@@ -387,16 +387,27 @@ function AppContent() {
     };
 
     if (modalType === 'tag') {
-      await saveTag(values, editingItem?.id);
+      const { error } = await saveTag(values, editingItem?.id);
+      if (error) {
+        showNotification("Erro ao salvar tag", error.message, "error");
+        return;
+      }
     } else if (modalType === 'cartao') {
-      await saveCreditCard(values, editingItem?.id);
+      const { error } = await saveCreditCard(values, editingItem?.id);
+      if (error) {
+        showNotification("Erro ao salvar cartão", error.message, "error");
+        return;
+      }
     } else {
-      await saveTransaction(
-        transactionData, 
-        editingItem?.id, 
-        // Passa o recurrenceType lido do formulário
+      const { error } = await saveTransaction(
+        transactionData,
+        editingItem?.id,
         { type: recurrenceTypeFromForm, installments: values.installments }
       );
+      if (error) {
+        showNotification("Erro ao salvar transação", error.message, "error");
+        return;
+      }
     }
     
     setModalOpen(false);
