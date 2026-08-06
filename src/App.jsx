@@ -410,8 +410,8 @@ function AppContent() {
       }
     }
     
-    setModalOpen(false);
-    setEditingItem(null);
+    setEditingItem(null); // Limpa o item em edição
+    setModalOpen(false); // Fecha o modal
   };
 
   const handleTogglePaid = async (id) => {

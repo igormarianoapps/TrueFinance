@@ -70,9 +70,12 @@ export const Login = ({ showNotification }) => {
       if (showNotification) showNotification('Erro', error.message, 'error');
       else alert(error.message);
     } else {
-      if (showNotification) showNotification('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.', 'success');
-      else alert('Cadastro realizado! Verifique seu email para confirmar.');
-      setShowSignUp(false);
+      if (showNotification) {
+        showNotification('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.', 'success');
+      } else {
+        alert('Cadastro realizado! Verifique seu email para confirmar.');
+      }
+      setShowSignUp(false); // Fecha o modal de cadastro para mostrar a notificação
     }
     setLoading(false);
   };
@@ -87,9 +90,12 @@ export const Login = ({ showNotification }) => {
       if (showNotification) showNotification('Erro', error.message, 'error');
       else alert(error.message);
     } else {
-      if (showNotification) showNotification('Sucesso', 'Email de redefinição enviado! Verifique sua caixa de entrada.', 'success');
-      else alert('Email de redefinição enviado! Verifique sua caixa de entrada.');
-      setShowForgot(false);
+      if (showNotification) {
+        showNotification('Sucesso', 'Email de redefinição enviado! Verifique sua caixa de entrada.', 'success');
+      } else {
+        alert('Email de redefinição enviado! Verifique sua caixa de entrada.');
+      }
+      setShowForgot(false); // Fecha o modal de recuperação para mostrar a notificação
     }
     setLoading(false);
   };

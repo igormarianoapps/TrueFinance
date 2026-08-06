@@ -178,6 +178,7 @@ export const Perfil = ({ user, theme, setTheme, openConfirmModal, profile, setSh
       const { error: funcError } = await supabase.functions.invoke('delete-account');
       if (funcError) throw funcError;
 
+      setShowDeleteModal(false); // Fecha o modal antes do logout
       // 3. Logout forçado (o redirecionamento acontece no App.jsx quando session vira null)
       await supabase.auth.signOut();
 
