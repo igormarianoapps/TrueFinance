@@ -75,14 +75,18 @@ export function useTransactions(user) {
   }, [fetchData]);
 
   const saveTag = async (values, editingId = null) => {
+    let query;
     if (editingId) {
-      const { error } = await supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingId);
-      if (error) console.error('Erro ao atualizar tag:', error);
+      query = supabase.from('tags').update({ nome: values.nome, cor: values.cor }).eq('id', editingId);
     } else {
-      const { error } = await supabase.from('tags').insert({ user_id: user.id, nome: values.nome, cor: values.cor });
-      if (error) console.error('Erro ao criar tag:', error);
+      query = supabase.from('tags').insert({ user_id: user.id, nome: values.nome, cor: values.cor });
     }
-    fetchData();
+    const { error } = await query;
+    if (error) {
+      console.error('Erro ao salvar tag:', error);
+    }
+    await fetchData();
+    return { error };
   };
 
   const deleteTag = async (id) => {
@@ -98,19 +102,22 @@ export function useTransactions(user) {
       closing_date: parseInt(values.closingDate)
     };
 
+    let query;
     if (editingId) {
-      const { error } = await supabase.from('credit_cards').update({ 
+      query = supabase.from('credit_cards').update({ 
         name: cardData.name, 
         due_date: cardData.due_date, 
         closing_date: cardData.closing_date 
       }).eq('id', editingId);
-      if (error) console.error('Erro ao atualizar cartão:', error);
     } else {
-      const { error } = await supabase.from('credit_cards').insert(cardData);
-      if (error) console.error('Erro ao criar cartão:', error);
+      query = supabase.from('credit_cards').insert(cardData);
     }
-
-    fetchData();
+    const { error } = await query;
+    if (error) {
+      console.error('Erro ao salvar cartão:', error);
+    }
+    await fetchData();
+    return { error };
   };
 
   const saveTransaction = async (transactionData, editingId = null, recurrence = { type: 'unico', installments: 1 }) => {
