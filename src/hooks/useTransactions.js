@@ -114,6 +114,8 @@ export function useTransactions(user) {
   };
 
   const saveTransaction = async (transactionData, editingId = null, recurrence = { type: 'unico', installments: 1 }) => {
+    let finalError = null;
+
     const commonData = {
       user_id: user.id,
       descricao: transactionData.descricao,
@@ -147,7 +149,10 @@ export function useTransactions(user) {
       }
 
       const { error } = await supabase.from('transacoes').update(updateData).eq('id', editingId);
-      if (error) console.error('Erro ao atualizar transação:', error);
+      if (error) {
+        console.error('Erro ao atualizar transação:', error);
+        finalError = error;
+      }
 
       // Propaga a edição para recorrências futuras (mesmo Group ID e data posterior)
       const allItems = [...data.entradas, ...data.fixos, ...data.variaveis, ...data.provisoes, ...data.poupanca];
@@ -166,7 +171,10 @@ export function useTransactions(user) {
           .gt('data', originalItem.data) // Apenas datas futuras em relação ao item original
           .neq('id', editingId);
           
-        if (futureError) console.error('Erro ao propagar edição:', futureError);
+        if (futureError) {
+          console.error('Erro ao propagar edição:', futureError);
+          if (!finalError) finalError = futureError; // Captura o erro se não houver um erro principal
+        }
       }
     } else {
       const newItems = [];
@@ -204,10 +212,14 @@ export function useTransactions(user) {
       
       if (newItems.length > 0) {
         const { error } = await supabase.from('transacoes').insert(newItems);
-        if (error) console.error('Erro ao criar transações:', error);
+        if (error) {
+          console.error('Erro ao criar transações:', error);
+          finalError = error;
+        }
       }
     }
-    fetchData();
+    await fetchData();
+    return { error: finalError };
   };
 
   const payInvoice = async (cardId, cardName, valor, dataVencimento) => {
